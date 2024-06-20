@@ -2,9 +2,7 @@
 
 
 
-
-
-ReViewCNV is a containerized Shiny App for the visualization the Copy Number Variants (CNVs) identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). It is possible to visualize the regions identified in up to three individuals at the same time. A test dataset is provided as example in the TEST_TRIO folder.
+ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). Is it possible to visualize the identified regions of up to three individuals (Trio) at the same time. A test dataset is provided as an example in the TEST_TRIO folder.
 
 
 <br/>
@@ -28,7 +26,7 @@ _sudo docker run --name shiny-app-excavator2 --platform linux/x86_64   -p 3838:
 
 ### Building and runnung the Singularity/Apptainer
 
-To build the file .sif is necessary to build the Docker immage first (see above), then the immage should be saved locally as a file .tar using the command below:
+To build the file .sif is necessary to build the Docker image first (see above), then the image should be saved locally as a file .tar using the command below:
 
 _sudo docker save shiny-app-excavator2 > shiny-app-excavator2.tar_ 
 
@@ -38,7 +36,7 @@ _singularity build shiny-app-excavator2.sif docker-archive://shiny-app-excavator
 
 _apptainer build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using apptainer)
 
-To run the apptainer singularity use one of the two commands below:
+To run the apptainer/singularity use one of the two commands below:
 
 _singularity run    shiny-app-excavator2.sif_ (if using singularity)
 
