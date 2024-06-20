@@ -39,7 +39,7 @@ apptainer run    shiny-app-excavator2.sif (if using apptainer)
 
 <br/>
 
-### How to specify the genome assembly and interact with the identified regions and the population polymorphisms plots
+### Specifying the genome assembly and interacting with the identified regions and the population polymorphisms plots
 
 ![Video_1](https://github.com/ctglab/ReViewCNV/assets/110105172/c0f3ad06-f099-4a71-b962-8d7dfb152513)
 
@@ -47,27 +47,27 @@ apptainer run    shiny-app-excavator2.sif (if using apptainer)
 <br/><br/>
 
 
-### How to show the genes annotations plot, to filter the identified regions according to call probability and to visualize a different chromosome
+### Showing the genes annotations plot, filtering the identified regions and to visualizing a different chromosome
 
 ![Video_2](https://github.com/ctglab/ReViewCNV/assets/110105172/6c770d9f-b347-4a99-8745-b61ece0def9f)
 
 
 <br/><br/>
 
-### How to filter the population polymorphisms according to their frequency and type (loss or gain), change the public dataset of population polymorphisms and increase the number of population polymorphisms to visualize
+### Filtering the population polymorphisms, changing the polymorphisms dataset and increasing the number of polymorphisms to visualize
 
 ![Video_3](https://github.com/ctglab/ReViewCNV/assets/110105172/27f238ae-884e-4fa8-8fd9-b90be701decd)
 
 
 <br/><br/>
 
-### How to have the same y axes range in the plot with the identified regions when loading more than one individuals, and how to remove the x axis sharing
+### Sharing the y axis range when loading multiple individuals, and disabling the x axis sharing
 
 ![Video_4](https://github.com/ctglab/ReViewCNV/assets/110105172/8d4d34bc-4eee-4ab9-a8e7-95a5acaa93f7)
 
 
 <br/><br/>
 
-# How to download an HTML file of a full chromosome or of a chromosome region
+# Downloading an HTML file of a full chromosome or of a chromosomal region
 
 ![Video_5](https://github.com/ctglab/ReViewCNV/assets/110105172/91823650-ccd4-4a69-a613-10043d012ff4)
