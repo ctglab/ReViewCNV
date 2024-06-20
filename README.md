@@ -9,15 +9,15 @@ ReViewCNV is a containerized Shiny App for the visualization the Copy Number Var
 
 To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take some time):
 
-sudo docker build -t shiny-app-excavator2 .
+_sudo docker build -t shiny-app-excavator2 ._
 
 To run the container run the following command:
 
-sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2
+_sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2_
 
 If working on a Mac with Apple Silicon, run the command below instead:
 
-sudo docker run --name shiny-app-excavator2 --platform linux/x86_64   -p 3838:3838 shiny-app-excavator2 
+_sudo docker run --name shiny-app-excavator2 --platform linux/x86_64   -p 3838:3838 shiny-app-excavator2_ 
 
 <br/>
 
@@ -25,17 +25,19 @@ sudo docker run --name shiny-app-excavator2 --platform linux/x86_64   -p 3838:3
 
 To build the file .sif is necessary to build the Docker immage first (see above), then the immage should be saved locally as a file .tar using the command below:
 
-sudo docker save shiny-app-excavator2 > shiny-app-excavator2.tar 
+_sudo docker save shiny-app-excavator2 > shiny-app-excavator2.tar_ 
 
 The file .tar can be converted to file.sif using one of the two commands below:
 
-singularity build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar (if using singularity)
-apptainer build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar (if using apptainer)
+_singularity build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using singularity)
+
+_apptainer build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using apptainer)
 
 To run the apptainer singularity use one of the two commands below:
 
-singularity run    shiny-app-excavator2.sif (if using singularity)
-apptainer run    shiny-app-excavator2.sif (if using apptainer)
+_singularity run    shiny-app-excavator2.sif_ (if using singularity)
+
+_apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 
 <br/>
 
