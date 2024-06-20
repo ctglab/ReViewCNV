@@ -32,23 +32,23 @@ To run the apptainer singularity use one of the two commands below:
 singularity run    shiny-app-excavator2.sif (if using singularity)
 apptainer run    shiny-app-excavator2.sif (if using apptainer)
 
-# How to specify the genome assembly and interact with the identified regions and the population polymorphisms plots
+ How to specify the genome assembly and interact with the identified regions and the population polymorphisms plots:
 
 ![Video_1](https://github.com/ctglab/ReViewCNV/assets/110105172/c0f3ad06-f099-4a71-b962-8d7dfb152513)
 
-# How to show the genes annotations plot, to filter the identified regions according to call probability and to visualize a different chromosome
+ How to show the genes annotations plot, to filter the identified regions according to call probability and to visualize a different chromosome:
 
 ![Video_2](https://github.com/ctglab/ReViewCNV/assets/110105172/6c770d9f-b347-4a99-8745-b61ece0def9f)
 
-# How to filter the population polymorthisms according to their frequency and type (loss or gain), change the pubblic dataset of population polymorphosms and increase the number of popultaion polymorphisms to visualize
+ How to filter the population polymorthisms according to their frequency and type (loss or gain), change the pubblic dataset of population polymorphosms and increase the number of popultaion polymorphisms to visualize:
 
 ![Video_3](https://github.com/ctglab/ReViewCNV/assets/110105172/27f238ae-884e-4fa8-8fd9-b90be701decd)
 
-# How to have the same y axes range in the plot with the identified regions when loading more than one individuals, and how to remove the x axis sharing
+How to have the same y axes range in the plot with the identified regions when loading more than one individuals, and how to remove the x axis sharing:
 
 ![Video_4](https://github.com/ctglab/ReViewCNV/assets/110105172/8d4d34bc-4eee-4ab9-a8e7-95a5acaa93f7)
 
-# How to download an HTML file of a full chromosome or of a chromosome region
+How to download an HTML file of a full chromosome or of a chromosome region:
 
 ![Video_5](https://github.com/ctglab/ReViewCNV/assets/110105172/91823650-ccd4-4a69-a613-10043d012ff4)
 
