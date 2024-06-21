@@ -44,7 +44,7 @@ _apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 
 #### Specifying the genome assembly and interacting with the identified regions and the population polymorphisms plots
 
-![Video_1](https://github.com/ctglab/ReViewCNV/assets/110105172/c0f3ad06-f099-4a71-b962-8d7dfb152513)
+![Video_1b](https://github.com/ctglab/ReViewCNV/assets/110105172/c31a6bb3-48df-4e0e-b212-3031c3cdb5ba)
 
 
 <br/><br/>
@@ -52,14 +52,16 @@ _apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 
 #### Showing the genes annotations plot, filtering the identified regions and visualizing a different chromosome
 
-![Video_2](https://github.com/ctglab/ReViewCNV/assets/110105172/6c770d9f-b347-4a99-8745-b61ece0def9f)
+
+![Video_2](https://github.com/ctglab/ReViewCNV/assets/110105172/e91a807f-a338-401b-826d-57a66b729416)
 
 
 <br/><br/>
 
 #### Filtering the population polymorphisms, changing public dataset and increasing the number of polymorphisms to visualize
 
-![Video_3](https://github.com/ctglab/ReViewCNV/assets/110105172/27f238ae-884e-4fa8-8fd9-b90be701decd)
+
+![Video_3b](https://github.com/ctglab/ReViewCNV/assets/110105172/65978811-e7bf-4160-967b-8bc2c7e1feea)
 
 
 <br/><br/>
