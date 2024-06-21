@@ -12,10 +12,9 @@ To build the image, download the repository, open the terminal, go to the folder
 
 _sudo docker buildx build  -t shiny-app-excavator2 ._
 
-To run the container run the following command:
+To run the container run:
 
 _sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2_
-
 
 <br/>
 
