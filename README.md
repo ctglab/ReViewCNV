@@ -53,7 +53,8 @@ _apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 #### Showing the genes annotations plot, filtering the identified regions and visualizing a different chromosome
 
 
-![Video_2](https://github.com/ctglab/ReViewCNV/assets/110105172/e91a807f-a338-401b-826d-57a66b729416)
+
+![Video_2b](https://github.com/ctglab/ReViewCNV/assets/110105172/98089ba5-6874-4bdc-b3bb-e03b87772c01)
 
 
 <br/><br/>
@@ -67,12 +68,13 @@ _apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 <br/><br/>
 
 #### Sharing the y axis range when loading multiple individuals and disabling the x axis sharing
+![Video_4b](https://github.com/ctglab/ReViewCNV/assets/110105172/f1bac7ba-adcd-443c-8332-5189edf1b982)
 
-![Video_4](https://github.com/ctglab/ReViewCNV/assets/110105172/8d4d34bc-4eee-4ab9-a8e7-95a5acaa93f7)
 
 
 <br/><br/>
 
 #### Downloading an HTML file of a full chromosome or of a chromosomal region
 
-![Video_5](https://github.com/ctglab/ReViewCNV/assets/110105172/91823650-ccd4-4a69-a613-10043d012ff4)
+![Video_5b](https://github.com/ctglab/ReViewCNV/assets/110105172/dbffa3da-a028-4970-a4e8-e377d57541f4)
+
