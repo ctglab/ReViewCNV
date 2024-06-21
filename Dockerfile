@@ -21,10 +21,18 @@ RUN installr -d -t gfortran plotly
 RUN installr -d \
         -t "zlib-dev" \
         shiny      
-RUN installr -d   dplyr readr htmlwidgets shinyHugePlot bslib duckdb dbplyr
+RUN installr -d dplyr 
+RUN installr -d readr 
+RUN installr -d htmlwidgets
+RUN installr -d shinyHugePlot
+RUN installr -d bslib
+RUN installr -d DBI 
+RUN installr -d dbplyr
 RUN installr -d \
     -t "make openssl-dev cmake linux-headers apache-arrow-dev" \
     -a "openssl libarrow_dataset libarrow" arrow@14.0.2.1
+RUN installr -d duckdb 
+
 
 #Create work directory and copy required files and folders into it
 RUN mkdir -p /app
@@ -38,6 +46,7 @@ COPY app.R /app
 
 #Run app.R
 CMD Rscript /app/app.R
+
 
 
 
