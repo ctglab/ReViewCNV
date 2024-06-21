@@ -8,7 +8,7 @@ ReViewCNV is a containerized Shiny App for the visualization of the Copy Number 
 
 ### Building and running the Docker
 
-To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take more than ten minutes):
+To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take a long time):
 
 _sudo docker buildx build --platform linux/x86_64 -t shiny-app-excavator2 ._
 
