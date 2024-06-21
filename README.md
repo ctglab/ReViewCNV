@@ -1,8 +1,6 @@
 # ReViewCNV
 
-
-
-ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). Is it possible to visualize the identified regions of up to three individuals (Trio) at the same time. A test dataset is provided as an example in the TEST_TRIO folder.
+ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) from exome or gene panels sequencing identified by the algorithm  [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). Is it possible to visualize the identified regions of up to three individuals (Trio) at the same time. A test dataset is provided as an example in the TEST_TRIO folder.
 
 
 <br/>
@@ -12,7 +10,7 @@ ReViewCNV is a containerized Shiny App for the visualization of the Copy Number 
 
 To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take more than ten minutes):
 
-_sudo docker build -t shiny-app-excavator2 ._
+_sudo docker buildx build --platform linux/x86_64 -t shiny-app-excavator2 ._
 
 To run the container run the following command:
 
