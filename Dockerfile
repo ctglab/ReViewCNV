@@ -5,12 +5,6 @@ FROM rhub/r-minimal
 RUN apk update
 RUN apk add --no-cache --update-cache bash
 
-#Add updated link to repositories
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.19/main' \
-	>> /etc/apk/repositories
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.19/community' \
-	>> /etc/apk/repositories
-
 #Install linux libaries
 RUN apk update
 RUN apk add --no-cache --update-cache R R-dev openssl-dev pandoc \
