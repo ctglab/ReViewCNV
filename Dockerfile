@@ -1,4 +1,4 @@
-#Base R Shiny image
+#Base r-minimal image
 FROM rhub/r-minimal
 
 #Install bash
