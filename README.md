@@ -58,7 +58,7 @@ _apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
 #### Filtering the population polymorphisms, changing public dataset and increasing the number of polymorphisms to visualize
 
 
-![Video_3b](https://github.com/ctglab/ReViewCNV/assets/110105172/65978811-e7bf-4160-967b-8bc2c7e1feea)
+![Video_3_new](https://github.com/ctglab/ReViewCNV/assets/110105172/f30854f3-f0a2-4097-904d-dd2af12d54a1)
 
 
 <br/><br/>
