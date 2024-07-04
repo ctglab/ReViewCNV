@@ -1,6 +1,15 @@
 # ReViewCNV
 
-![example workflow](https://github.com/ctglab/ReViewCNV/actions/workflows/docker-image.yml/badge.svg)
+![GitHub docker image build](https://github.com/ctglab/ReViewCNV/actions/workflows/docker-image.yml/badge.svg)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/ctglab/ReViewCNV) 
+![GitHub last commit](https://img.shields.io/github/last-commit/ctglab/ReViewCNV)
+![GitHub contributors](https://img.shields.io/github/contributors/ctglab/ReViewCNV)
+[![GitHub Website](https://img.shields.io/website-up-down-green-red/http/monip.org.svg)](https://ctglab.github.io/)
+![GitHub forks](https://img.shields.io/github/forks/ctglab/ReViewCNV)
+![GitHub Repo stars](https://img.shields.io/github/stars/ctglab/ReViewCNV)
+![GitHub watchers](https://img.shields.io/github/watchers/ctglab/ReViewCNV.svg)
+![GitHub release](https://img.shields.io/github/release/ctglab/ReViewCNV.svg)
+
 
 ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) from exome or gene panels sequencing identified by the algorithm  [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). It is possible to visualize the identified regions in up to three individuals (Trio) at the same time. A test dataset is provided in the TEST_TRIO folder.
 
