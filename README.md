@@ -1,5 +1,7 @@
 # ReViewCNV
 
+![example workflow](https://github.com/ctglab/ReViewCNV/actions/workflows/docker-image.yml/badge.svg?branch=master)
+
 ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) from exome or gene panels sequencing identified by the algorithm  [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). It is possible to visualize the identified regions in up to three individuals (Trio) at the same time. A test dataset is provided in the TEST_TRIO folder.
 
 
