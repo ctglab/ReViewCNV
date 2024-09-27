@@ -20,7 +20,7 @@ ReViewCNV has now increased its compatibility and accepts as input a list of CNV
 The App allows the user to compare the  CNVs of interst with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). For the genes present in correspondance of the CNVs of interest the exons are highlighted. It is possible to visualize up to three individuals at the same time in synchronized plots, facilitating family studies and the identification of de novo mutations.
 </p>
 <p align="justify">
-In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The app_Excavator2.R is specific for EXCAVATOR2. The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates (Chromosome, Start and End positions) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R are avilable in the folder test_TRIO_app_CNV_tsv.
+In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The app_Excavator2.R is specific for EXCAVATOR2. The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R are avilable in the folder test_TRIO_app_CNV_tsv.
 </p>
 
 
