@@ -69,12 +69,17 @@ _apptainer run  shiny-app-excavator2.sif  Rscript app_CNV_tsv.R_ (if using appta
 
 <br/>
 
-### Example of use tags:
+### Example of use gifs:
 <p align="justify">
-The animated tags below illustrate how the app works. The first one shows how to upload the input files in the app_CNV_tsv.R, while the following tags show the app functionalities in the app_Excavator2.R as they are almost the same in the app_CNV_tsv.R.
+The animated gifs below illustrate how the app works. The first one shows how to upload the input files in the app_CNV_tsv.R, while the following gifs show the app functionalities in the app_Excavator2.R as they are almost the same in the app_CNV_tsv.R.
 </p>
 
 <br/>
+
+#### Uploading the input file in the app_CNV_tsv.R 
+
+![App_CNV_tsv_upload](https://github.com/user-attachments/assets/24f2792b-4e30-4719-b60a-b6335c7b877e)
+
 
 #### Specifying the genome assembly and interacting with the identified regions and the population polymorphisms plots
 
