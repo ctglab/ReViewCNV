@@ -11,7 +11,7 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/ctglab/ReViewCNV.svg)
 
 
-ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs). It was created to visualize CNVs from exome or gene panels sequencing identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/)
+ReViewCNV is a containerized Shiny App for the visualization of germinal Copy Number Variants (CNVs). It was created to visualize CNVs from exome or gene panels sequencing identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/)
 
 <p align="justify">
 ReViewCNV has now increased its compatibility and accepts as input a list of CNVs identified by any bioinformatic tool!
