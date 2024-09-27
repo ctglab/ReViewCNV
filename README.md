@@ -72,7 +72,7 @@ _apptainer run  shiny-app-excavator2.sif  Rscript app_CNV_tsv.R_ (if using appta
 
 ### How to use the app
 <p align="justify">
-The animated gifs below illustrate how the app works. The first one shows how to upload the input files in the app_CNV_tsv.R, while the following gifs show the app functionalities for the app_Excavator2.R,  they are almost the same in the app_CNV_tsv.R.
+The animated gifs below illustrate how the app works. The first one shows how to upload the input files in the app_CNV_tsv.R. The other gifs show the app functionalities for the app_Excavator2.R, they are almost the same for the app_CNV_tsv.R.
 </p>
 
 <br/>
