@@ -29,16 +29,16 @@ In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The a
 
 ### Building and running the Docker
 
-<p align="justify">
-To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take a long time):
-</p>
+
+##### To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take a long time):
+
 _sudo docker buildx build  -t shiny-app-excavator2 ._
 
-To run the app_Excavator2.R use:
+##### To run the app_Excavator2.R use:
 
 _sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 Rscript app_Excavator2.R_
 
-To run the app_CNV_tsv.R use:
+##### To run the app_CNV_tsv.R use:
 
 _sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 Rscript app_CNV_tsv.R_
 
