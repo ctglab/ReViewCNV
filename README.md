@@ -29,8 +29,9 @@ In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The a
 
 ### Building and running the Docker
 
+<p align="justify">
 To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take a long time):
-
+</p>
 _sudo docker buildx build  -t shiny-app-excavator2 ._
 
 To run the app_Excavator2.R use:
@@ -45,23 +46,23 @@ _sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 
 
 ### Building and running the Singularity/Apptainer
 
-To create the .sif file it is necessary to build the Docker image first (see above). The Docker image should be saved locally as a .tar file using the command below:
-
+<p align="justify"> ##### To create the .sif file it is necessary to build the Docker image first (see above). The Docker image should be saved locally as a .tar file using the command below:
+</p>
 _sudo docker save shiny-app-excavator2 > shiny-app-excavator2.tar_ 
 
-The .tar file  can be converted to a .sif file using one of the two commands below:
+##### The .tar file  can be converted to a .sif file using one of the two commands below:
 
 _singularity build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using singularity)
 
 _apptainer build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using apptainer)
 
-To run the the app_Excavator2.R on apptainer/singularity use one of the two commands below:
+##### To run the the app_Excavator2.R on apptainer/singularity use one of the two commands below:
 
 _singularity run  shiny-app-excavator2.sif  Rscript app_Excavator2.R_ (if using singularity)
 
 _apptainer run  shiny-app-excavator2.sif  Rscript app_Excavator2.R_ (if using apptainer)
 
-To run the the app_CNV_tsv.R on apptainer/singularity use one of the two commands below:
+##### To run the the app_CNV_tsv.R on apptainer/singularity use one of the two commands below:
 
 _singularity run  shiny-app-excavator2.sif  Rscript app_CNV_tsv.R_ (if using singularity)
 
