@@ -15,9 +15,11 @@ ReViewCNV is a containerized Shiny App for the visualization of the Copy Number 
 
 <p align="justify">
 ReViewCNV has now increased its compatibility and accepts as input a list of CNVs identified by any bioinformatic tool!
-
+</p>
+<p align="justify">
 The App allows the user to compare the  CNVs of interst with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). For the genes present in correspondance of the CNVs of interest the exons are highlighted. It is possible to visualize up to three individuals at the same time in synchronized plots, facilitating family studies and the identification of de novo mutations.
-
+</p>
+<p align="justify">
 In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The app_Excavator2.R is specific for the Excavator2 output. The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates(chromosome, start and end position) and optionally a fourth column specifyingh the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R are avilable in the folder test_TRIO_app_CNV_tsv.
 </p>
 
