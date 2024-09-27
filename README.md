@@ -46,8 +46,8 @@ _sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 
 
 ### Building and running the Singularity/Apptainer
 
-<p align="justify"> ##### To create the .sif file it is necessary to build the Docker image first (see above). The Docker image should be saved locally as a .tar file using the command below:
-</p>
+#####  To create the .sif file it is necessary to build the Docker image first (see above). The Docker image should be saved locally as a .tar file using the command below:
+
 _sudo docker save shiny-app-excavator2 > shiny-app-excavator2.tar_ 
 
 ##### The .tar file  can be converted to a .sif file using one of the two commands below:
