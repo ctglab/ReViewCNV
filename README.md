@@ -11,7 +11,13 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/ctglab/ReViewCNV.svg)
 
 
-ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs) from exome or gene panels sequencing identified by the algorithm  [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/). The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). It is possible to visualize the identified regions in up to three individuals (Trio) at the same time. A test dataset is provided in the TEST_TRIO folder.
+ReViewCNV is a containerized Shiny App for the visualization of the Copy Number Variants (CNVs). It was created to visualize CNVs from exome or gene panels sequencing identified by the algorithm [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/)
+
+ReViewCNV has increased its compatibility and now accepts  as input a list of CNVs identified with any bioinformatic tool!
+
+The App allows the user to compare the  identified CNVs with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). For the genes present in correspondance of the CNVs of interest also the different exons are shown. It is possible to visualize up to three individuals at the same time in synchronized plots, facilitating family studies and the identification of denovo mutations.
+
+In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The app_Excavator2.R is specific for the Excavator2 output and also visualizes the Log2Ratios for each genomic window and represents in different colors the CNVs classes. The app_CNV_tsv.R accepts as input a tsv file (without header) with a list of CNVs coordinates: Chromosome, Start and End position and optionally a fourth column specifyingh the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while example input files for the app_CNV_tsv.R are avilable in the folder test_TRIO_app_CNV_tsv.
 
 
 <br/>
@@ -23,9 +29,13 @@ To build the image, download the repository, open the terminal, go to the folder
 
 _sudo docker buildx build  -t shiny-app-excavator2 ._
 
-To run the container run:
+To run the app_Excavator2.R use:
 
-_sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2_
+_sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 Rscript app_Excavator2.R_
+
+To run the app_CNV_tsv.R use:
+
+_sudo docker run --name shiny-app-excavator2  -p 3838:3838 shiny-app-excavator2 Rscript app_CNV_tsv.R_
 
 <br/>
 
@@ -41,11 +51,17 @@ _singularity build shiny-app-excavator2.sif docker-archive://shiny-app-excavator
 
 _apptainer build shiny-app-excavator2.sif docker-archive://shiny-app-excavator2.tar_ (if using apptainer)
 
-To run the apptainer/singularity use one of the two commands below:
+To run the the app_Excavator2.R on apptainer/singularity use one of the two commands below:
 
-_singularity run    shiny-app-excavator2.sif_ (if using singularity)
+_singularity run  shiny-app-excavator2.sif  Rscript app_Excavator2.R_ (if using singularity)
 
-_apptainer run    shiny-app-excavator2.sif_ (if using apptainer)
+_apptainer run  shiny-app-excavator2.sif  Rscript app_Excavator2.R_ (if using apptainer)
+
+To run the the app_CNV_tsv.R on apptainer/singularity use one of the two commands below:
+
+_singularity run  shiny-app-excavator2.sif  Rscript app_CNV_tsv.R_ (if using singularity)
+
+_apptainer run  shiny-app-excavator2.sif  Rscript app_CNV_tsv.R_ (if using apptainer)
 
 <br/>
 
