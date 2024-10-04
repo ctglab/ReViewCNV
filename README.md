@@ -78,7 +78,7 @@ The animated gifs below illustrate how the app works. The first one shows how to
 <br/>
 
 ### Questions?
-Do you have any question or suggestion? Please let us know, we look forward to your feedback
+Do you have any question or suggestion? Please let us know, we look forward to your feedback!
 
 
 <br/>
