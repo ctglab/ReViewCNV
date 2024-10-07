@@ -85,7 +85,8 @@ Do you have any question or suggestion? Please [let us know](https://github.com/
 
 #### Uploading the input file in the app_CNV_tsv.R 
 
-![App_CNV_tsv_upload](https://github.com/user-attachments/assets/24f2792b-4e30-4719-b60a-b6335c7b877e)
+![App_CNV_tsv_upload](https://github.com/user-attachments/assets/8d507f5b-d39f-4ff5-90dc-5a3c827287ed)
+
 
 <br/><br/>
 
