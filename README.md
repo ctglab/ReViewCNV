@@ -32,7 +32,7 @@ The ShinyApp has been developed in R (v. 4.4.1) using RStudio as IDE and the fol
 ### Building and running the Docker
 
 
-##### To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this can take a long time):
+##### To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this will take around 25 minutes):
 
 _sudo docker buildx build  -t shiny-app-excavator2 ._
 
