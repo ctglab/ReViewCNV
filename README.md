@@ -23,7 +23,7 @@ The App allows the user to compare the  CNVs of interst with population polymorp
 In the container are present two apps: app_Excavator2.R and app_CNV_tsv.R. The app_Excavator2.R is specific for EXCAVATOR2. The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R in the folder test_TRIO_app_CNV_tsv.
 </p>
 <p align="justify">
-The ShinyApp has been developed in R (v. 4.4.1) using RStudio asIDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
+The ShinyApp has been developed in R (v. 4.4.1) using RStudio as IDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
 </p>
 
 <br/>
