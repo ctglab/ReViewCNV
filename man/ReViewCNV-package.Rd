@@ -3,12 +3,12 @@
 \docType{package}
 \name{ReViewCNV-package}
 \alias{ReViewCNV-package}
-\title{ReViewCNV: What the Package Does (One Line, Title Case)}
+\title{ReViewCNV: Visualization of germinal Copy Number Variants (CNVs)}
 \description{
-What the package does (one paragraph).
+ReViewCNV is a ShinyApp for the visualization and clinical interpretation of germinal Copy Number Variants (CNVs). It visualizes CNVs from exome or gene panels sequencing identified by the algorithms EXCAVATOR2 and Mixer. It also accepts a tsv file with the identified CNVs as specified in README.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Francesco Paparazzo \email{francescopaparazzo85@gmail.com}
 
 }
 \keyword{internal}

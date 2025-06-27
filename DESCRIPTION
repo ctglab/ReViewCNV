@@ -6,7 +6,6 @@ Authors@R:
 Description: ReViewCNV is a ShinyApp for the visualization  and clinical interpretation of germinal Copy Number Variants (CNVs). 
     It visualizes CNVs from exome or gene panels sequencing identified by the algorithms EXCAVATOR2 and Mixer. 
     It also accepts a tsv file with the identified CNVs as specified in README.
-
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
