@@ -13,7 +13,7 @@
 #'   Plot_Visualization()
 #' }
 
-ReViewCNV <- function(host="0.0.0.0", port = 3838  ) {
+ReViewCNV <- function(host="0.0.0.0", port = 3838 ) {
 # Specify the application port
 options(shiny.maxRequestSize=50*1024^2) #max dim for input files
 
@@ -2483,6 +2483,7 @@ if(!is.null(exons_annotations())){
 
 }
 
-  shiny::runApp(list(ui, server), host = host, port = port)
+  app <- shiny::shinyApp(ui = ui, server = server)
+  shiny::runApp(app, host = host, port = port)
 
 }
