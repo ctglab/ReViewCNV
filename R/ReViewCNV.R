@@ -4,6 +4,7 @@
 #'
 #' @param host The IPv4 address that the application should listen
 #' @param port The TCP port that the application should listen on
+#' @param launch.browser If true, the system's default web browser will be launched automatically after the app is started.
 #'
 #' @returns  Runs a Shiny application in the default web browser.
 #' @export
@@ -13,7 +14,7 @@
 #'   Plot_Visualization()
 #' }
 
-ReViewCNV <- function(host="0.0.0.0", port = 3838 ) {
+ReViewCNV <- function(host="0.0.0.0", port = 3838, launch.browser = TRUE ) {
 # Specify the application port
 options(shiny.maxRequestSize=50*1024^2) #max dim for input files
 
@@ -2484,6 +2485,6 @@ if(!is.null(exons_annotations())){
 }
 
   app <- shiny::shinyApp(ui = ui, server = server)
-  shiny::runApp(app, host = host, port = port, launch.browser = TRUE)
+  shiny::runApp(app, host = host, port = port)
 
 }
