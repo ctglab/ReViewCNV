@@ -3,6 +3,4 @@
 ^\.Rproj\.user$
 ^Dockerfile$
 ^tools/app_for_Docker\.R$
-^.github$
-
 ^\.github$
