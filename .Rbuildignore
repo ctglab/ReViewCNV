@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.Rproj\.user$
+^LICENSE\.md$
 ^Dockerfile$
 ^tools/app_for_Docker\.R$
 ^\.github$
+^README\.Rmd$
