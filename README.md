@@ -28,7 +28,7 @@ You can install the development version of AppPackage from GitHub with:
 pak::pak("ctglab/ReViewCNV")
 ```
   
-It is also possible to insatll the Dockerized version of the app (see below). The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R in the folder test_TRIO_app_CNV_tsv.
+It is also possible to insatll the Dockerized version of the app (see below). 
 </p>
 <p align="justify">
 The ShinyApp has been developed in R (v. 4.4.1) using RStudio as IDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
