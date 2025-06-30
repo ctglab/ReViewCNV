@@ -1,6 +1,7 @@
 # ReViewCNV
 
 ![GitHub release](https://img.shields.io/github/release/ctglab/ReViewCNV.svg)
+![R-CMD-check](https://github.com/ctglab/ReViewCNV/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ctglab/ReViewCNV/actions/workflows/R-CMD-check.yaml)
 ![GitHub docker image build](https://github.com/ctglab/ReViewCNV/actions/workflows/docker-image.yml/badge.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ctglab/ReViewCNV) 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ctglab/ReViewCNV)

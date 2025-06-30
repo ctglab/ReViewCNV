@@ -203,7 +203,7 @@ target_data <- shiny::reactive({
     else{
       file_data_1 <- utils::read.table(input$HSLM_1$datapath, fill=T, quote="\"", sep="\t", h = T) |>
         select(dplyr::any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
-        mutate(dplyr::across(dplyr::where()(is.double), ~ round(.,2)))
+        mutate(dplyr::across(dplyr::where(is.double), ~ round(.,2)))
 
       if(is.null(file_data_1$Position)) {
         file_data_1 <- file_data_1 |>
@@ -294,7 +294,7 @@ CNV_all_Chromosomes <- shiny::reactive({
       else{
         file_data_2 <- utils::read.table(input$HSLM_2$datapath, fill=T, quote="\"", sep="\t", h = T) |>
           select(dplyr::any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
-          mutate(dplyr::across(dplyr::where()(is.double), ~ round(.,2)))
+          mutate(dplyr::across(dplyr::where(is.double), ~ round(.,2)))
 
         if(is.null(file_data_2$Position)) {
           file_data_2 <- file_data_2 |>
@@ -375,7 +375,7 @@ fast_call_2 <- shiny::reactive({
       else{
         file_data_3 <- utils::read.table(input$HSLM_3$datapath, fill=T, quote="\"", sep="\t", h = T) |>
           select(dplyr::any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
-          mutate(dplyr::across(dplyr::where()(is.double), ~ round(.,2)))
+          mutate(dplyr::across(dplyr::where(is.double), ~ round(.,2)))
 
         if(is.null(file_data_3$Position)) {
           file_data_3 <- file_data_3 |>
