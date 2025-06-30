@@ -4,14 +4,14 @@
 \alias{ReViewCNV}
 \title{ReViewCNV}
 \usage{
-ReViewCNV(host = "0.0.0.0", port = 3838, launch.browser = TRUE)
+ReViewCNV(host = "0.0.0.0", port = 3838, launch = TRUE)
 }
 \arguments{
 \item{host}{The IPv4 address that the application should listen}
 
 \item{port}{The TCP port that the application should listen on}
 
-\item{launch.browser}{If true, the system's default web browser will be launched automatically after the app is started.}
+\item{launch}{If true, the system's default web browser will be launched automatically after the app is started}
 }
 \value{
 Runs a Shiny application in the default web browser.
