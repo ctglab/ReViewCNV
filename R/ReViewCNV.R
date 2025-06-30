@@ -2,7 +2,8 @@
 
 #' ReViewCNV
 #'
-#' @param ... Additional arguments passed to `shinyApp()`. Currently unused.
+#' @param host The IPv4 address that the application should listen
+#' @param port The TCP port that the application should listen on
 #'
 #' @returns  Runs a Shiny application in the default web browser.
 #' @export
@@ -12,13 +13,10 @@
 #'   Plot_Visualization()
 #' }
 
-ReViewCNV <- function(...) {
-
-
+ReViewCNV <- function(host="0.0.0.0", port = 3838  ) {
 # Specify the application port
 options(shiny.maxRequestSize=50*1024^2) #max dim for input files
-options(shiny.host = "0.0.0.0")
-options(shiny.port = 3838)
+
 shiny::addResourcePath("www", system.file("www", package = "ReViewCNV"))
 shiny::shinyOptions(cache = cachem::cache_mem(max_size = 500e6))
 options(warn = -1)
@@ -2485,6 +2483,6 @@ if(!is.null(exons_annotations())){
 
 }
 
-  shiny::shinyApp(ui, server)
+  shiny::runApp(list(ui, server), host = host, port = port)
 
 }

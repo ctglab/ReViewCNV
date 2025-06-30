@@ -4,10 +4,12 @@
 \alias{ReViewCNV}
 \title{ReViewCNV}
 \usage{
-ReViewCNV(...)
+ReViewCNV(host = "0.0.0.0", port = 3838)
 }
 \arguments{
-\item{...}{Additional arguments passed to \code{shinyApp()}. Currently unused.}
+\item{host}{The IPv4 address that the application should listen}
+
+\item{port}{The TCP port that the application should listen on}
 }
 \value{
 Runs a Shiny application in the default web browser.
