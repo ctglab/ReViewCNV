@@ -5,3 +5,4 @@
 ^tools/app_for_Docker\.R$
 ^\.github$
 ^README\.Rmd$
+^\Examples$
