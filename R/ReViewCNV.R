@@ -2484,6 +2484,6 @@ if(!is.null(exons_annotations())){
 }
 
   app <- shiny::shinyApp(ui = ui, server = server)
-  shiny::runApp(app, host = host, port = port, , launch.browser = TRUE)
+  shiny::runApp(app, host = host, port = port, launch.browser = TRUE)
 
 }
