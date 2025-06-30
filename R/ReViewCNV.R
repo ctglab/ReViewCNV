@@ -19,33 +19,33 @@ ReViewCNV <- function(...) {
 options(shiny.maxRequestSize=50*1024^2) #max dim for input files
 options(shiny.host = "0.0.0.0")
 options(shiny.port = 6868)
-shiny::addResourcePath(prefix = 'www', directoryPath = 'inst/www')
+shiny::addResourcePath("www", system.file("www", package = "ReViewCNV"))
 shiny::shinyOptions(cache = cachem::cache_mem(max_size = 500e6))
 options(warn = -1)
 
 
 # Read variants annotations data ---------------------------------------------------
 
-Annotations_37 <-arrow:: open_dataset("inst/37") |> dplyr::collect()
-Annotations_38 <-arrow:: open_dataset("inst/38") |> dplyr::collect()
+Annotations_37 <-arrow:: open_dataset(system.file("37", package = "ReViewCNV")) |> dplyr::collect()
+Annotations_38 <-arrow:: open_dataset(system.file("38", package = "ReViewCNV")) |> dplyr::collect()
 
 
 
 # Read genes annotation data ----------------------------------------------
 
-genes_annotation_38 <-readRDS("inst/genes_annotation_38.rds")
-genes_annotation_37 <-readRDS("inst/genes_annotation_37.rds")
+genes_annotation_38 <-readRDS(system.file("genes_annotation_37.rds", package = "ReViewCNV"))
+genes_annotation_37 <-readRDS(system.file("genes_annotation_38.rds", package = "ReViewCNV"))
 
 
 # Read exons annotations --------------------------------------------------
 
-exons_annotation_37 <- readRDS("inst/Exons_37.rds")
-exons_annotation_38 <- readRDS("inst/Exons_38.rds")
+exons_annotation_37 <- readRDS(system.file("Exons_37.rds", package = "ReViewCNV"))
+exons_annotation_38 <- readRDS(system.file("Exons_38.rds", package = "ReViewCNV"))
 
 # Read chromosome coordinates --------------------------------------------
 
-hg37_Chromosomes_Coordinates <- readRDS("inst/hg37_Coordinates.rds")
-hg38_Chromosomes_Coordinates <- readRDS("inst/hg38_Coordinates.rds")
+hg37_Chromosomes_Coordinates <- readRDS(system.file("hg37_Coordinates.rds", package = "ReViewCNV"))
+hg38_Chromosomes_Coordinates <- readRDS(system.file("hg38_Coordinates.rds", package = "ReViewCNV"))
 
 
 
