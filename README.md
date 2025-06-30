@@ -25,7 +25,7 @@ You can install the development version of AppPackage from GitHub with:
 
 ``` r
 # install.packages("pak")
-pak::pak("ctglab/RiewCNV")
+pak::pak("ctglab/ReViewCNV")
 ```
   
 It is also possible to insatll the Dockerized version of the app (see below). The app_CNV_tsv.R accepts as input a tsv file (without header) with three columns indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for the app_Excavator2.R are avialble in the folder TEST_TRIO_app_Excavator2, while for the app_CNV_tsv.R in the folder test_TRIO_app_CNV_tsv.
