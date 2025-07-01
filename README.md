@@ -12,10 +12,7 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/ctglab/ReViewCNV.svg)
 
 
-ReViewCNV is a  Shiny App for the visualization of germinal Copy Number Variants (CNVs). It was created to visualize CNVs from exome or gene panels sequencing identified by the algorithms [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/) and Mixer
-
-<p align="justify">
-ReViewCNV has now increased its compatibility and accepts as input the Excavator2 output files, the Mixer output files or a list of CNVs identified by any bioinformatic tool with three columns (without header) indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for each of the three options are available in the EXAMPLE folder.
+ReViewCNV is a  Shiny App for the visualization of germinal Copy Number Variants (CNVs). It accepts as input [EXCAVATOR2](https://pubmed.ncbi.nlm.nih.gov/27507884/) output files, MIXER output files or a list of CNVs identified by any bioinformatic tool with three columns (without header) indicating for each CNV the genomic coordinates (Chromosome, Start and End) and optionally a fourth column specifying the CNV type (i.e. deletion or duplication). Example input files for each of the three options are available in the EXAMPLE folder.
 </p>
 <p align="justify">
 The App allows the user to compare the  CNVs of interst with population polymorphisms present in different public datasets (AnnotSV, DGV and gnomAD) and to identify the genes present in correspondence of the altered regions (genome-wide). The exons of the genes present in correspondance of the CNVs of interest are highlighted. It is possible to visualize up to three individuals at the same time in synchronized plots, facilitating family studies and the identification of de novo mutations.
@@ -28,10 +25,10 @@ You can install the development version of AppPackage from GitHub with:
 pak::pak("ctglab/ReViewCNV")
 ```
   
-It is also possible to insatll the Dockerized version of the app (see below). 
+It is also possible to install the Dockerized version of the app (see below). 
 </p>
 <p align="justify">
-The ShinyApp has been developed in R (v. 4.4.1) using RStudio as IDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
+The ShinyApp has been developed in R (v. 4.4.5) using RStudio as IDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
 </p>
 
 <br/>
