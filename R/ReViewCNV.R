@@ -25,8 +25,8 @@ options(warn = -1)
 
 # Read variants annotations data ---------------------------------------------------
 
-Annotations_37 <-arrow:: open_dataset(system.file("37", package = "ReViewCNV")) |> dplyr::collect()
-Annotations_38 <-arrow:: open_dataset(system.file("38", package = "ReViewCNV")) |> dplyr::collect()
+Annotations_37 <-arrow::open_dataset(system.file("37", package = "ReViewCNV"))
+Annotations_38 <-arrow::open_dataset(system.file("38", package = "ReViewCNV"))
 
 
 
@@ -918,25 +918,29 @@ rects_2 <- shiny::reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
 
       Annotations_37 |>
         filter (Chromosome == input$chr) |>
+        filter(Frequency > as.numeric(input$Freq)) |>
+        filter (Database %in%  !!Annotations_list() ) |>
+        dplyr::collect() |>
         filter(stringr::str_detect(calls, input$Type))|>
-        filter(Frequency > input$Freq) |>
-        filter (Database %in%  Annotations_list() ) |>
         dplyr::inner_join(rects_1() , dplyr::join_by(overlaps(Start, End, Start, End)))|>
         rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |>
         select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |>
-        arrange(End_FastCall, End)}
+        arrange(End_FastCall, End)
+      }
 
 
     else if(input$Genome == "GRCh38"){
       Annotations_38 |>
-        filter (Chromosome == input$chr) |>
+        filter(Chromosome == input$chr) |>
+        filter(Frequency > as.numeric(input$Freq)) |>
+        filter (Database %in% !!Annotations_list() ) |>
+        dplyr::collect() |>
         filter(stringr::str_detect(calls, input$Type))|>
-        filter(Frequency > input$Freq) |>
-        filter (Database %in% Annotations_list() ) |>
         dplyr::inner_join(rects_1(), dplyr::join_by(overlaps(Start, End, Start, End)))|>
         rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |>
         select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |>
-        arrange(End_FastCall, End)}
+        arrange(End_FastCall, End)
+      }
 
     else {return(NULL)}
 
