@@ -13,7 +13,7 @@ library(arrow)
 
 
 # Specify the application port
-options(shiny.maxRequestSize=50*1024^2) #max dim for input files 
+options(shiny.maxRequestSize=50*1024^2) #max dim for input files
 options(shiny.host = "0.0.0.0")
 options(shiny.port = 6868)
 addResourcePath(prefix = 'www', directoryPath = 'www')
@@ -23,8 +23,8 @@ options(warn = -1)
 
 # Read variants annotations data ---------------------------------------------------
 
-Annotations_37 <- open_dataset("37") |> collect()
-Annotations_38 <- open_dataset("38") |> collect()
+Annotations_37 <- open_dataset("37")
+Annotations_38 <- open_dataset("38")
 
 
 
@@ -65,15 +65,15 @@ ui  <- page_sidebar(
       checkboxInput("GenomeBrowser", "Show genes annotations", value = FALSE, width = NULL),
       checkboxInput("ShareAxes", "Share x axis", value = FALSE, width = NULL),
       checkboxInput("Set_y_axis", "Set the same Log2R range", value = FALSE, width = NULL),
-      uiOutput("Button_1"), 
+      uiOutput("Button_1"),
       uiOutput("Second_Individual"),
-      uiOutput("Button_2"), 
+      uiOutput("Button_2"),
       uiOutput("Third_Individual"),
         selectInput("chr", "Select the Chr", selected = "All",
           choices = c("All")),
-      uiOutput("Button_3"), 
+      uiOutput("Button_3"),
         selectInput("Prob", "Select Calls", selected = "All",
-          choices = c("All" = "-1", "Prob Call \u2265  0.5" = "0.5", "Prob Call \u2265  0.6" = "0.6", 
+          choices = c("All" = "-1", "Prob Call \u2265  0.5" = "0.5", "Prob Call \u2265  0.6" = "0.6",
             "Prob Call \u2265  0.7" = "0.7", "Prob Call \u2265  0.8" = "0.8",
             "Prob Call \u2265  0.9" = "0.9")),
         h4("Choose CNVs datasets"),
@@ -83,11 +83,11 @@ ui  <- page_sidebar(
         checkboxInput("GnomAD_Genome", "GnomAD_Genome", value = FALSE),
         checkboxInput("GnomAD_Exome", "GnomAD_Exome (only GRCh38)", value = FALSE),
         selectInput("Type", "Select CNVs type", selected = "All",
-                  choices = c("All" = ".*","Gain" = "Gain", 
+                  choices = c("All" = ".*","Gain" = "Gain",
                               "Loss" = "Loss")),
         selectInput("Freq", "Select CNVs frequency", selected = "All",
-            choices = c("All" = 0, "Freq \u003E  0.01" = 0.01, 
-              "Freq \u003E  0.02" = 0.02,"Freq \u003E  0.05" = 0.05, 
+            choices = c("All" = 0, "Freq \u003E  0.01" = 0.01,
+              "Freq \u003E  0.02" = 0.02,"Freq \u003E  0.05" = 0.05,
               "Freq \u003E  0.1" = 0.1, "Freq \u003E  0.2" = 0.2,
               "Freq \u003E  0.3" = 0.3)),
         uiOutput("limits"),
@@ -104,11 +104,11 @@ ui  <- page_sidebar(
 
 server <- function(input, output, session) {
 #Find pandoc
-  
+
   if (!rmarkdown::pandoc_available()) {
     alt_pandoc <- "~/local/pandoc/bin"
     alt_pandoc_bin <- file.path(alt_pandoc, "pandoc")
-    
+
     if (file.exists(alt_pandoc_bin)) {
       message("Using user-installed Pandoc at: ", alt_pandoc)
       Sys.setenv(RSTUDIO_PANDOC = alt_pandoc)
@@ -116,12 +116,9 @@ server <- function(input, output, session) {
       warning("Pandoc not available and no fallback found. Some features may not work.")
     }
   }
-  
-  
-  
-  
-  
-  
+
+
+
   bs_themer()
   # Storing the session for the Download Handler
   session_store <- reactiveValues()
@@ -129,9 +126,9 @@ server <- function(input, output, session) {
   rv <- reactiveValues(download_flag = 0)
   options(warn = -1)
 
-  
+
 # Coordinates -----------------------------------
-  
+
   Coordinates <- reactive({
     if ( is.null(input$FastCall_Results_1)|input$Genome == "") {
       return(NULL)}
@@ -147,8 +144,8 @@ server <- function(input, output, session) {
         return(Coordinates)}
       else{return(NULL)} }
   }) |> bindCache(input$chr)
-  
-  
+
+
 Coordinates_all <- reactive({
     if ( is.null(input$FastCall_Results_1)|input$Genome == "") {
       return(NULL)}
@@ -162,25 +159,25 @@ Coordinates_all <- reactive({
         return(Coordinates)}
       else{return(NULL)} }
   })
-  
+
 
 # Coordinates for all chromosome introductory map -------------------------
 
-  
+
 Chromosomes_Coordinates <-  reactive({
   if ( is.null(input$FastCall_Results_1)|input$Genome == "") {
     return(NULL)}
   else{
-  Coordinates_all()|> 
-    mutate(level = rev(seq(0,2*dim(Coordinates_all())[1]-2, 2))) |> 
-    arrange(level) |> 
+  Coordinates_all()|>
+    mutate(level = rev(seq(0,2*dim(Coordinates_all())[1]-2, 2))) |>
+    arrange(level) |>
     mutate(Chromoseome_n = str_remove(Chromosome, "chr"))}
   })
-  
-  
-  
+
+
+
 # Bed file -----------------------------------------------------------
-  
+
 target_data <- reactive({
   if (is.null(input$Bed)) {
     return(NULL)
@@ -192,35 +189,35 @@ target_data <- reactive({
 })
 
 # File, target data first individual and CNV all Chromosomes-----------------------------------
-  
+
   file_data_1_pre <- reactive({
     if (is.null(input$HSLM_1)) {
       return(NULL)
     }
     else{
-      file_data_1 <- read.table(input$HSLM_1$datapath, fill=T, quote="\"", sep="\t", h = T) |> 
-        select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |> 
+      file_data_1 <- read.table(input$HSLM_1$datapath, fill=T, quote="\"", sep="\t", h = T) |>
+        select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
         mutate(across(where(is.double), ~ round(.,2)))
-      
+
       if(is.null(file_data_1$Position)) {
-        file_data_1 <- file_data_1 |> 
+        file_data_1 <- file_data_1 |>
           mutate(Position = (Start + End)/2)}
-      
+
       if(is.null(file_data_1$Chromosome)) {
-        file_data_1 <- file_data_1 |> 
+        file_data_1 <- file_data_1 |>
           rename("Chromosome" = "Chr")}
-      
+
       if(is.null(file_data_1$Log2R)) {
-        file_data_1 <- file_data_1 |> 
-          rename("Log2R" = "NRC_poolNorm") }  
-      
+        file_data_1 <- file_data_1 |>
+          rename("Log2R" = "NRC_poolNorm") }
+
       if(is.null(file_data_1$Class)) {
-        file_data_1 <- file_data_1|> 
+        file_data_1 <- file_data_1|>
           mutate(Class = "Yes") }
-      
+
       if(is.null(file_data_1$Exon)) {
         file_data_1$Exon = NA }
-      
+
       return(file_data_1)
     }
   })
@@ -228,59 +225,59 @@ target_data <- reactive({
 
 file_data_1 <- reactive({
   if(!is.null(input$Bed) & ! is.null(input$HSLM_1)){
-    file_data_1_merged <- 
-      file_data_1_pre() |> 
-      select(!Exon) |> 
+    file_data_1_merged <-
+      file_data_1_pre() |>
+      select(!Exon) |>
       left_join(target_data(),by=c("Chromosome","Start", "End"))
   }
   else{file_data_1_merged <- file_data_1_pre()}
   return(file_data_1_merged)
 })
 
-  
 
-      
+
+
 fast_call_1 <- reactive({
       if (is.null(input$FastCall_Results_1)| input$Genome == "") {
         return(NULL)
         }
       else{
         fast_call_1 <- read.table(input$FastCall_Results_1$datapath, header = T,
-        fill=T, quote="\"") 
-        
-        fast_call_1 <- fast_call_1 |> 
+        fill=T, quote="\"")
+
+        fast_call_1 <- fast_call_1 |>
         select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
         if(is.null(fast_call_1$Mutation)){
-        fast_call_1 <- fast_call_1 |> 
+        fast_call_1 <- fast_call_1 |>
           mutate(Mutation = case_when(
           Call == -2 ~ "2-DEL",
           Call == -1 ~ "DEL",
           Call == 1 ~ "AMP",
           TRUE ~ "2-AMP"))}
-        
+
         if(is.null(fast_call_1$ProbCall)){fast_call_1$ProbCall = 1}
         if(is.null(fast_call_1$CN)){fast_call_1$CN = "NA"}
-        if(is.null(fast_call_1$Call)){fast_call_1$Call = "NA"} 
-        
-        fast_call_1 <- fast_call_1 |> 
-        filter(ProbCall >= as.numeric(input$Prob)) |> 
+        if(is.null(fast_call_1$Call)){fast_call_1$Call = "NA"}
+
+        fast_call_1 <- fast_call_1 |>
+        filter(ProbCall >= as.numeric(input$Prob)) |>
         mutate(mid = (Start + End)/2 )
-        
+
         names(fast_call_1) <- sub("Chr$", "Chromosome", names(fast_call_1))
-        
+
         return(fast_call_1)
       }
-    }) 
+    })
 
-CNV_all_Chromosomes <- reactive({ 
+CNV_all_Chromosomes <- reactive({
   if (is.null(input$FastCall_Results_1)| input$Genome == "") {
     return(NULL)
   }
   else{
-    fast_call_1() |> 
+    fast_call_1() |>
       left_join(Chromosomes_Coordinates(), join_by(Chromosome))}
 })
-    
+
 
  # File and FastCall data second individual ----------------------------------
 
@@ -289,119 +286,119 @@ CNV_all_Chromosomes <- reactive({
         return(NULL)
       }
       else{
-        file_data_2 <- read.table(input$HSLM_2$datapath, fill=T, quote="\"", sep="\t", h = T) |> 
-          select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |> 
+        file_data_2 <- read.table(input$HSLM_2$datapath, fill=T, quote="\"", sep="\t", h = T) |>
+          select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
           mutate(across(where(is.double), ~ round(.,2)))
-        
+
         if(is.null(file_data_2$Position)) {
-          file_data_2 <- file_data_2 |> 
+          file_data_2 <- file_data_2 |>
             mutate(Position = (Start + End)/2)}
-        
+
         if(is.null(file_data_2$Chromosome)) {
-          file_data_2 <- file_data_2 |> 
+          file_data_2 <- file_data_2 |>
             rename("Chromosome" = "Chr")}
-        
+
         if(is.null(file_data_2$Log2R)) {
-          file_data_2 <- file_data_2 |> 
-            rename("Log2R" = "NRC_poolNorm") }  
-        
+          file_data_2 <- file_data_2 |>
+            rename("Log2R" = "NRC_poolNorm") }
+
         if(is.null(file_data_2$Class)) {
-          file_data_2 <- file_data_2 |> 
+          file_data_2 <- file_data_2 |>
             mutate(Class = "Yes") }
-        
+
         if(is.null(file_data_2$Exon)) {
           file_data_2$Exon = NA }
-        
+
         return(file_data_2)
       }
     })
 
 file_data_2 <- reactive({
       if(!is.null(input$Bed) & ! is.null(input$HSLM_2)){
-        file_data_2_merged <- 
-          file_data_2_pre() |> 
-          select(!Exon) |> 
+        file_data_2_merged <-
+          file_data_2_pre() |>
+          select(!Exon) |>
           left_join(target_data(),by=c("Chromosome","Start", "End"))
       }
       else{file_data_2_merged <- file_data_2_pre()}
       return(file_data_2_merged)
     })
-    
-    
-    
+
+
+
 fast_call_2 <- reactive({
       if (is.null(input$FastCall_Results_2)| input$Genome == "" | x$val == 1) {
         return(NULL)
       }
       else{
         fast_call_2 <- read.table(input$FastCall_Results_2$datapath, header = T,
-          fill=T, quote="\"") 
-        
-        fast_call_2 <- fast_call_2 |> 
+          fill=T, quote="\"")
+
+        fast_call_2 <- fast_call_2 |>
           select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
         if(is.null(fast_call_2$Mutation)){
-          fast_call_2 <- fast_call_2 |> 
+          fast_call_2 <- fast_call_2 |>
             mutate(Mutation = case_when(
               Call == -2 ~ "2-DEL",
               Call == -1 ~ "DEL",
               Call == 1 ~ "AMP",
               TRUE ~ "2-AMP"))}
-        
+
         if(is.null(fast_call_2$ProbCall)){fast_call_2$ProbCall = 1}
         if(is.null(fast_call_2$CN)){fast_call_2$CN = "NA"}
-        if(is.null(fast_call_2$Call)){fast_call_2$Call = "NA"} 
-        
-        fast_call_2 <- fast_call_2 |> 
-          filter(ProbCall >= as.numeric(input$Prob)) |> 
+        if(is.null(fast_call_2$Call)){fast_call_2$Call = "NA"}
+
+        fast_call_2 <- fast_call_2 |>
+          filter(ProbCall >= as.numeric(input$Prob)) |>
           mutate(mid = (Start + End)/2 )
-        
+
         names(fast_call_2) <- sub("Chr$", "Chromosome", names(fast_call_2))
-        
+
         return(fast_call_2)
       }
-    }) 
-    
-    
+    })
+
+
 
 # File and FastCall data third individual -----------------------------------
-    
+
     file_data_3_pre <- reactive({
       if (is.null(input$HSLM_3)) {
         return(NULL)
       }
       else{
-        file_data_3 <- read.table(input$HSLM_3$datapath, fill=T, quote="\"", sep="\t", h = T) |> 
-          select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |> 
+        file_data_3 <- read.table(input$HSLM_3$datapath, fill=T, quote="\"", sep="\t", h = T) |>
+          select(any_of(c("Chr", "Start", "End", "GC_content", "Mappability", "NRC_poolNorm", "Log2R", "SegMean", "Class", "Chromosome", "Position", "Exon"))) |>
           mutate(across(where(is.double), ~ round(.,2)))
-        
+
         if(is.null(file_data_3$Position)) {
-          file_data_3 <- file_data_3 |> 
+          file_data_3 <- file_data_3 |>
             mutate(Position = (Start + End)/2)}
-        
+
         if(is.null(file_data_3$Chromosome)) {
-          file_data_3 <- file_data_3 |> 
+          file_data_3 <- file_data_3 |>
             rename("Chromosome" = "Chr")}
-        
+
         if(is.null(file_data_3$Log2R)) {
-          file_data_3 <- file_data_3 |> 
-            rename("Log2R" = "NRC_poolNorm") }  
-        
+          file_data_3 <- file_data_3 |>
+            rename("Log2R" = "NRC_poolNorm") }
+
         if(is.null(file_data_3$Class)) {
-          file_data_3 <- file_data_3 |> 
+          file_data_3 <- file_data_3 |>
             mutate(Class = "Yes") }
-        
+
         if(is.null(file_data_3$Exon)) {
           file_data_3$Exon = NA }
-        
+
         return(file_data_3)
       }
     })
 
 file_data_3 <- reactive({
   if(!is.null(input$Bed) & ! is.null(input$HSLM_3)){
-    file_data_3_merged <- 
-      file_data_3_pre() |> 
-      select(!Exon) |> 
+    file_data_3_merged <-
+      file_data_3_pre() |>
+      select(!Exon) |>
       left_join(target_data(),by=c("Chromosome","Start", "End"))
   }
   else{file_data_3_merged <- file_data_3_pre()}
@@ -415,37 +412,37 @@ file_data_3 <- reactive({
       }
       else{
         fast_call_3 <- read.table(input$FastCall_Results_3$datapath, header = T,
-          fill=T, quote="\"") 
-        
-        fast_call_3 <- fast_call_3 |> 
+          fill=T, quote="\"")
+
+        fast_call_3 <- fast_call_3 |>
           select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
         if(is.null(fast_call_3$Mutation)){
-          fast_call_3 <- fast_call_3 |> 
+          fast_call_3 <- fast_call_3 |>
             mutate(Mutation = case_when(
               Call == -2 ~ "2-DEL",
               Call == -1 ~ "DEL",
               Call == 1 ~ "AMP",
               TRUE ~ "2-AMP"))}
-        
+
         if(is.null(fast_call_3$ProbCall)){fast_call_3$ProbCall = 1}
         if(is.null(fast_call_3$CN)){fast_call_3$CN = "NA"}
-        if(is.null(fast_call_3$Call)){fast_call_3$Call = "NA"} 
-        
-        fast_call_3 <- fast_call_3 |> 
-          filter(ProbCall >= as.numeric(input$Prob)) |> 
+        if(is.null(fast_call_3$Call)){fast_call_3$Call = "NA"}
+
+        fast_call_3 <- fast_call_3 |>
+          filter(ProbCall >= as.numeric(input$Prob)) |>
           mutate(mid = (Start + End)/2 )
-        
+
         names(fast_call_3) <- sub("Chr$", "Chromosome", names(fast_call_3))
-        
+
         return(fast_call_3)
       }
-    }) 
-    
-  
-    
+    })
+
+
+
 #  Select plot ------------------------------------------------------------
-    
-    
+
+
 output$Plot =renderUI({
         if(input$chr == "All"){
           plotlyOutput("Plot_all_chr", width = "100%", height = "100%")}
@@ -455,7 +452,7 @@ output$Plot =renderUI({
 
 # Plot all chromosomes ----------------------------------------------------
 
-    
+
 
 output$Plot_all_chr <- renderPlotly({
 
@@ -485,35 +482,35 @@ output$Plot_all_chr <- renderPlotly({
           left_join(Chromosomes_Coordinates(), join_by(Chromosome))
 
 
-        
-        
-        
+
+
+
         rect_CNV_2DEL <-
           CNV |>
           filter(Mutation == "2-DEL")
-        
-        
+
+
         rect_CNV_DEL <-
           CNV |>
           filter(Mutation == "DEL")
-        
-        
+
+
         rect_CNV_AMP <-
           CNV |>
           filter(Mutation == "AMP")
-        
-        
+
+
         rect_CNV_2AMP <-
           CNV |>
           filter(Mutation == "2-AMP")
-        
-        
+
+
         rect_2_CNV_2DEL <- list(
           type ="polygon",
           fillcolor = "yellow",
           line = list( color = "yellow" ))
-        
-        
+
+
         rect_2DEL <- list()
         for (i in c(1:dim(rect_CNV_2DEL)[1])) {
           rect_2_CNV_2DEL[["x0"]] <- rect_CNV_2DEL[i,]$Start.x
@@ -522,15 +519,15 @@ output$Plot_all_chr <- renderPlotly({
           rect_2_CNV_2DEL[["y1"]] <- rect_CNV_2DEL[i,]$level.x + 0.8
           rect_2DEL <- c(rect_2DEL, list(rect_2_CNV_2DEL))
         }
-        
-        
-        
+
+
+
         rect_2_CNV_DEL <- list(
           type ="polygon",
           fillcolor = "yellow",
           line = list( color = "yellow" ))
-        
-        
+
+
         rect_DEL <- list()
         for (i in c(1:dim(rect_CNV_DEL)[1])) {
           rect_2_CNV_DEL[["x0"]] <- rect_CNV_DEL[i,]$Start.x
@@ -539,15 +536,15 @@ output$Plot_all_chr <- renderPlotly({
           rect_2_CNV_DEL[["y1"]] <- rect_CNV_DEL[i,]$level.x + 0.8
           rect_DEL <- c(rect_DEL, list(rect_2_CNV_DEL))
         }
-        
-        
-        
+
+
+
         rect_2_CNV_AMP <- list(
           type ="polygon",
           fillcolor = "yellow",
           line = list( color = "yellow" ))
-        
-        
+
+
         rect_AMP <- list()
         for (i in c(1:dim(rect_CNV_AMP)[1])) {
           rect_2_CNV_AMP[["x0"]] <- rect_CNV_AMP[i,]$Start.x
@@ -556,14 +553,14 @@ output$Plot_all_chr <- renderPlotly({
           rect_2_CNV_AMP[["y1"]] <- rect_CNV_AMP[i,]$level.x + 0.8
           rect_AMP <- c(rect_AMP, list(rect_2_CNV_AMP))
         }
-        
-        
+
+
         rect_2_CNV_2AMP <- list(
           type ="polygon",
           fillcolor = "yellow",
           line = list( color = "yellow" ))
-        
-        
+
+
         rect_2AMP <- list()
         for (i in c(1:dim(rect_CNV_2AMP)[1])) {
           rect_2_CNV_2AMP[["x0"]] <- rect_CNV_2AMP[i,]$Start.x
@@ -572,31 +569,31 @@ output$Plot_all_chr <- renderPlotly({
           rect_2_CNV_2AMP[["y1"]] <- rect_CNV_2AMP[i,]$level.x + 0.8
           rect_2AMP <- c(rect_2AMP, list(rect_2_CNV_2AMP))
         }
-        
+
         rect<-c(rect_Chromosome)
-        
+
         if (dim(rect_CNV_2AMP)[1] >0){
           rect <- append(rect, rect_2AMP )
         }
-        
-        if (dim(rect_CNV_AMP)[1] >0){
-          rect <- append(rect, rect_AMP) 
-        }
-        
-        if (dim(rect_CNV_DEL)[1] >0){
-          rect <- append(rect, rect_DEL) 
-        }
-        
-        if (dim(rect_CNV_2DEL)[1] >0){
-          rect <- append(rect, rect_2DEL) 
-        }  
 
-        
+        if (dim(rect_CNV_AMP)[1] >0){
+          rect <- append(rect, rect_AMP)
+        }
+
+        if (dim(rect_CNV_DEL)[1] >0){
+          rect <- append(rect, rect_DEL)
+        }
+
+        if (dim(rect_CNV_2DEL)[1] >0){
+          rect <- append(rect, rect_2DEL)
+        }
+
+
 
 
 
         fig_all <- plot_ly() |>
-          layout(shapes = rect, 
+          layout(shapes = rect,
             xaxis =list(title = "Chromosome coordinate"),
             yaxis = list(
             title = "Chromosome",
@@ -627,31 +624,31 @@ session_store$plt
 }
     }) |>  bindCache(input$Prob,  input$slider, input$chr,
      input$FastCall_Results_1,  rv$download_flag)
-     
+
 
 # Observe click event -----------------------------------------------------
 
-    hover_reactive <- reactiveVal()   
-    
-    
+    hover_reactive <- reactiveVal()
+
+
     observe({
       hover_data <- event_data("plotly_click")
       if (!is.null(hover_data))
-        hover_reactive(hover_data)  
+        hover_reactive(hover_data)
       else{return(NULL)}
     })
-    
-    observe({ 
+
+    observe({
       if(!is.null(hover_reactive()) & h$val == 1){
         updateSelectInput(session,'chr',
           selected =  chromosome(),
             choices = c("All", chromosome()))
-        
+
         updateSliderInput(session,
           'slider', value  =c(Start() -2000000, Start() + 1000000))
       }
     })
-    
+
     observe({
       if (input$chr != "All"){
         hover_data <- NULL
@@ -659,14 +656,14 @@ session_store$plt
         updateCheckboxInput(session,"GenomeBrowser", value = TRUE)
         }
     })
-    
-    
 
-    
-    
+
+
+
+
     chromosome <- reactive({
       if(!is.null(hover_reactive()) & input$chr == "All" & h$val == 1){
-      
+
       b <- abs((hover_reactive()$y - 8.8)/2 -20)
       if (b == "23"){b = "X"}
       if (b == "24"){b = "Y"}
@@ -674,11 +671,11 @@ session_store$plt
       c}
       else{return(NULL)}
     })
-    
+
     Start <- reactive({
-      hover_reactive()$x 
+      hover_reactive()$x
     })
-    
+
     observe({
       if(h$val == -1) {
         updateSelectInput(session,'chr',
@@ -689,9 +686,9 @@ session_store$plt
         "chr17", "chr18", "chr19", "chr20", "chr21",
         "chr22", "chrX"))
         }
-      
+
       })
-    
+
     observe({
       if(h$val == 1) {
         updateSelectInput(session,'chr',
@@ -699,19 +696,19 @@ session_store$plt
           choices = c( "All"))
         }
     })
-    
+
     observe({
       if(input$chr == "All"){
-        updateCheckboxInput(session,"GenomeBrowser", value = FALSE)}  
+        updateCheckboxInput(session,"GenomeBrowser", value = FALSE)}
       })
-        
-    
+
+
 
 # Button3 -----------------------------------------------------------------
 
-    
-    h <- reactiveValues(val = 1) 
-    
+
+    h <- reactiveValues(val = 1)
+
 output$Button_3  =renderUI({
   if(input$chr != "All"){
       if(h$val == 1){
@@ -722,21 +719,21 @@ output$Button_3  =renderUI({
   else{return(NULL)}
     })
 
-    
+
 observeEvent(input$Button_3, {h$val = h$val*(-1)})
 
 
-    
+
 # Subsetting file data--------------------------------------------------------------
 
-#First individual  
+#First individual
 
   subset_data_1 <- reactive({
-    
+
   if(is.null(file_data_1())){return(NULL)}
   else{
-    
-  subset_data_1 <- file_data_1()[file_data_1()$Chromosome == input$chr,] 
+
+  subset_data_1 <- file_data_1()[file_data_1()$Chromosome == input$chr,]
 
   if(!is.null( subset_data_1$Mappability)){
     subset_data_1 <-  subset_data_1 |>
@@ -746,96 +743,96 @@ observeEvent(input$Button_3, {h$val = h$val*(-1)})
   else if (!is.null(subset_data_1$SegMean)){
     subset_data_1 <-  subset_data_1 |>
       mutate(Text = paste(" Class: ", Class, "<br>", "Log2R: ", Log2R, "<br>",
-        "Exon: ", Exon,"<br>", 
+        "Exon: ", Exon,"<br>",
         "Start:", Start, "<br>", "End:", End))}
-    
+
   else {
     subset_data_1 <-  subset_data_1 |>
       mutate(Text = paste( " Log2R: ", Log2R, "<br>", "Start:", Start, "<br>", "End:", End))}
   return(subset_data_1)}
    }) |> bindCache(input$chr, file_data_1())
-  
+
   subset_data_1_range <- reactive({  if(is.null(subset_data_1())){return(NULL)}
     else{
-    subset_data_1() |> 
+    subset_data_1() |>
     filter(Start >= input$slider[1] & End <= input$slider[2])}
     })
-  
-  
-#Second individual 
-  
+
+
+#Second individual
+
   subset_data_2 <- reactive({
-    
+
     if(is.null(file_data_2())){return(NULL)}
     else{
-      
-      subset_data_2 <- file_data_2()[file_data_2()$Chromosome == input$chr,] 
-      
+
+      subset_data_2 <- file_data_2()[file_data_2()$Chromosome == input$chr,]
+
       if(!is.null( subset_data_2$Mappability)){
         subset_data_2 <-  subset_data_2 |>
           mutate(Text = paste(" NRC_poolNorm: ", Log2R, "<br>", "GC content: ", GC_content, "<br>",
             " Start:", Start, "<br>", " End:", End, "<br>",  "Mappability: ", Mappability))}
-      
+
       else if (!is.null(subset_data_2$SegMean)){
         subset_data_2 <-  subset_data_2 |>
           mutate(Text = paste(" Class: ", Class, "<br>", "Log2R: ", Log2R, "<br>",
-            "Exon: ", Exon,"<br>", 
+            "Exon: ", Exon,"<br>",
             "Start:", Start, "<br>", "End:", End))}
-      
+
       else {
         subset_data_2 <-  subset_data_2 |>
           mutate(Text = paste( " Log2R: ", Log2R, "<br>", "Start:", Start, "<br>", "End:", End))}
       return(subset_data_2)}
   }) |> bindCache(input$chr, file_data_2())
-  
+
   subset_data_2_range <- reactive({  if(is.null(file_data_2())){return(NULL)}
     else{
-      subset_data_2() |> 
+      subset_data_2() |>
         filter(Start >= input$slider[1] & End <= input$slider[2])}
   })
-  
-#Third individual  
-   
+
+#Third individual
+
   subset_data_3 <- reactive({
-    
+
     if(is.null(file_data_3())){return(NULL)}
     else{
-      
-      subset_data_3 <- file_data_3()[file_data_3()$Chromosome == input$chr,] 
-      
+
+      subset_data_3 <- file_data_3()[file_data_3()$Chromosome == input$chr,]
+
       if(!is.null( subset_data_3$Mappability)){
         subset_data_3 <-  subset_data_3 |>
           mutate(Text = paste(" NRC_poolNorm: ", Log2R, "<br>", "GC content: ", GC_content, "<br>",
             "Start:", Start, "<br>", "End:", End, "<br>",  "Mappability: ", Mappability))}
-      
+
       else if (!is.null(subset_data_3$SegMean)){
         subset_data_3 <-  subset_data_3 |>
           mutate(Text = paste(" Class: ", Class, "<br>", "Log2R: ", Log2R, "<br>",
-            "Exon: ", Exon,"<br>", 
+            "Exon: ", Exon,"<br>",
             "Start:", Start, "<br>", "End:", End))}
-      
+
       else {
         subset_data_3 <-  subset_data_3 |>
           mutate(Text = paste( " Log2R: ", Log2R, "<br>", "Start:", Start, "<br>", "End:", End))}
       return(subset_data_3)}
   }) |> bindCache(input$chr, file_data_3())
-  
+
   subset_data_3_range <- reactive({  if(is.null(file_data_3())){return(NULL)}
     else{
-      subset_data_3() |> 
+      subset_data_3() |>
         filter(Start >= input$slider[1] & End <= input$slider[2])}
   })
-  
-  
-  
+
+
+
 # Subsetting FastCall data ------------------------------------------------
 
 #First individual
-  
+
 rects_1 <- reactive({fast_call_1() |> filter(Chromosome == input$chr)})|>
     bindCache(input$chr,fast_call_1())
-  
-  
+
+
 rects_1_range <- reactive ({
     if (is.null(input$slider)| input$Genome == "") {
       return(NULL)
@@ -846,11 +843,11 @@ rects_1_range <- reactive ({
   })|> bindCache(input$slider, rects_1())
 
 
-#Second individual   
-  
+#Second individual
+
 rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
   bindCache(input$chr,fast_call_2())
-  
+
   rects_2_range <- reactive ({
     if (is.null(input$slider[1])| input$Genome == "") {
       return(NULL)
@@ -858,13 +855,13 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
     else { rects_2() |>
       filter(Start >= input$slider[1] & End <= input$slider[2])}
    })|> bindCache(input$slider, rects_2())
-   
-  
+
+
 #Third individual
-  
+
   rects_3 <- reactive({fast_call_3() |> filter(Chromosome == input$chr)})|>
     bindCache(input$chr,fast_call_3())
-  
+
   rects_3_range <- reactive ({
     if (is.null(input$slider[1])| input$Genome == "") {
      return(NULL)
@@ -872,10 +869,10 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
    else{rects_3() |>
       filter(Start >= input$slider[1] & End <= input$slider[2])}
    })|> bindCache(input$slider, rects_3())
- 
-  
+
+
 # Subsetting variants annotations data ---------------------------------------------
- 
+
   Annot_SV_D <- reactive({
     if(input$AnnotSV){"AnnotSV BenignSV (v. 3.4)"}
     else{return(NULL)}
@@ -898,49 +895,51 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
       c("gnomad_v2.1_sv.controls_only.site", "gnomad.v4.1.sv.non_neuro_controls.sites")}
     else{return(NULL)}
   })
-  
+
   GnomAD_Exome_D <- reactive({
     if(input$GnomAD_Exome){
       GnomAD_Exome_D <-  "gnomad.v4.1.cnv.non_neuro_controls"}
     else{return(NULL)}
   })
-  
+
 
   Annotations_list <-reactive({
     Annotations_list<-c(Annot_SV_D(), DGV_Gold_D(), DGV_Merge_D(), GnomAD_D(),  GnomAD_Exome_D())
     Annotations_list
   })
-  
+
   Annotations_subset <-reactive({
     if(input$Genome == "GRCh37"){
-      
-      Annotations_37 |>  
-        filter (Chromosome == input$chr) |> 
-        filter(str_detect(calls, input$Type))|> 
-        filter(Frequency > input$Freq) |> 
-        filter (Database %in%  Annotations_list() ) |> 
-        inner_join(rects_1() , join_by(overlaps(Start, End, Start, End)))|>
-        rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |> 
-        select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |> 
+
+      Annotations_37 |>
+        filter(Chromosome == input$chr) |>
+        filter(Frequency > as.numeric(input$Freq)) |>
+        filter (Database %in% !!Annotations_list() ) |>
+        collect() |>
+        filter(str_detect(calls, input$Type))|>
+        inner_join(rects_1(), join_by(overlaps(Start, End, Start, End)))|>
+        rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |>
+        select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |>
         arrange(End_FastCall, End)}
 
 
     else if(input$Genome == "GRCh38"){
       Annotations_38 |>
-        filter (Chromosome == input$chr) |> 
-        filter(str_detect(calls, input$Type))|>  
-        filter(Frequency > input$Freq) |> 
-        filter (Database %in% Annotations_list() ) |> 
+        filter(Chromosome == input$chr) |>
+        filter(Frequency > as.numeric(input$Freq)) |>
+        filter (Database %in% !!Annotations_list() ) |>
+        collect() |>
+        filter(str_detect(calls, input$Type))|>
         inner_join(rects_1(), join_by(overlaps(Start, End, Start, End)))|>
-        rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |> 
-        select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |> 
+        rename(chr = Chromosome.x, Start =Start.x, End = End.x, End_FastCall = End.y, Start_FastCall = Start.y) |>
+        select("Unique_ID","ID","chr", "Start","Start_FastCall","End_FastCall", "End", "calls", "Length", "Frequency", "Database", "middle", "Frequency", "AnnotSV_Present") |>
         arrange(End_FastCall, End)}
-    
+
     else {return(NULL)}
-    
+
   }) %>% bindCache (input$Genome, input$chr, input$Type, input$Freq, Annotations_list(), fast_call_1())
-  
-  
+
+
   CNV1 <- reactive ({
     if(!is.null(Annotations_subset())){
     if(input$AnnotSV){
@@ -949,15 +948,15 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
     else{return(NULL)}
   })
 
-  
+
   CNV_FC <- reactive({
     if(!is.null(Annotations_subset())){
-      CNV1() |> 
-      select(Start_FastCall, End_FastCall) |> 
+      CNV1() |>
+      select(Start_FastCall, End_FastCall) |>
       distinct(Start_FastCall, End_FastCall)}
     else{return(NULL)}
       })
-  
+
 
   CNV2 <-reactive({
     if(!is.null(CNV1())){
@@ -969,26 +968,26 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
           if(CNV1()[i,]$Start < CNV_FC()[k,]$End_FastCall)  {
             v <-append(v,k)}
           else {k = k +1
-            v<-append(v,k)}}} 
+            v<-append(v,k)}}}
 
-       CNV2 <- CNV1()|> 
-        mutate(n_overlap = v) 
-       
+       CNV2 <- CNV1()|>
+        mutate(n_overlap = v)
+
        for (i in (2:dim(CNV2)[1])){
          if (CNV2[i,]$Unique_ID  %in% CNV2[-i,]$Unique_ID){
            CNV2[i,]$n_overlap <-0}}
-      
-           
-      CNV2 <- CNV2 |> group_by(Unique_ID) |> 
-             slice(1) |> 
-             ungroup() |> 
+
+
+      CNV2 <- CNV2 |> group_by(Unique_ID) |>
+             slice(1) |>
+             ungroup() |>
              arrange(n_overlap, desc(round(log10(Length),0)), desc(Frequency))
       CNV2
-       
+
       }}
     else{return(NULL)}
     }) |> bindCache(CNV1(), CNV_FC())
-  
+
   CNV3 <- reactive({
     if(!is.null(CNV2())){
       v2 <- c(1)
@@ -1002,74 +1001,74 @@ rects_2 <- reactive({fast_call_2() |> filter(Chromosome == input$chr)})|>
             else {k2 = 1
               v2<-append(v2,k2)}
             }}
-  
-        CNV3 <- CNV2()|> 
-        mutate(level = v2) 
-        
+
+        CNV3 <- CNV2()|>
+        mutate(level = v2)
+
       if(dim(CNV2())[1] >1){
         i = 2
         while (i <= dim(CNV3)[1]){
           if(CNV3[i,]$Start <  max(CNV3[1:i-1,] |> filter(level == CNV3[i,]$level) |> select(End))){
-            CNV3[i,]$level <-  CNV3[i,]$level +1 
+            CNV3[i,]$level <-  CNV3[i,]$level +1
             i = i}
           else{i = i+1}
           }}
-    
-        
+
+
       CNV3
       }}
    else{return(NULL)}
    })|> bindCache(CNV2())
-  
+
 
 # Subsetting genes annotations data ---------------------------------------
 
 genes_annotations <-reactive ({
   if(input$GenomeBrowser){
-  
+
     if (input$Genome == "GRCh37"){
-      genes_annotation_37 |>  
+      genes_annotation_37 |>
       filter (Chr == input$chr)}
     else if (input$Genome == "GRCh38"){
-      genes_annotation_38 |>  
+      genes_annotation_38 |>
       filter (Chr == input$chr)
     }
   }
   else(return(NULL))
   }) |> bindCache(input$Genome, input$chr)
-  
-  
+
+
   rect_1_genes_annotation <- list(
     type ="line",
     line = list( color = "#008000" ))
-  
-  
-  
+
+
+
   rect_genes_annotation <- reactive({
   if(!is.null(genes_annotations())){
     rect_genes_annotation_1 <- list()
   for (i in c(1:dim(genes_annotations())[1])) {
     rect_1_genes_annotation[["x0"]] <- genes_annotations()[i,]$Start
     rect_1_genes_annotation[["x1"]] <- genes_annotations()[i,]$End
-    rect_1_genes_annotation[c("y0", "y1")] <- genes_annotations()[i,]$level 
+    rect_1_genes_annotation[c("y0", "y1")] <- genes_annotations()[i,]$level
     rect_genes_annotation_1 <- c(rect_genes_annotation_1, list(rect_1_genes_annotation))
   }
     return(rect_genes_annotation_1)}
     else{return(NULL)}
-    
+
   })|> bindCache(genes_annotations())
 
 
 # Subsetting exons annotations --------------------------------------------
 
-  
-  
+
+
   exons_annotations_1 <-reactive({
     if(input$GenomeBrowser){
       if (input$Genome == "GRCh37"){
-        exons <- exons_annotation_37 
+        exons <- exons_annotation_37
         return(exons)
-        
+
       }
       else if (input$Genome == "GRCh38"){
         exons <- exons_annotation_38
@@ -1078,36 +1077,36 @@ genes_annotations <-reactive ({
       else(return(NULL))}
     else(return(NULL))
   })|> bindCache(input$Genome)
-  
-  
+
+
   exons_annotations <-reactive ({
     if (dim(rects_1())[1]>0){
-      genes <- genes_annotations() |> 
-        inner_join(rects_1() , join_by(overlaps(Start, End, Start, End))) 
-      
-      exons <- exons_annotations_1() |> 
-        filter (Chr == input$chr) |> 
+      genes <- genes_annotations() |>
+        inner_join(rects_1() , join_by(overlaps(Start, End, Start, End)))
+
+      exons <- exons_annotations_1() |>
+        filter (Chr == input$chr) |>
         filter(RefSeq_ID %in% genes$RefSeq_ID)
       return(exons)
-      
+
     }
     else(return(NULL))
-    
+
   })|> bindCache(input$chr, genes_annotations(), exons_annotations_1())
-  
-  
+
+
       rect_1_exons_annotation <- list(
         type ="rect",
         fillcolor = "#008000",
         opacity =0.4,
         line = list( color = "#008000" ))
-      
-      
-      
+
+
+
       rect_exons_annotation <- reactive({
       if(!is.null(exons_annotations())){
           if(dim(exons_annotations())[1] >0){
-        
+
       rect_exons_annotation_1<- list()
       for (i in c(1:dim(exons_annotations())[1])) {
         rect_1_exons_annotation[["x0"]] <- exons_annotations()[i,]$Start
@@ -1121,84 +1120,84 @@ genes_annotations <-reactive ({
         else{return(NULL)}}
         else{return(NULL)}
       }) |> bindCache(exons_annotations())
-    
 
-      
+
+
 shapes <- reactive({
   c(rect_genes_annotation(), rect_exons_annotation())
   }) |> bindCache(rect_genes_annotation(), rect_exons_annotation())
-      
+
 # First button -------------------------------------------------------
 
    x <- reactiveValues(val = 1)
-   
+
    observeEvent(input$Button_1, {
-     x$val = x$val *(-1) 
+     x$val = x$val *(-1)
    })
-   
+
    output$Button_1  =renderUI({
      if(x$val == 1){
       actionButton("Button_1", "Add new sample")
        }
      else { actionButton("Button_1", "Remove sample")}
    })
-   
-   
+
+
     output$Second_Individual=renderUI({
       if(x$val == -1){list(
-        
+
         fileInput("FastCall_Results_2", "Load the CNV calls file"),
         fileInput("HSLM_2", "If available load the HSLM/TR level CN estimation file"))
-        
+
         }
       else{return(NULL)}
-    
+
      })
 
 
 
 # Second button -----------------------------------------------------------
 
-    
-    
+
+
     z <- reactiveValues(val = 1)
-    
+
     observeEvent(input$Button_2, {
-      z$val = z$val *(-1) 
+      z$val = z$val *(-1)
     })
-    
-    
-    A <- reactive({      
+
+
+    A <- reactive({
       if (is.null(input$FastCall_Results_2)){return(NULL)}
-      
+
       else if (is.null(fast_call_2())){return(NULL)}
-      
+
       else if (z$val == 1){
         actionButton("Button_2", "Add new sample") }
-      
-      else { actionButton("Button_2", "Remove sample")} 
+
+      else { actionButton("Button_2", "Remove sample")}
     })
-    
+
     output$Button_2  <- renderUI({
       K = A()
       return(K)
-    }) 
-    
-    
+    })
+
+
     output$Third_Individual=renderUI({
       if(z$val == -1){list(
-        
+
         fileInput("FastCall_Results_3", "Load the CNV calls file"),
         fileInput("HSLM_3", "If available load the HSLM/TR level CN estimation file"))
       }
       else{return(NULL)}
-      
+
     })
-     
-    
+
+
 
 # Setting the range slider for coordinates------------------------------------------------
-   
+
 output$limits=renderUI({
       if (is.null(input$FastCall_Results_1)|input$Genome == "" ) {
         return(NULL)}
@@ -1217,15 +1216,15 @@ output$limits=renderUI({
         max=max(Coordinates_all()$End),
         value=c(1,
         max(Coordinates_all()$End)))}
-    }) 
-    
-    
-    
+    })
+
+
+
 
 
 # Setting the range slider for annotations --------------------------------
 
-    
+
     output$Annotations_limits=renderUI({
       if (!is.null(input$FastCall_Results_1)){
         if(!(is.null(CNV3()))){
@@ -1237,12 +1236,12 @@ output$limits=renderUI({
             value=c(0,
             min(20,max(CNV3()$level))))}
           }}
-      
-    
+
+
       else {return(NULL)}
     })
-    
-    
+
+
 
 # Download ----------------------------------------------------------------
 
@@ -1254,14 +1253,14 @@ output$Download = renderUI({
   }
   else{return(NULL)}
   }) |> bindCache(input$FastCall_Results_1, input$Genome)
- 
-     
+
+
 
 # pal 1---------------------------------------------------------------------
 
     pal_1 <- reactive({
       if(is.null(subset_data_1_range())){return (NULL)}
-      
+
       else if("IN" %in% subset_data_1_range()$Class){
         pal_1 <- c("blue", "lightblue")
         pal_1 <- setNames(pal_1, c("IN", "OUT"))
@@ -1270,13 +1269,13 @@ output$Download = renderUI({
         pal_1 <- setNames(pal_1, c("Yes"))
       }
       return(pal_1)
-    }) 
+    })
 
 # pal 2---------------------------------------------------------------------
-    
+
     pal_2 <- reactive({
       if(is.null(subset_data_2_range())){return (NULL)}
-      
+
       else if("IN" %in% subset_data_2_range()$Class){
         pal_2 <- c("blue", "lightblue")
         pal_2 <- setNames(pal_2, c("IN", "OUT"))
@@ -1285,14 +1284,14 @@ output$Download = renderUI({
       pal_2 <- setNames(pal_2, c("Yes"))
       }
       return(pal_2)
-    }) 
-    
-    
+    })
+
+
 # pal 3---------------------------------------------------------------------
-    
+
     pal_3 <- reactive({
       if(is.null(subset_data_3_range())){return (NULL)}
-      
+
       else if("IN" %in% subset_data_3_range()$Class){
         pal_3 <- c("blue", "lightblue")
         pal_3 <- setNames(pal_3, c("IN", "OUT"))
@@ -1301,12 +1300,12 @@ output$Download = renderUI({
       pal_3 <- setNames(pal_3, c("Yes"))
       }
       return(pal_3)
-    }) 
+    })
 
-    
+
 # Plot variants --------------------------------------------------------
 
-    
+
   output$Plot_single_chr <- renderPlotly({
 
 
@@ -2460,8 +2459,8 @@ if(!is.null(exons_annotations())){
                       input$Bed, rects_1(), rects_1_range(), Coordinates(), Chromosomes_Coordinates(), Coordinates_all(), h$val
                      )
 
-    
-    
+
+
     output$downloadplot <- shiny::downloadHandler(
       filename = function() {
         paste(Sys.Date(), " ", input$chr," Coordinates", " ", input$slider[1],"-", input$slider[2],  ".html", sep = "")
@@ -2475,12 +2474,12 @@ if(!is.null(exons_annotations())){
           error = function(e) {
             message("Download error: ", e$message)
             writeLines(e$message, "/tmp/render_error.log")
-          }) 
+          })
       },
       contentType = "text/html"
     )
-  
-} 
+
+}
 
   shinyApp(ui, server)
 
