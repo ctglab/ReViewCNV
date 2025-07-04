@@ -24,6 +24,12 @@ You can install the development version of AppPackage from GitHub with:
 # install.packages("pak")
 pak::pak("ctglab/ReViewCNV")
 ```
+
+To run the app just type
+``` r
+ReViewCNV()
+```
+
   
 It is also possible to install the Dockerized version of the app (see below). 
 </p>
