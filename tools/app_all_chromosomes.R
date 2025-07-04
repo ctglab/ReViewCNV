@@ -237,37 +237,48 @@ file_data_1 <- reactive({
 
 
 
-fast_call_1 <- reactive({
-      if (is.null(input$FastCall_Results_1)| input$Genome == "") {
-        return(NULL)
-        }
-      else{
-        fast_call_1 <- read.table(input$FastCall_Results_1$datapath, header = T,
-        fill=T, quote="\"")
+fast_call_1 <- shiny::reactive({
+  if (is.null(input$FastCall_Results_1)| input$Genome == "") {
+    return(NULL)
+  }
+  else{
+    fast_call_1 <- utils::read.table(input$FastCall_Results_1$datapath, header = T,
+      fill=T, quote="\"")
+    if(stringr::str_detect(names(fast_call_1)[2], ".*[0-9].*")){
+      a <- names(fast_call_1)
+      names(fast_call_1) <- NULL
+      fast_call_1 <- rbind(a, fast_call_1)
+      names(fast_call_1)<- c("Chromosome","Start","End", "Mutation")
+      fast_call_1 <- fast_call_1 |>
+        mutate(Start = as.numeric(Start)) |>
+        mutate(End = as.numeric(End))
+    }
 
-        fast_call_1 <- fast_call_1 |>
-        select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
-        if(is.null(fast_call_1$Mutation)){
-        fast_call_1 <- fast_call_1 |>
-          mutate(Mutation = case_when(
+    fast_call_1 <- fast_call_1 |>
+      select(dplyr::any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
+    if(is.null(fast_call_1$Mutation)){
+      fast_call_1 <- fast_call_1 |>
+        mutate(Mutation = case_when(
           Call == -2 ~ "2-DEL",
           Call == -1 ~ "DEL",
           Call == 1 ~ "AMP",
           TRUE ~ "2-AMP"))}
+  }
+  fast_call_1 <- fast_call_1 |>
+    mutate(Mutation = stringr::str_replace(Mutation, "DUP", "AMP"))
 
-        if(is.null(fast_call_1$ProbCall)){fast_call_1$ProbCall = 1}
-        if(is.null(fast_call_1$CN)){fast_call_1$CN = "NA"}
-        if(is.null(fast_call_1$Call)){fast_call_1$Call = "NA"}
+  if(is.null(fast_call_1$ProbCall)){fast_call_1$ProbCall = 1}
+  if(is.null(fast_call_1$CN)){fast_call_1$CN = "NA"}
+  if(is.null(fast_call_1$Call)){fast_call_1$Call = "NA"}
 
-        fast_call_1 <- fast_call_1 |>
-        filter(ProbCall >= as.numeric(input$Prob)) |>
-        mutate(mid = (Start + End)/2 )
+  fast_call_1 <- fast_call_1 |>
+    filter(ProbCall >= as.numeric(input$Prob)) |>
+    mutate(mid = (Start + End)/2 )
 
-        names(fast_call_1) <- sub("Chr$", "Chromosome", names(fast_call_1))
+  names(fast_call_1) <- sub("Chr$", "Chromosome", names(fast_call_1))
 
-        return(fast_call_1)
-      }
-    })
+  return(fast_call_1)
+})
 
 CNV_all_Chromosomes <- reactive({
   if (is.null(input$FastCall_Results_1)| input$Genome == "") {
@@ -325,38 +336,49 @@ file_data_2 <- reactive({
     })
 
 
+fast_call_2 <- shiny::reactive({
+  if (is.null(input$FastCall_Results_1)| input$Genome == "") {
+    return(NULL)
+  }
+  else{
+    fast_call_2 <- utils::read.table(input$FastCall_Results_1$datapath, header = T,
+      fill=T, quote="\"")
+    if(stringr::str_detect(names(fast_call_2)[2], ".*[0-9].*")){
+      a <- names(fast_call_2)
+      names(fast_call_2) <- NULL
+      fast_call_2 <- rbind(a, fast_call_2)
+      names(fast_call_2)<- c("Chromosome","Start","End", "Mutation")
+      fast_call_2 <- fast_call_2 |>
+        mutate(Start = as.numeric(Start)) |>
+        mutate(End = as.numeric(End))
+    }
 
-fast_call_2 <- reactive({
-      if (is.null(input$FastCall_Results_2)| input$Genome == "" | x$val == 1) {
-        return(NULL)
-      }
-      else{
-        fast_call_2 <- read.table(input$FastCall_Results_2$datapath, header = T,
-          fill=T, quote="\"")
+    fast_call_2 <- fast_call_2 |>
+      select(dplyr::any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
+    if(is.null(fast_call_2$Mutation)){
+      fast_call_2 <- fast_call_2 |>
+        mutate(Mutation = case_when(
+          Call == -2 ~ "2-DEL",
+          Call == -1 ~ "DEL",
+          Call == 1 ~ "AMP",
+          TRUE ~ "2-AMP"))}
+  }
+  fast_call_2 <- fast_call_2 |>
+    mutate(Mutation = stringr::str_replace(Mutation, "DUP", "AMP"))
 
-        fast_call_2 <- fast_call_2 |>
-          select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
-        if(is.null(fast_call_2$Mutation)){
-          fast_call_2 <- fast_call_2 |>
-            mutate(Mutation = case_when(
-              Call == -2 ~ "2-DEL",
-              Call == -1 ~ "DEL",
-              Call == 1 ~ "AMP",
-              TRUE ~ "2-AMP"))}
+  if(is.null(fast_call_2$ProbCall)){fast_call_2$ProbCall = 1}
+  if(is.null(fast_call_2$CN)){fast_call_2$CN = "NA"}
+  if(is.null(fast_call_2$Call)){fast_call_2$Call = "NA"}
 
-        if(is.null(fast_call_2$ProbCall)){fast_call_2$ProbCall = 1}
-        if(is.null(fast_call_2$CN)){fast_call_2$CN = "NA"}
-        if(is.null(fast_call_2$Call)){fast_call_2$Call = "NA"}
+  fast_call_2 <- fast_call_2 |>
+    filter(ProbCall >= as.numeric(input$Prob)) |>
+    mutate(mid = (Start + End)/2 )
 
-        fast_call_2 <- fast_call_2 |>
-          filter(ProbCall >= as.numeric(input$Prob)) |>
-          mutate(mid = (Start + End)/2 )
+  names(fast_call_2) <- sub("Chr$", "Chromosome", names(fast_call_2))
 
-        names(fast_call_2) <- sub("Chr$", "Chromosome", names(fast_call_2))
+  return(fast_call_2)
+})
 
-        return(fast_call_2)
-      }
-    })
 
 
 
@@ -406,37 +428,49 @@ file_data_3 <- reactive({
 })
 
 
-    fast_call_3 <- reactive({
-      if (is.null(input$FastCall_Results_3)| input$Genome == "") {
-        return(NULL)
-      }
-      else{
-        fast_call_3 <- read.table(input$FastCall_Results_3$datapath, header = T,
-          fill=T, quote="\"")
+fast_call_3 <- shiny::reactive({
+  if (is.null(input$FastCall_Results_1)| input$Genome == "") {
+    return(NULL)
+  }
+  else{
+    fast_call_3 <- utils::read.table(input$FastCall_Results_1$datapath, header = T,
+      fill=T, quote="\"")
+    if(stringr::str_detect(names(fast_call_3)[2], ".*[0-9].*")){
+      a <- names(fast_call_3)
+      names(fast_call_3) <- NULL
+      fast_call_3 <- rbind(a, fast_call_3)
+      names(fast_call_3)<- c("Chromosome","Start","End", "Mutation")
+      fast_call_3 <- fast_call_3 |>
+        mutate(Start = as.numeric(Start)) |>
+        mutate(End = as.numeric(End))
+    }
 
-        fast_call_3 <- fast_call_3 |>
-          select(any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
-        if(is.null(fast_call_3$Mutation)){
-          fast_call_3 <- fast_call_3 |>
-            mutate(Mutation = case_when(
-              Call == -2 ~ "2-DEL",
-              Call == -1 ~ "DEL",
-              Call == 1 ~ "AMP",
-              TRUE ~ "2-AMP"))}
+    fast_call_3 <- fast_call_3 |>
+      select(dplyr::any_of(c("Chr", "Chromosome","Start", "End", "Mutation", "CN", "Call",  "ProbCall")))
+    if(is.null(fast_call_3$Mutation)){
+      fast_call_3 <- fast_call_3 |>
+        mutate(Mutation = case_when(
+          Call == -2 ~ "2-DEL",
+          Call == -1 ~ "DEL",
+          Call == 1 ~ "AMP",
+          TRUE ~ "2-AMP"))}
+  }
+  fast_call_3 <- fast_call_3 |>
+    mutate(Mutation = stringr::str_replace(Mutation, "DUP", "AMP"))
 
-        if(is.null(fast_call_3$ProbCall)){fast_call_3$ProbCall = 1}
-        if(is.null(fast_call_3$CN)){fast_call_3$CN = "NA"}
-        if(is.null(fast_call_3$Call)){fast_call_3$Call = "NA"}
+  if(is.null(fast_call_3$ProbCall)){fast_call_3$ProbCall = 1}
+  if(is.null(fast_call_3$CN)){fast_call_3$CN = "NA"}
+  if(is.null(fast_call_3$Call)){fast_call_3$Call = "NA"}
 
-        fast_call_3 <- fast_call_3 |>
-          filter(ProbCall >= as.numeric(input$Prob)) |>
-          mutate(mid = (Start + End)/2 )
+  fast_call_3 <- fast_call_3 |>
+    filter(ProbCall >= as.numeric(input$Prob)) |>
+    mutate(mid = (Start + End)/2 )
 
-        names(fast_call_3) <- sub("Chr$", "Chromosome", names(fast_call_3))
+  names(fast_call_3) <- sub("Chr$", "Chromosome", names(fast_call_3))
 
-        return(fast_call_3)
-      }
-    })
+  return(fast_call_3)
+})
+
 
 
 
@@ -452,179 +486,186 @@ output$Plot =renderUI({
 
 # Plot all chromosomes ----------------------------------------------------
 
-
-
-output$Plot_all_chr <- renderPlotly({
-
-      if (is.null(input$FastCall_Results_1)|input$Genome == "" ) {
-        return(NULL)}
-      else{
-
-
-        rect_1_Chromosome <- list(
-          type ="polygon",
-          fillcolor = "green",
-          line = list( color = "green" ))
-
-
-        rect_Chromosome <- list()
-        for (i in c(1:dim(Chromosomes_Coordinates())[1])) {
-          rect_1_Chromosome[["x0"]] <- Chromosomes_Coordinates()[i,]$Start
-          rect_1_Chromosome[["x1"]] <- Chromosomes_Coordinates()[i,]$End
-          rect_1_Chromosome[["y0"]] <- Chromosomes_Coordinates()[i,]$level - 0.8
-          rect_1_Chromosome[["y1"]] <- Chromosomes_Coordinates()[i,]$level + 0.8
-          rect_Chromosome <- c(rect_Chromosome, list(rect_1_Chromosome))
-        }
+# Plot all chromosomes ----------------------------------------------------
 
 
 
-        CNV <- CNV_all_Chromosomes() |>
-          left_join(Chromosomes_Coordinates(), join_by(Chromosome))
+output$Plot_all_chr <- plotly::renderPlotly({
+
+  if (is.null(input$FastCall_Results_1)|input$Genome == "" ) {
+    return(NULL)}
+  else{
+
+
+    rect_1_Chromosome <- list(
+      type ="polygon",
+      fillcolor = "white",
+      line = list( color = "black" ))
+
+
+    rect_Chromosome <- list()
+    for (i in c(1:dim(Chromosomes_Coordinates())[1])) {
+      rect_1_Chromosome[["x0"]] <- Chromosomes_Coordinates()[i,]$Start
+      rect_1_Chromosome[["x1"]] <- Chromosomes_Coordinates()[i,]$End
+      rect_1_Chromosome[["y0"]] <- Chromosomes_Coordinates()[i,]$level - 0.8
+      rect_1_Chromosome[["y1"]] <- Chromosomes_Coordinates()[i,]$level + 0.8
+      rect_Chromosome <- c(rect_Chromosome, list(rect_1_Chromosome))
+    }
 
 
 
-
-
-        rect_CNV_2DEL <-
-          CNV |>
-          filter(Mutation == "2-DEL")
-
-
-        rect_CNV_DEL <-
-          CNV |>
-          filter(Mutation == "DEL")
-
-
-        rect_CNV_AMP <-
-          CNV |>
-          filter(Mutation == "AMP")
-
-
-        rect_CNV_2AMP <-
-          CNV |>
-          filter(Mutation == "2-AMP")
-
-
-        rect_2_CNV_2DEL <- list(
-          type ="polygon",
-          fillcolor = "yellow",
-          line = list( color = "yellow" ))
-
-
-        rect_2DEL <- list()
-        for (i in c(1:dim(rect_CNV_2DEL)[1])) {
-          rect_2_CNV_2DEL[["x0"]] <- rect_CNV_2DEL[i,]$Start.x
-          rect_2_CNV_2DEL[["x1"]] <- rect_CNV_2DEL[i,]$End.x
-          rect_2_CNV_2DEL[["y0"]] <- rect_CNV_2DEL[i,]$level.x - 0.8
-          rect_2_CNV_2DEL[["y1"]] <- rect_CNV_2DEL[i,]$level.x + 0.8
-          rect_2DEL <- c(rect_2DEL, list(rect_2_CNV_2DEL))
-        }
-
-
-
-        rect_2_CNV_DEL <- list(
-          type ="polygon",
-          fillcolor = "yellow",
-          line = list( color = "yellow" ))
-
-
-        rect_DEL <- list()
-        for (i in c(1:dim(rect_CNV_DEL)[1])) {
-          rect_2_CNV_DEL[["x0"]] <- rect_CNV_DEL[i,]$Start.x
-          rect_2_CNV_DEL[["x1"]] <- rect_CNV_DEL[i,]$End.x
-          rect_2_CNV_DEL[["y0"]] <- rect_CNV_DEL[i,]$level.x - 0.8
-          rect_2_CNV_DEL[["y1"]] <- rect_CNV_DEL[i,]$level.x + 0.8
-          rect_DEL <- c(rect_DEL, list(rect_2_CNV_DEL))
-        }
-
-
-
-        rect_2_CNV_AMP <- list(
-          type ="polygon",
-          fillcolor = "yellow",
-          line = list( color = "yellow" ))
-
-
-        rect_AMP <- list()
-        for (i in c(1:dim(rect_CNV_AMP)[1])) {
-          rect_2_CNV_AMP[["x0"]] <- rect_CNV_AMP[i,]$Start.x
-          rect_2_CNV_AMP[["x1"]] <- rect_CNV_AMP[i,]$End.x
-          rect_2_CNV_AMP[["y0"]] <- rect_CNV_AMP[i,]$level.x - 0.8
-          rect_2_CNV_AMP[["y1"]] <- rect_CNV_AMP[i,]$level.x + 0.8
-          rect_AMP <- c(rect_AMP, list(rect_2_CNV_AMP))
-        }
-
-
-        rect_2_CNV_2AMP <- list(
-          type ="polygon",
-          fillcolor = "yellow",
-          line = list( color = "yellow" ))
-
-
-        rect_2AMP <- list()
-        for (i in c(1:dim(rect_CNV_2AMP)[1])) {
-          rect_2_CNV_2AMP[["x0"]] <- rect_CNV_2AMP[i,]$Start.x
-          rect_2_CNV_2AMP[["x1"]] <- rect_CNV_2AMP[i,]$End.x
-          rect_2_CNV_2AMP[["y0"]] <- rect_CNV_2AMP[i,]$level.x - 0.8
-          rect_2_CNV_2AMP[["y1"]] <- rect_CNV_2AMP[i,]$level.x + 0.8
-          rect_2AMP <- c(rect_2AMP, list(rect_2_CNV_2AMP))
-        }
-
-        rect<-c(rect_Chromosome)
-
-        if (dim(rect_CNV_2AMP)[1] >0){
-          rect <- append(rect, rect_2AMP )
-        }
-
-        if (dim(rect_CNV_AMP)[1] >0){
-          rect <- append(rect, rect_AMP)
-        }
-
-        if (dim(rect_CNV_DEL)[1] >0){
-          rect <- append(rect, rect_DEL)
-        }
-
-        if (dim(rect_CNV_2DEL)[1] >0){
-          rect <- append(rect, rect_2DEL)
-        }
+    CNV <- CNV_all_Chromosomes() |>
+      dplyr::left_join(Chromosomes_Coordinates(), dplyr::join_by(Chromosome))
 
 
 
 
 
-        fig_all <- plot_ly() |>
-          layout(shapes = rect,
-            xaxis =list(title = "Chromosome coordinate"),
-            yaxis = list(
-            title = "Chromosome",
-            range = c(-1,46.8),
-            zeroline = FALSE,
-            showline = FALSE,
-            showgrid = FALSE,
-            tickmode = "array",
-            tickvals = c(Chromosomes_Coordinates()$level),
-            ticktext = c(Chromosomes_Coordinates()$Chromoseome_n))
-           )
-
-fig_all2 <- fig_all|>
-  add_trace(data = CNV, type = 'scatter', mode = 'markers', x =  ~End.x, y =  ~level.x + 0.8,
-    color ="red",
-    marker =list(size = 2), showlegend = FALSE,
-    text = ~paste(" Chromosome: ", Chromosome,  "<br>",
-      "Start: ", Start.x, "<br>", "End: ", End.x,
-      "<br>", "Mutation: ", Mutation ),
-    hoverinfo = "text",
-    hoverlabel = list(bgcolor = "yellow"))
+    rect_CNV_2DEL <-
+      CNV |>
+      filter(Mutation == "2-DEL")
 
 
-plt <-fig_all2 |> partial_bundle()  |>  toWebGL()
+    rect_CNV_DEL <-
+      CNV |>
+      filter(Mutation == "DEL")
 
-session_store$plt <- plt
-session_store$plt
-}
-    }) |>  bindCache(input$Prob,  input$slider, input$chr,
-     input$FastCall_Results_1,  rv$download_flag)
 
+    rect_CNV_AMP <-
+      CNV |>
+      filter(Mutation == "AMP")
+
+
+    rect_CNV_2AMP <-
+      CNV |>
+      filter(Mutation == "2-AMP")
+
+
+    rect_2_CNV_2DEL <- list(
+      type ="polygon",
+      fillcolor = "#D55e00",
+      line = list( color = "#D55e00")
+    )
+
+
+
+
+    rect_2DEL <- list()
+    for (i in c(1:dim(rect_CNV_2DEL)[1])) {
+      rect_2_CNV_2DEL[["x0"]] <- rect_CNV_2DEL[i,]$Start.x
+      rect_2_CNV_2DEL[["x1"]] <- rect_CNV_2DEL[i,]$End.x
+      rect_2_CNV_2DEL[["y0"]] <- rect_CNV_2DEL[i,]$level.x - 0.8
+      rect_2_CNV_2DEL[["y1"]] <- rect_CNV_2DEL[i,]$level.x + 0.8
+      rect_2DEL <- c(rect_2DEL, list(rect_2_CNV_2DEL))
+    }
+
+
+    rect_2_CNV_DEL <- list(
+      type ="polygon",
+      fillcolor = "#D55e00",
+      line = list(color = "#D55e00")
+    )
+
+
+
+    rect_DEL <- list()
+    for (i in c(1:dim(rect_CNV_DEL)[1])) {
+      rect_2_CNV_DEL[["x0"]] <- rect_CNV_DEL[i,]$Start.x
+      rect_2_CNV_DEL[["x1"]] <- rect_CNV_DEL[i,]$End.x
+      rect_2_CNV_DEL[["y0"]] <- rect_CNV_DEL[i,]$level.x - 0.8
+      rect_2_CNV_DEL[["y1"]] <- rect_CNV_DEL[i,]$level.x + 0.8
+      rect_DEL <- c(rect_DEL, list(rect_2_CNV_DEL))
+    }
+
+
+
+    rect_2_CNV_AMP <- list(
+      type ="polygon",
+      fillcolor = "#0072B2",
+      line = list(color = "#0072B2" ))
+
+
+
+    rect_AMP <- list()
+    for (i in c(1:dim(rect_CNV_AMP)[1])) {
+      rect_2_CNV_AMP[["x0"]] <- rect_CNV_AMP[i,]$Start.x
+      rect_2_CNV_AMP[["x1"]] <- rect_CNV_AMP[i,]$End.x
+      rect_2_CNV_AMP[["y0"]] <- rect_CNV_AMP[i,]$level.x - 0.8
+      rect_2_CNV_AMP[["y1"]] <- rect_CNV_AMP[i,]$level.x + 0.8
+      rect_AMP <- c(rect_AMP, list(rect_2_CNV_AMP))
+    }
+
+
+    rect_2_CNV_2AMP <- list(
+      type ="polygon",
+      fillcolor = "#0072B2",
+      line = list(color = "#0072B2" ))
+
+
+
+    rect_2AMP <- list()
+    for (i in c(1:dim(rect_CNV_2AMP)[1])) {
+      rect_2_CNV_2AMP[["x0"]] <- rect_CNV_2AMP[i,]$Start.x
+      rect_2_CNV_2AMP[["x1"]] <- rect_CNV_2AMP[i,]$End.x
+      rect_2_CNV_2AMP[["y0"]] <- rect_CNV_2AMP[i,]$level.x - 0.8
+      rect_2_CNV_2AMP[["y1"]] <- rect_CNV_2AMP[i,]$level.x + 0.8
+      rect_2AMP <- c(rect_2AMP, list(rect_2_CNV_2AMP))
+    }
+
+    rect<-c(rect_Chromosome)
+
+    if (dim(rect_CNV_2AMP)[1] >0){
+      rect <- append(rect, rect_2AMP )
+    }
+
+    if (dim(rect_CNV_AMP)[1] >0){
+      rect <- append(rect, rect_AMP)
+    }
+
+    if (dim(rect_CNV_DEL)[1] >0){
+      rect <- append(rect, rect_DEL)
+    }
+
+    if (dim(rect_CNV_2DEL)[1] >0){
+      rect <- append(rect, rect_2DEL)
+    }
+
+
+
+
+
+    fig_all <- plotly::plot_ly () |>
+      layout(shapes = rect,
+        xaxis =list(title = "Chromosome coordinate"),
+        yaxis = list(
+          title = "Chromosome",
+          range = c(-1,46.8),
+          zeroline = FALSE,
+          showline = FALSE,
+          showgrid = FALSE,
+          tickmode = "array",
+          tickvals = c(Chromosomes_Coordinates()$level),
+          ticktext = c(Chromosomes_Coordinates()$Chromoseome_n))
+      )
+
+    fig_all2 <- fig_all|>
+      plotly::add_trace(data = CNV, type = 'scatter', mode = 'markers', x =  ~End.x, y =  ~level.x + 0.8,
+        color ="red",
+        marker =list(size = 2), showlegend = FALSE,
+        text = ~paste(" Chromosome: ", Chromosome,  "<br>",
+          "Start: ", Start.x, "<br>", "End: ", End.x,
+          "<br>", "Mutation: ", Mutation ),
+        hoverinfo = "text",
+        hoverlabel = list(bgcolor = "yellow"))
+
+
+    plt <-fig_all2 |>plotly::partial_bundle()  |>  plotly::toWebGL()
+
+    session_store$plt <- plt
+    session_store$plt
+  }
+}) |>  shiny::bindCache(input$Prob,  input$slider, input$chr,
+  input$FastCall_Results_1,  rv$download_flag)
 
 # Observe click event -----------------------------------------------------
 
