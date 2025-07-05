@@ -691,7 +691,7 @@ session_store$plt
             choices = c("All", chromosome()))
 
         shiny::updateSliderInput(session,
-          'slider', value  =c(Start() -2000000, Start() + 1000000))
+          'slider', value  =c(Start() -30000, End() + 30000))
       }
     })
 
@@ -718,9 +718,16 @@ session_store$plt
       else{return(NULL)}
     })
 
-    Start <- shiny::reactive({
+    End <- shiny::reactive({
       hover_reactive()$x
     })
+
+
+    Start <-shiny:: reactive({fast_call_1() |>
+        filter(Chromosome == chromosome()) |>
+        filter(End == End()) |>
+        select(Start) |>
+        as.numeric()})
 
     shiny::observe({
       if(h$val == -1) {
