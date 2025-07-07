@@ -266,7 +266,7 @@ fast_call_1 <- shiny::reactive({
           mutate(Mutation = case_when(
           Call == -2 ~ "2-DEL",
           Call == -1 ~ "DEL",
-          Call == 1 ~ "AMP",
+          Call %in% c(1, "+1") ~ "AMP",
           TRUE ~ "2-AMP"))}
       }
       fast_call_1 <- fast_call_1 |>
@@ -503,7 +503,7 @@ output$Plot_all_chr <- plotly::renderPlotly({
 
         rect_1_Chromosome <- list(
           type ="polygon",
-          fillcolor = "white",
+          fillcolor = "snow",
           line = list( color = "black" ))
 
 
@@ -547,8 +547,8 @@ output$Plot_all_chr <- plotly::renderPlotly({
 
         rect_2_CNV_2DEL <- list(
           type ="polygon",
-          fillcolor = "#D55e00",
-          line = list( color = "#D55e00")
+          fillcolor = "#CDBE70",
+          line = list( color = "#CDBE70")
         )
 
 
@@ -566,8 +566,8 @@ output$Plot_all_chr <- plotly::renderPlotly({
 
           rect_2_CNV_DEL <- list(
           type ="polygon",
-          fillcolor = "#D55e00",
-          line = list(color = "#D55e00")
+          fillcolor = "#CDBE70",
+          line = list(color = "#CDBE70")
         )
 
 
@@ -585,8 +585,8 @@ output$Plot_all_chr <- plotly::renderPlotly({
 
         rect_2_CNV_AMP <- list(
           type ="polygon",
-          fillcolor = "#0072B2",
-          line = list(color = "#0072B2" ))
+          fillcolor = "#27408B",
+          line = list(color = "#27408B"))
 
 
 
@@ -602,8 +602,8 @@ output$Plot_all_chr <- plotly::renderPlotly({
 
         rect_2_CNV_2AMP <- list(
           type ="polygon",
-          fillcolor = "#0072B2",
-          line = list(color = "#0072B2" ))
+          fillcolor = "#27408B",
+          line = list(color = "#27408B" ))
 
 
 
@@ -1100,7 +1100,7 @@ genes_annotations <-shiny::reactive ({
 
 
   rect_genes_annotation <- shiny::reactive({
-  if(!is.null(genes_annotations())){
+  if(!is.null(genes_annotations()) & input$chr !="All"){
     rect_genes_annotation_1 <- list()
   for (i in c(1:dim(genes_annotations())[1])) {
     rect_1_genes_annotation[["x0"]] <- genes_annotations()[i,]$Start
@@ -1517,8 +1517,8 @@ if(!is.null(exons_annotations())){
 
        rect_1D <- list(
          type ="rect",
-         fillcolor =   "#E69f00",
-         line = list(color = "#E69f00"),
+         fillcolor =   "#EEDD82",
+         line = list(color = "#EEDD82"),
          opacity = 0.6
        )
 
@@ -1536,8 +1536,8 @@ if(!is.null(exons_annotations())){
 
        rect_1A <- list(
          type ="rect",
-         fillcolor = "#56B4E9",
-         line = list(color =  "#56B4E9"),
+         fillcolor = "#4876FF",
+         line = list(color =  "#4876FF"),
          opacity = 0.6
        )
 
@@ -1553,8 +1553,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2A <- list(
          type ="rect",
-         fillcolor = "#0072B2",
-         line = list(color = "#0072B2"),
+         fillcolor = "#27408B",
+         line = list(color = "#27408B"),
          opacity = 0.6
        )
 
@@ -1570,8 +1570,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2D <- list(
          type ="rect",
-         fillcolor = "#D55e00",
-         line = list(color = "#D55e00"),
+         fillcolor = "#CDBE70",
+         line = list(color = "#CDBE70"),
          opacity = 0.6
        )
 
@@ -1618,25 +1618,25 @@ if(!is.null(exons_annotations())){
          x = 0,
          y = 0,
          name = "DEL",
-         color= I("#E69f00"),
+         color= I("#EEDD82"),
          opacity = 0.6) |>
       plotly::add_trace(type = 'bar',
          x = 0,
          y = 0,
          name = "AMP",
-         color = I("#56B4E9"),
+         color = I("#4876FF"),
         opacity = 0.6)|>
       plotly::add_trace(type = 'bar',
          x = 0,
          y = 0,
          name = "2_DEL",
-         color = I("#D55e00"),
+         color = I("#CDBE70"),
          opacity = 0.6)|>
       plotly::add_trace(type = 'bar',
         x = 0,
         y = 0,
         name = "2_AMP",
-        color= I("#0072B2"),
+        color= I("#27408B"),
         opacity = 0.6) |>
       plotly::add_trace(type = 'bar',
         x = 0,
@@ -1674,129 +1674,129 @@ if(!is.null(exons_annotations())){
 
 
        if (dim(rects_2DEL)[1] >0){
-       pl_1<- pl_1|> plotly::add_trace(data = rects_2DEL,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),   color = I("#D55e00"), opacity = 0.6,
+       pl_1<- pl_1|> plotly::add_trace(data = rects_2DEL,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),   color = I("#CDBE70"), opacity = 0.6,
          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
            "ProbCall: ", round(ProbCall,2)),
                              hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                             hoverlabel = list(bgcolor = "#D55e00"))|>
-                 plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y = max(ceiling(max(subset_data_1()$Log2R)+1.5),5),   color = I("#D55e00"), opacity = 0.6,
+                             hoverlabel = list(bgcolor = "#CDBE70"))|>
+                 plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y = max(ceiling(max(subset_data_1()$Log2R)+1.5),5),   color = I("#CDBE70"), opacity = 0.6,
                    text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                      "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                      "ProbCall: ", round(ProbCall,2)),
                             hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                            hoverlabel = list(bgcolor = "#D55e00") ) |>
-                plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#D55e00"), opacity = 0.6,
+                            hoverlabel = list(bgcolor = "#CDBE70") ) |>
+                plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#CDBE70"), opacity = 0.6,
                   text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                     "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                     "ProbCall: ", round(ProbCall,2)),
                             hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                            hoverlabel = list(bgcolor = "#D55e00")) |>
-                plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#D55e00"), opacity = 0.6,
+                            hoverlabel = list(bgcolor = "#CDBE70")) |>
+                plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#CDBE70"), opacity = 0.6,
                   text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                     "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                     "ProbCall: ", round(ProbCall,2)),
                                hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                               hoverlabel = list(bgcolor = "#D55e00")) |>
-               plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#D55e00"), opacity = 0.6,
+                               hoverlabel = list(bgcolor = "#CDBE70")) |>
+               plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#CDBE70"), opacity = 0.6,
                  text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                    "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                    "ProbCall: ", round(ProbCall,2)),
                                hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                               hoverlabel = list(bgcolor = "#D55e00"))}
+                               hoverlabel = list(bgcolor = "#CDBE70"))}
        if (dim(rects_DEL)[1] >0){
-         pl_1<- pl_1|> plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#E69f00"), opacity = 0.6,
+         pl_1<- pl_1|> plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#EEDD82"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00") ) |>
-                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82") ) |>
+                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#EEDD82"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                     plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers', x =  ~Start, y = min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                     plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers', x =  ~Start, y = min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#EEDD82"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                  plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                  plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#EEDD82"), opacity = 0.6,
                     text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                       "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                       "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                  plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                  plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#EEDD82"), opacity = 0.6,
                     text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                       "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                       "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) }
+                                 hoverlabel = list(bgcolor = "#EEDD82")) }
        if (dim(rects_AMP)[1] >0){
-         pl_1<- pl_1|> plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+         pl_1<- pl_1|> plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                       plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                       plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                      plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                      plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                      plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                      plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                    plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                    plotly::add_trace(data = rects_AMP,  type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#4876FF"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9"))}
+                                 hoverlabel = list(bgcolor = "#4876FF"))}
         if (dim(rects_2AMP)[1] >0){
-         pl_1<- pl_1|> plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+         pl_1<- pl_1|> plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                         plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                         plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                          plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                          plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_1()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
                             text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                               "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                               "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                          plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                          plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                             text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                               "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                               "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                           plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~mid, y =  0, color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                           plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~mid, y =  0, color = I("#27408B"), opacity = 0.6,
                              text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                                "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                                "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2"))}
+                                 hoverlabel = list(bgcolor = "#27408B"))}
 
 
 
@@ -1885,8 +1885,8 @@ if(!is.null(exons_annotations())){
 
        rect_1D <- list(
          type ="rect",
-         fillcolor =   "#E69f00",
-         line = list(color = "#E69f00"),
+         fillcolor =   "#EEDD82",
+         line = list(color = "#EEDD82"),
          opacity = 0.6
        )
 
@@ -1904,8 +1904,8 @@ if(!is.null(exons_annotations())){
 
        rect_1A <- list(
          type ="rect",
-         fillcolor = "#56B4E9",
-         line = list(color =  "#56B4E9"),
+         fillcolor = "#4876FF",
+         line = list(color =  "#4876FF"),
          opacity = 0.6
        )
 
@@ -1923,8 +1923,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2A <- list(
          type ="rect",
-         fillcolor = "#0072B2",
-         line = list(color = "#0072B2"),
+         fillcolor = "#27408B",
+         line = list(color = "#27408B"),
          opacity = 0.6
        )
 
@@ -1943,8 +1943,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2D <- list(
          type ="rect",
-         fillcolor = "#D55e00",
-         line = list(color = "#D55e00"),
+         fillcolor = "#CDBE70",
+         line = list(color = "#CDBE70"),
          opacity = 0.6
        )
 
@@ -2013,130 +2013,130 @@ if(!is.null(exons_annotations())){
 
 
        if (dim(rects_2DEL)[1] >0){
-         pl_2<- pl_2|> plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),   color = I("#D55e00"),opacity = 0.6,
+         pl_2<- pl_2|> plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),   color = I("#CDBE70"),opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                    plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),   color = I("#D55e00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                    plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),   color = I("#CDBE70"),opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                     plotly::add_trace(data = rects_2DEL,type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#D55e00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                     plotly::add_trace(data = rects_2DEL,type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#CDBE70"),opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                     plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers',x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#D55e00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                     plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers',x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),   color = I("#CDBE70"),opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00"))|>
-                    plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#D55e00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70"))|>
+                    plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#CDBE70"),opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00"))}
+                                 hoverlabel = list(bgcolor = "#CDBE70"))}
      if (dim(rects_DEL)[1] >0){
-         pl_2<- pl_2|> plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers',x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#E69f00"),opacity = 0.6,
+         pl_2<- pl_2|> plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers',x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#EEDD82"),opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#E69f00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#EEDD82"),opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#E69f00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#EEDD82"),opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#E69f00"),opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                    plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#EEDD82"),opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                     plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                     plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#EEDD82"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) }
+                                 hoverlabel = list(bgcolor = "#EEDD82")) }
 
        if (dim(rects_AMP)[1] >0){
-         pl_2<- pl_2|> plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+         pl_2<- pl_2|> plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#4876FF"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9"))}
+                                 hoverlabel = list(bgcolor = "#4876FF"))}
        if (dim(rects_2AMP)[1] >0){
-         pl_2<- pl_2|> plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+         pl_2<- pl_2|> plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                       plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                       plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                       plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                       plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_2()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                      plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                      plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_1()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                      plotly::add_trace(data = rects_2AMP,type = 'scatter', mode = 'markers',  x =  ~mid, y =  0, color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                      plotly::add_trace(data = rects_2AMP,type = 'scatter', mode = 'markers',  x =  ~mid, y =  0, color = I("#27408B"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2"))}
+                                 hoverlabel = list(bgcolor = "#27408B"))}
        if(input$Set_y_axis){
          if (is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)){
            pl_2 <- pl_2|> layout(
@@ -2188,8 +2188,8 @@ if(!is.null(exons_annotations())){
 
        rect_1D <- list(
          type ="rect",
-         fillcolor =   "#E69f00",
-         line = list(color = "#E69f00"),
+         fillcolor =   "#EEDD82",
+         line = list(color = "#EEDD82"),
          opacity = 0.6
        )
 
@@ -2207,8 +2207,8 @@ if(!is.null(exons_annotations())){
 
        rect_1A <- list(
          type ="rect",
-         fillcolor = "#56B4E9",
-         line = list(color =  "#56B4E9"),
+         fillcolor = "#4876FF",
+         line = list(color =  "#4876FF"),
          opacity = 0.6
        )
 
@@ -2226,8 +2226,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2A <- list(
          type ="rect",
-         fillcolor = "#0072B2",
-         line = list(color = "#0072B2"),
+         fillcolor = "#27408B",
+         line = list(color = "#27408B"),
          opacity = 0.6
        )
 
@@ -2244,8 +2244,8 @@ if(!is.null(exons_annotations())){
 
        rect_1_2D <- list(
          type ="rect",
-         fillcolor = "#D55e00",
-         line = list(color = "#D55e00"),
+         fillcolor = "#CDBE70",
+         line = list(color = "#CDBE70"),
          opacity = 0.6
        )
 
@@ -2328,131 +2328,131 @@ if(!is.null(exons_annotations())){
                                     max(ceiling(max(subset_data_3()$Log2R)+1.5),5))))}
 
        if (dim(rects_2DEL)[1] >0){
-         pl_3<- pl_3|> plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),   color = I("#D55e00"), opacity = 0.6,
+         pl_3<- pl_3|> plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),   color = I("#CDBE70"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),   color = I("#D55e00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),   color = I("#CDBE70"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                      plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),   color = I("#D55e00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                      plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),   color = I("#CDBE70"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),   color = I("#D55e00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),   color = I("#CDBE70"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00")) |>
-                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#D55e00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#CDBE70")) |>
+                       plotly::add_trace(data = rects_2DEL, type = 'scatter', mode = 'markers', x =  ~mid, y =  0,   color = I("#CDBE70"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#D55e00"))}
+                                 hoverlabel = list(bgcolor = "#CDBE70"))}
        if (dim(rects_DEL)[1] >0){
-         pl_3 <- pl_3|> plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#E69f00"), opacity = 0.6,
+         pl_3 <- pl_3|> plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#EEDD82"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                      plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                      plotly::add_trace(data = rects_DEL,  type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#EEDD82"), opacity = 0.6,
                         text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                           "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                           "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#EEDD82"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#EEDD82"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00")) |>
-                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#E69f00"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#EEDD82")) |>
+                       plotly::add_trace(data = rects_DEL, type = 'scatter', mode = 'markers', x =  ~mid, y = 0,  color = I("#EEDD82"), opacity = 0.6,
                          text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                            "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                            "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#E69f00"))}
+                                 hoverlabel = list(bgcolor = "#EEDD82"))}
 
        if (dim(rects_AMP)[1] >0){
-         pl_3 <- pl_3|> plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+         pl_3 <- pl_3|> plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                    plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                     plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5),  color = I("#4876FF"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9"))|>
-                  plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF"))|>
+                  plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers', x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5),  color = I("#4876FF"), opacity = 0.6,
                     text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                       "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                       "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9")) |>
-                   plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~mid, y = 0,  color = I("#56B4E9"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#4876FF")) |>
+                   plotly::add_trace(data = rects_AMP, type = 'scatter', mode = 'markers',  x =  ~mid, y = 0,  color = I("#4876FF"), opacity = 0.6,
                      text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                        "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                        "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#56B4E9"))}
+                                 hoverlabel = list(bgcolor = "#4876FF"))}
 
        if (dim(rects_2AMP)[1] >0){
-         pl_3<- pl_3|> plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+         pl_3<- pl_3|> plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~End, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
            text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
              "CN: ", CN, "<br>", "Call: ", Call, "<br>",
              "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                    plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                    plotly::add_trace(data = rects_2AMP,  type = 'scatter', mode = 'markers', x =  ~End, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                    plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                    plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  max(ceiling(max(subset_data_3()$Log2R)+1.5),5), color = I("#27408B"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                    plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5), color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                    plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers',  x =  ~Start, y =  min(floor(min(subset_data_3()$Log2R) - 0.5), -5), color = I("#27408B"), opacity = 0.6,
                       text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                         "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                         "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2")) |>
-                     plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~mid, y =  0, color = I("#0072B2"), opacity = 0.6,
+                                 hoverlabel = list(bgcolor = "#27408B")) |>
+                     plotly::add_trace(data = rects_2AMP, type = 'scatter', mode = 'markers', x =  ~mid, y =  0, color = I("#27408B"), opacity = 0.6,
                        text = ~paste(" Start: ", Start, "<br>", "End: ", End, "<br>", "Mutation: ", Mutation,"<br>",
                          "CN: ", CN, "<br>", "Call: ", Call, "<br>",
                          "ProbCall: ", round(ProbCall,2)),
                                  hoverinfo = "text", marker =list(size = 2), showlegend = FALSE,
-                                 hoverlabel = list(bgcolor = "#0072B2"))}
+                                 hoverlabel = list(bgcolor = "#27408B"))}
         if(input$Set_y_axis) {
           pl_3 <- pl_3|> layout(
           yaxis = list(
