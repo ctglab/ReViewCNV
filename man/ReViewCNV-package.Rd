@@ -10,5 +10,10 @@ ReViewCNV is a ShinyApp for the visualization and clinical interpretation of ger
 \author{
 \strong{Maintainer}: Francesco Paparazzo \email{francescopaparazzo85@gmail.com}
 
+Other contributors:
+\itemize{
+  \item CTGLab, IIT CNR [copyright holder, funder]
+}
+
 }
 \keyword{internal}
