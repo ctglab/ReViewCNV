@@ -1,7 +1,7 @@
 Package: ReViewCNV
 Title: Visualization of germinal Copy Number Variants (CNVs)
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person("Francesco", "Paparazzo", "francescopaparazzo85@gmail.com", role = c("aut", "cre")),
     person("CTGLab, IIT CNR", role = c("cph", "fnd")))
 Description: ReViewCNV is a ShinyApp for the visualization  and clinical interpretation of germinal Copy Number Variants (CNVs). 
