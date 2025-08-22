@@ -45,11 +45,11 @@ The ShinyApp has been developed in R (v. 4.4.5) using RStudio as IDE and the fol
 
 ##### To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this will take around 25 minutes):
 
-_sudo docker buildx build  -t ReViewCNV ._
+_sudo docker buildx build  -t reviewcnv ._
 
 ##### To run the Docker use:
 
-_sudo docker run --name ReViewCNV  -p 6868:6868 ReViewCNV Rscript ReViewCNV.R_
+_sudo docker run --name reviewcnv  -p 6868:6868 reviewcnv Rscript ReViewCNV.R_
 
 
 <br/>
