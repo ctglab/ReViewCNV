@@ -35,7 +35,7 @@ COPY inst/Exons_38.rds  /app
 COPY inst/www /app/www
 COPY inst/hg38_Coordinates.rds /app
 COPY inst/hg37_Coordinates.rds /app
-COPY tools/app_all_chromosomes.R /app
+COPY tools/ReViewCNV.R /app
 
 
 
