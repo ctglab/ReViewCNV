@@ -1039,6 +1039,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 "GC content: ",
                 GC_content,
                 "<br>",
+                "Exon: ",
+                Exon,
+                "<br>",
                 "Start:",
                 Start,
                 "<br>",
@@ -1080,7 +1083,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 Start,
                 "<br>",
                 "End:",
-                End
+                End,
+                "<br>",
+                "Exon: ",
+                Exon
               )
             )
         }
@@ -1115,6 +1121,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 "<br>",
                 "GC content: ",
                 GC_content,
+                "<br>",
+                "Exon: ",
+                Exon,
                 "<br>",
                 " Start:",
                 Start,
@@ -1157,7 +1166,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 Start,
                 "<br>",
                 "End:",
-                End
+                End,
+                "<br>",
+                "Exon: ",
+                Exon
               )
             )
         }
@@ -1192,6 +1204,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 "<br>",
                 "GC content: ",
                 GC_content,
+                "<br>",
+                "Exon: ",
+                Exon,
                 "<br>",
                 "Start:",
                 Start,
@@ -1234,7 +1249,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 Start,
                 "<br>",
                 "End:",
-                End
+                End,
+                "<br>",
+                "Exon: ",
+                Exon
               )
             )
         }
