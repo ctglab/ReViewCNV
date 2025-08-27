@@ -1577,20 +1577,32 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # Subsetting genes annotations data ---------------------------------------
 
-    genes_annotations <- shiny::reactive({
-      if (input$GenomeBrowser) {
-        if (input$Genome == "GRCh37") {
-          genes_annotation_37 |>
-            filter(Chr == input$chr)
-        } else if (input$Genome == "GRCh38") {
-          genes_annotation_38 |>
-            filter(Chr == input$chr)
-        }
+    genes_annotations_1 <- shiny::reactive({
+      if (input$Genome == "GRCh37") {
+        return(
+          genes_annotation_37
+        )
+      }
+      if (input$Genome == "GRCh38") {
+        return(
+          genes_annotation_38
+        )
       } else {
         (return(NULL))
       }
     }) |>
-      shiny::bindCache(input$Genome, input$chr)
+      shiny::bindCache(input$Genome)
+
+    genes_annotations <- shiny::reactive({
+      if (input$GenomeBrowser) {
+        genes_annotations <- genes_annotations_1() |>
+          filter(Chr == input$chr)
+        return(genes_annotations)
+      } else {
+        (return(NULL))
+      }
+    }) |>
+      shiny::bindCache(input$chr)
 
     rect_1_genes_annotation <- list(
       type = "line",
@@ -1615,8 +1627,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(genes_annotations())
+    })
 
     # Subsetting exons annotations --------------------------------------------
 
@@ -1625,7 +1636,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         if (input$Genome == "GRCh37") {
           exons <- exons_annotation_37
           return(exons)
-        } else if (input$Genome == "GRCh38") {
+        }
+        if (input$Genome == "GRCh38") {
           exons <- exons_annotation_38
           return(exons)
         } else {
@@ -1638,10 +1650,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       shiny::bindCache(input$Genome)
 
     exons_annotations <- shiny::reactive({
-      if (dim(rects_1())[1] > 0) {
+      if (dim(rects_1_range())[1] > 0) {
         genes <- genes_annotations() |>
           dplyr::inner_join(
-            rects_1(),
+            rects_1_range(),
             dplyr::join_by(overlaps(Start, End, Start, End))
           )
 
@@ -1653,7 +1665,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         (return(NULL))
       }
     }) |>
-      shiny::bindCache(input$chr, genes_annotations(), exons_annotations_1())
+      shiny::bindCache(input$chr)
 
     rect_1_exons_annotation <- list(
       type = "rect",
@@ -1685,8 +1697,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(exons_annotations())
+    })
 
     shapes <- shiny::reactive({
       c(rect_genes_annotation(), rect_exons_annotation())
