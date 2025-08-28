@@ -3005,7 +3005,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                       max(subset_data_1_range()$Log2R) + 0.1,
                       max(subset_data_2_range()$Log2R) + 0.1
                     )
-                  ),
+                  )
                 )
               )
           } else {
@@ -3018,19 +3018,17 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                         min(subset_data_1_range()$Log2R),
                         min(subset_data_2_range()$Log2R),
                         min(subset_data_3_range()$Log2R)
-                      )),
-                      -5
+                      )) -
+                        0.1
                     ),
                     max = max(
-                      ceiling(max(
-                        max(subset_data_1_range()$Log2R),
-                        max(subset_data_2_range()$Log2R),
-                        max(subset_data_3_range()$Log2R)
-                      )),
-                      5
+                      max(subset_data_1_range()$Log2R),
+                      max(subset_data_2_range()$Log2R),
+                      max(subset_data_3_range()$Log2R)
                     )
                   )
-                )
+                ) +
+                  0.1
               )
           }
         } else {
@@ -3917,7 +3915,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                       max(subset_data_1_range()$Log2R) + 0.1,
                       max(subset_data_2_range()$Log2R) + 0.1
                     )
-                  ),
+                  )
                 )
               )
           } else {
@@ -4135,7 +4133,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 range = c(
                   min(subset_data_3_range()$Log2R) - 0.1
                 ),
-                max(subset_data_3_range()$Log2R + 0.1)
+                max(subset_data_3_range()$Log2R) + 0.1
               )
             )
         }
