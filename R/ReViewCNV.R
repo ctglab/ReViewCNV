@@ -1665,7 +1665,12 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         (return(NULL))
       }
     }) |>
-      shiny::bindCache(input$chr)
+      shiny::bindCache(
+        input$chr,
+        rects_1_range(),
+        genes_annotations(),
+        exons_annotations_1()
+      )
 
     rect_1_exons_annotation <- list(
       type = "rect",
@@ -2158,8 +2163,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_DEL)[1])) {
           rect_1D[["x0"]] <- rects_DEL[i, ]$Start
           rect_1D[["x1"]] <- rects_DEL[i, ]$End
-          rect_1D[["y0"]] <- min(subset_data_1_range()$Log2R)
-          rect_1D[["y1"]] <- max(subset_data_1_range()$Log2R)
+          rect_1D[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+          rect_1D[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
           rect_D <- c(rect_D, list(rect_1D))
         }
 
@@ -2174,8 +2179,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_AMP)[1])) {
           rect_1A[["x0"]] <- rects_AMP[i, ]$Start
           rect_1A[["x1"]] <- rects_AMP[i, ]$End
-          rect_1A[["y0"]] <- min(subset_data_1_range()$Log2R)
-          rect_1A[["y1"]] <- max(subset_data_1_range()$Log2R)
+          rect_1A[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+          rect_1A[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
           rect_A <- c(rect_A, list(rect_1A))
         }
 
@@ -2190,8 +2195,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2AMP)[1])) {
           rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
           rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-          rect_1_2A[["y0"]] <- min(subset_data_1_range()$Log2R)
-          rect_1_2A[["y1"]] <- max(subset_data_1_range()$Log2R)
+          rect_1_2A[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+          rect_1_2A[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
           rect_2A <- c(rect_2A, list(rect_1_2A))
         }
 
@@ -2206,8 +2211,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2DEL)[1])) {
           rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
           rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-          rect_1_2D[["y0"]] <- min(subset_data_1_range()$Log2R)
-          rect_1_2D[["y1"]] <- max(subset_data_1_range()$Log2R)
+          rect_1_2D[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+          rect_1_2D[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
           rect_2D <- c(rect_2D, list(rect_1_2D))
         }
 
@@ -2333,7 +2338,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -2365,7 +2370,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -2397,7 +2402,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -2429,7 +2434,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -2496,7 +2501,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -2528,7 +2533,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -2560,7 +2565,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -2592,7 +2597,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -2659,7 +2664,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -2691,7 +2696,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -2723,7 +2728,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -2755,7 +2760,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -2822,7 +2827,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -2854,7 +2859,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -2886,7 +2891,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = max(subset_data_1_range()$Log2R),
+              y = max(max(subset_data_1_range()$Log2R), 0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -2918,7 +2923,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_1_range()$Log2R),
+              y = min(min(subset_data_1_range()$Log2R), -0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -3050,7 +3055,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 type = "bar",
                 x = 0,
                 y = 0,
-                name = "Genes annotation from MANE_RefSEq v 1.3",
+                name = "Genes annotation from MANE 1.4 (RefSEq)",
                 color = I("#008000")
               )
           }
@@ -3124,8 +3129,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_DEL)[1])) {
           rect_1D[["x0"]] <- rects_DEL[i, ]$Start
           rect_1D[["x1"]] <- rects_DEL[i, ]$End
-          rect_1D[["y0"]] <- min(subset_data_2_range()$Log2R)
-          rect_1D[["y1"]] <- max(subset_data_2_range()$Log2R)
+          rect_1D[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+          rect_1D[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
           rect_D <- c(rect_D, list(rect_1D))
         }
 
@@ -3141,8 +3146,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_AMP)[1])) {
           rect_1A[["x0"]] <- rects_AMP[i, ]$Start
           rect_1A[["x1"]] <- rects_AMP[i, ]$End
-          rect_1A[["y0"]] <- min(subset_data_2_range()$Log2R)
-          rect_1A[["y1"]] <- max(subset_data_2_range()$Log2R)
+          rect_1A[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+          rect_1A[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
           rect_A <- c(rect_A, list(rect_1A))
         }
 
@@ -3158,8 +3163,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2AMP)[1])) {
           rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
           rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-          rect_1_2A[["y0"]] <- min(subset_data_2_range()$Log2R)
-          rect_1_2A[["y1"]] <- max(subset_data_2_range()$Log2R)
+          rect_1_2A[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+          rect_1_2A[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
           rect_2A <- c(rect_2A, list(rect_1_2A))
         }
 
@@ -3175,8 +3180,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2DEL)[1])) {
           rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
           rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-          rect_1_2D[["y0"]] <- min(subset_data_2_range()$Log2R)
-          rect_1_2D[["y1"]] <- max(subset_data_2_range()$Log2R)
+          rect_1_2D[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+          rect_1_2D[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
           rect_2D <- c(rect_2D, list(rect_1_2D))
         }
 
@@ -3319,7 +3324,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -3351,7 +3356,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#CDBE70"),
               opacity = 0.6,
               text = ~ paste(
@@ -3450,7 +3455,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -3482,7 +3487,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#EEDD82"),
               opacity = 0.6,
               text = ~ paste(
@@ -3614,7 +3619,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -3646,7 +3651,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#4876FF"),
               opacity = 0.6,
               text = ~ paste(
@@ -3745,7 +3750,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = max(subset_data_2_range()$Log2R),
+              y = max(max(subset_data_2_range()$Log2R), 0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -3777,7 +3782,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~End,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -3809,7 +3814,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = max(subset_data_2_range()$Log2R),
+              y = max(max(subset_data_2_range()$Log2R), 0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -3841,7 +3846,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               type = "scatter",
               mode = "markers",
               x = ~Start,
-              y = min(subset_data_2_range()$Log2R),
+              y = min(min(subset_data_2_range()$Log2R), -0.1),
               color = I("#27408B"),
               opacity = 0.6,
               text = ~ paste(
@@ -3984,8 +3989,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_DEL)[1])) {
           rect_1D[["x0"]] <- rects_DEL[i, ]$Start
           rect_1D[["x1"]] <- rects_DEL[i, ]$End
-          rect_1D[["y0"]] <- min(subset_data_3_range()$Log2R)
-          rect_1D[["y1"]] <- max(subset_data_3_range()$Log2R)
+          rect_1D[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+          rect_1D[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
           rect_D <- c(rect_D, list(rect_1D))
         }
 
@@ -4001,8 +4006,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_AMP)[1])) {
           rect_1A[["x0"]] <- rects_AMP[i, ]$Start
           rect_1A[["x1"]] <- rects_AMP[i, ]$End
-          rect_1A[["y0"]] <- min(subset_data_3_range()$Log2R)
-          rect_1A[["y1"]] <- max(subset_data_3_range()$Log2R)
+          rect_1A[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+          rect_1A[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
           rect_A <- c(rect_A, list(rect_1A))
         }
 
@@ -4018,8 +4023,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2AMP)[1])) {
           rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
           rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-          rect_1_2A[["y0"]] <- min(subset_data_3_range()$Log2R)
-          rect_1_2A[["y1"]] <- max(subset_data_3_range()$Log2R)
+          rect_1_2A[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+          rect_1_2A[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
           rect_2A <- c(rect_2A, list(rect_1_2A))
         }
 
@@ -4035,8 +4040,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         for (i in c(1:dim(rects_2DEL)[1])) {
           rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
           rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-          rect_1_2D[["y0"]] <- min(subset_data_3_range()$Log2R)
-          rect_1_2D[["y1"]] <- max(subset_data_3_range()$Log2R)
+          rect_1_2D[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+          rect_1_2D[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
           rect_2D <- c(rect_2D, list(rect_1_2D))
         }
 
@@ -4119,9 +4124,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                     min(subset_data_3_range()$Log2R) - 0.1
                   ),
                   max = max(
-                    max(subset_data_1_range()$Log2R) + 0.1,
-                    max(subset_data_2_range()$Log2R) + 0.1,
-                    max(subset_data_3_range()$Log2R) + 0.1
+                    max(
+                      subset_data_1_range()$Log2R + 0.1,
+                      max(subset_data_2_range()$Log2R) + 0.1,
+                      max(subset_data_3_range()$Log2R) + 0.1
+                    )
                   )
                 )
               )
