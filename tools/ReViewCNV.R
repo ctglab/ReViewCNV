@@ -155,22 +155,6 @@ ui <- bslib::page_sidebar(
 # Server ------------------------------------------------------------------
 
 server <- function(input, output, session) {
-  # Find pandoc
-
-  if (!rmarkdown::pandoc_available()) {
-    alt_pandoc <- "~/local/pandoc/bin"
-    alt_pandoc_bin <- file.path(alt_pandoc, "pandoc")
-
-    if (file.exists(alt_pandoc_bin)) {
-      message("Using user-installed Pandoc at: ", alt_pandoc)
-      Sys.setenv(POSITRON_PANDOC = alt_pandoc)
-    } else {
-      warning(
-        "Pandoc not available and no fallback found. Some features may not work."
-      )
-    }
-  }
-
   bslib::bs_themer()
   # Storing the session for the Download Handler
   session_store <- shiny::reactiveValues()
@@ -1015,6 +999,9 @@ server <- function(input, output, session) {
               "GC content: ",
               GC_content,
               "<br>",
+              "Exon: ",
+              Exon,
+              "<br>",
               "Start:",
               Start,
               "<br>",
@@ -1056,7 +1043,10 @@ server <- function(input, output, session) {
               Start,
               "<br>",
               "End:",
-              End
+              End,
+              "<br>",
+              "Exon: ",
+              Exon
             )
           )
       }
@@ -1091,6 +1081,9 @@ server <- function(input, output, session) {
               "<br>",
               "GC content: ",
               GC_content,
+              "<br>",
+              "Exon: ",
+              Exon,
               "<br>",
               " Start:",
               Start,
@@ -1133,7 +1126,10 @@ server <- function(input, output, session) {
               Start,
               "<br>",
               "End:",
-              End
+              End,
+              "<br>",
+              "Exon: ",
+              Exon
             )
           )
       }
@@ -1168,6 +1164,9 @@ server <- function(input, output, session) {
               "<br>",
               "GC content: ",
               GC_content,
+              "<br>",
+              "Exon: ",
+              Exon,
               "<br>",
               "Start:",
               Start,
@@ -1210,7 +1209,10 @@ server <- function(input, output, session) {
               Start,
               "<br>",
               "End:",
-              End
+              End,
+              "<br>",
+              "Exon: ",
+              Exon
             )
           )
       }
@@ -1535,20 +1537,32 @@ server <- function(input, output, session) {
 
   # Subsetting genes annotations data ---------------------------------------
 
-  genes_annotations <- shiny::reactive({
-    if (input$GenomeBrowser) {
-      if (input$Genome == "GRCh37") {
-        genes_annotation_37 |>
-          filter(Chr == input$chr)
-      } else if (input$Genome == "GRCh38") {
-        genes_annotation_38 |>
-          filter(Chr == input$chr)
-      }
+  genes_annotations_1 <- shiny::reactive({
+    if (input$Genome == "GRCh37") {
+      return(
+        genes_annotation_37
+      )
+    }
+    if (input$Genome == "GRCh38") {
+      return(
+        genes_annotation_38
+      )
     } else {
       (return(NULL))
     }
   }) |>
-    shiny::bindCache(input$Genome, input$chr)
+    shiny::bindCache(input$Genome)
+
+  genes_annotations <- shiny::reactive({
+    if (input$GenomeBrowser) {
+      genes_annotations <- genes_annotations_1() |>
+        filter(Chr == input$chr)
+      return(genes_annotations)
+    } else {
+      (return(NULL))
+    }
+  }) |>
+    shiny::bindCache(input$chr)
 
   rect_1_genes_annotation <- list(
     type = "line",
@@ -1573,8 +1587,7 @@ server <- function(input, output, session) {
     } else {
       return(NULL)
     }
-  }) |>
-    shiny::bindCache(genes_annotations())
+  })
 
   # Subsetting exons annotations --------------------------------------------
 
@@ -1583,7 +1596,8 @@ server <- function(input, output, session) {
       if (input$Genome == "GRCh37") {
         exons <- exons_annotation_37
         return(exons)
-      } else if (input$Genome == "GRCh38") {
+      }
+      if (input$Genome == "GRCh38") {
         exons <- exons_annotation_38
         return(exons)
       } else {
@@ -1596,10 +1610,10 @@ server <- function(input, output, session) {
     shiny::bindCache(input$Genome)
 
   exons_annotations <- shiny::reactive({
-    if (dim(rects_1())[1] > 0) {
+    if (dim(rects_1_range())[1] > 0) {
       genes <- genes_annotations() |>
         dplyr::inner_join(
-          rects_1(),
+          rects_1_range(),
           dplyr::join_by(overlaps(Start, End, Start, End))
         )
 
@@ -1611,7 +1625,12 @@ server <- function(input, output, session) {
       (return(NULL))
     }
   }) |>
-    shiny::bindCache(input$chr, genes_annotations(), exons_annotations_1())
+    shiny::bindCache(
+      input$chr,
+      rects_1_range(),
+      genes_annotations(),
+      exons_annotations_1()
+    )
 
   rect_1_exons_annotation <- list(
     type = "rect",
@@ -1643,8 +1662,7 @@ server <- function(input, output, session) {
     } else {
       return(NULL)
     }
-  }) |>
-    shiny::bindCache(exons_annotations())
+  })
 
   shapes <- shiny::reactive({
     c(rect_genes_annotation(), rect_exons_annotation())
@@ -2105,8 +2123,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_DEL)[1])) {
         rect_1D[["x0"]] <- rects_DEL[i, ]$Start
         rect_1D[["x1"]] <- rects_DEL[i, ]$End
-        rect_1D[["y0"]] <- min(subset_data_1_range()$Log2R)
-        rect_1D[["y1"]] <- max(subset_data_1_range()$Log2R)
+        rect_1D[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+        rect_1D[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
         rect_D <- c(rect_D, list(rect_1D))
       }
 
@@ -2121,8 +2139,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_AMP)[1])) {
         rect_1A[["x0"]] <- rects_AMP[i, ]$Start
         rect_1A[["x1"]] <- rects_AMP[i, ]$End
-        rect_1A[["y0"]] <- min(subset_data_1_range()$Log2R)
-        rect_1A[["y1"]] <- max(subset_data_1_range()$Log2R)
+        rect_1A[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+        rect_1A[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
         rect_A <- c(rect_A, list(rect_1A))
       }
 
@@ -2137,8 +2155,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2AMP)[1])) {
         rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
         rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-        rect_1_2A[["y0"]] <- min(subset_data_1_range()$Log2R)
-        rect_1_2A[["y1"]] <- max(subset_data_1_range()$Log2R)
+        rect_1_2A[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+        rect_1_2A[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
         rect_2A <- c(rect_2A, list(rect_1_2A))
       }
 
@@ -2153,8 +2171,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2DEL)[1])) {
         rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
         rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-        rect_1_2D[["y0"]] <- min(subset_data_1_range()$Log2R)
-        rect_1_2D[["y1"]] <- max(subset_data_1_range()$Log2R)
+        rect_1_2D[["y0"]] <- min(min(subset_data_1_range()$Log2R), -0.1)
+        rect_1_2D[["y1"]] <- max(max(subset_data_1_range()$Log2R), 0.1)
         rect_2D <- c(rect_2D, list(rect_1_2D))
       }
 
@@ -2280,7 +2298,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -2312,7 +2330,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -2344,7 +2362,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -2376,7 +2394,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -2443,7 +2461,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -2475,7 +2493,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -2507,7 +2525,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -2539,7 +2557,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -2606,7 +2624,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -2638,7 +2656,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -2670,7 +2688,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -2702,7 +2720,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -2769,7 +2787,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -2801,7 +2819,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -2833,7 +2851,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = max(subset_data_1_range()$Log2R),
+            y = max(max(subset_data_1_range()$Log2R), 0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -2865,7 +2883,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_1_range()$Log2R),
+            y = min(min(subset_data_1_range()$Log2R), -0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -2950,7 +2968,7 @@ server <- function(input, output, session) {
                     max(subset_data_1_range()$Log2R) + 0.1,
                     max(subset_data_2_range()$Log2R) + 0.1
                   )
-                ),
+                )
               )
             )
         } else {
@@ -2963,19 +2981,17 @@ server <- function(input, output, session) {
                       min(subset_data_1_range()$Log2R),
                       min(subset_data_2_range()$Log2R),
                       min(subset_data_3_range()$Log2R)
-                    )),
-                    -5
+                    )) -
+                      0.1
                   ),
                   max = max(
-                    ceiling(max(
-                      max(subset_data_1_range()$Log2R),
-                      max(subset_data_2_range()$Log2R),
-                      max(subset_data_3_range()$Log2R)
-                    )),
-                    5
+                    max(subset_data_1_range()$Log2R),
+                    max(subset_data_2_range()$Log2R),
+                    max(subset_data_3_range()$Log2R)
                   )
                 )
-              )
+              ) +
+                0.1
             )
         }
       } else {
@@ -2997,7 +3013,7 @@ server <- function(input, output, session) {
               type = "bar",
               x = 0,
               y = 0,
-              name = "Genes annotation from MANE_RefSEq v 1.3",
+              name = "Genes annotation from MANE 1.4 (RefSEq)",
               color = I("#008000")
             )
         }
@@ -3071,8 +3087,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_DEL)[1])) {
         rect_1D[["x0"]] <- rects_DEL[i, ]$Start
         rect_1D[["x1"]] <- rects_DEL[i, ]$End
-        rect_1D[["y0"]] <- min(subset_data_2_range()$Log2R)
-        rect_1D[["y1"]] <- max(subset_data_2_range()$Log2R)
+        rect_1D[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+        rect_1D[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
         rect_D <- c(rect_D, list(rect_1D))
       }
 
@@ -3088,8 +3104,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_AMP)[1])) {
         rect_1A[["x0"]] <- rects_AMP[i, ]$Start
         rect_1A[["x1"]] <- rects_AMP[i, ]$End
-        rect_1A[["y0"]] <- min(subset_data_2_range()$Log2R)
-        rect_1A[["y1"]] <- max(subset_data_2_range()$Log2R)
+        rect_1A[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+        rect_1A[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
         rect_A <- c(rect_A, list(rect_1A))
       }
 
@@ -3105,8 +3121,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2AMP)[1])) {
         rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
         rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-        rect_1_2A[["y0"]] <- min(subset_data_2_range()$Log2R)
-        rect_1_2A[["y1"]] <- max(subset_data_2_range()$Log2R)
+        rect_1_2A[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+        rect_1_2A[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
         rect_2A <- c(rect_2A, list(rect_1_2A))
       }
 
@@ -3122,8 +3138,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2DEL)[1])) {
         rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
         rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-        rect_1_2D[["y0"]] <- min(subset_data_2_range()$Log2R)
-        rect_1_2D[["y1"]] <- max(subset_data_2_range()$Log2R)
+        rect_1_2D[["y0"]] <- min(min(subset_data_2_range()$Log2R), -0.1)
+        rect_1_2D[["y1"]] <- max(max(subset_data_2_range()$Log2R), 0.1)
         rect_2D <- c(rect_2D, list(rect_1_2D))
       }
 
@@ -3266,7 +3282,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -3298,7 +3314,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#CDBE70"),
             opacity = 0.6,
             text = ~ paste(
@@ -3397,7 +3413,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -3429,7 +3445,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#EEDD82"),
             opacity = 0.6,
             text = ~ paste(
@@ -3561,7 +3577,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -3593,7 +3609,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#4876FF"),
             opacity = 0.6,
             text = ~ paste(
@@ -3692,7 +3708,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = max(subset_data_2_range()$Log2R),
+            y = max(max(subset_data_2_range()$Log2R), 0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -3724,7 +3740,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~End,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -3756,7 +3772,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = max(subset_data_2_range()$Log2R),
+            y = max(max(subset_data_2_range()$Log2R), 0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -3788,7 +3804,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "markers",
             x = ~Start,
-            y = min(subset_data_2_range()$Log2R),
+            y = min(min(subset_data_2_range()$Log2R), -0.1),
             color = I("#27408B"),
             opacity = 0.6,
             text = ~ paste(
@@ -3862,7 +3878,7 @@ server <- function(input, output, session) {
                     max(subset_data_1_range()$Log2R) + 0.1,
                     max(subset_data_2_range()$Log2R) + 0.1
                   )
-                ),
+                )
               )
             )
         } else {
@@ -3931,8 +3947,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_DEL)[1])) {
         rect_1D[["x0"]] <- rects_DEL[i, ]$Start
         rect_1D[["x1"]] <- rects_DEL[i, ]$End
-        rect_1D[["y0"]] <- min(subset_data_3_range()$Log2R)
-        rect_1D[["y1"]] <- max(subset_data_3_range()$Log2R)
+        rect_1D[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+        rect_1D[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
         rect_D <- c(rect_D, list(rect_1D))
       }
 
@@ -3948,8 +3964,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_AMP)[1])) {
         rect_1A[["x0"]] <- rects_AMP[i, ]$Start
         rect_1A[["x1"]] <- rects_AMP[i, ]$End
-        rect_1A[["y0"]] <- min(subset_data_3_range()$Log2R)
-        rect_1A[["y1"]] <- max(subset_data_3_range()$Log2R)
+        rect_1A[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+        rect_1A[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
         rect_A <- c(rect_A, list(rect_1A))
       }
 
@@ -3965,8 +3981,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2AMP)[1])) {
         rect_1_2A[["x0"]] <- rects_2AMP[i, ]$Start
         rect_1_2A[["x1"]] <- rects_2AMP[i, ]$End
-        rect_1_2A[["y0"]] <- min(subset_data_3_range()$Log2R)
-        rect_1_2A[["y1"]] <- max(subset_data_3_range()$Log2R)
+        rect_1_2A[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+        rect_1_2A[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
         rect_2A <- c(rect_2A, list(rect_1_2A))
       }
 
@@ -3982,8 +3998,8 @@ server <- function(input, output, session) {
       for (i in c(1:dim(rects_2DEL)[1])) {
         rect_1_2D[["x0"]] <- rects_2DEL[i, ]$Start
         rect_1_2D[["x1"]] <- rects_2DEL[i, ]$End
-        rect_1_2D[["y0"]] <- min(subset_data_3_range()$Log2R)
-        rect_1_2D[["y1"]] <- max(subset_data_3_range()$Log2R)
+        rect_1_2D[["y0"]] <- min(min(subset_data_3_range()$Log2R), -0.1)
+        rect_1_2D[["y1"]] <- max(max(subset_data_3_range()$Log2R), 0.1)
         rect_2D <- c(rect_2D, list(rect_1_2D))
       }
 
@@ -4066,9 +4082,11 @@ server <- function(input, output, session) {
                   min(subset_data_3_range()$Log2R) - 0.1
                 ),
                 max = max(
-                  max(subset_data_1_range()$Log2R) + 0.1,
-                  max(subset_data_2_range()$Log2R) + 0.1,
-                  max(subset_data_3_range()$Log2R) + 0.1
+                  max(
+                    subset_data_1_range()$Log2R + 0.1,
+                    max(subset_data_2_range()$Log2R) + 0.1,
+                    max(subset_data_3_range()$Log2R) + 0.1
+                  )
                 )
               )
             )
@@ -4080,7 +4098,7 @@ server <- function(input, output, session) {
               range = c(
                 min(subset_data_3_range()$Log2R) - 0.1
               ),
-              max(subset_data_3_range()$Log2R + 0.1)
+              max(subset_data_3_range()$Log2R) + 0.1
             )
           )
       }
