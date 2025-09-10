@@ -6,7 +6,7 @@
 #' @param port The TCP port that the application should listen on
 #' @param launch If true, the system's default web browser will be launched automatically after the app is started
 #'
-#' @returns  Runs a Shiny application in the default web browser.
+#' @returns  Runs a Shiny application in the default web browser
 #' @export
 #'
 #' @examples

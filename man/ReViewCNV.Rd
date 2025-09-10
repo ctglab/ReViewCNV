@@ -14,7 +14,7 @@ ReViewCNV(host = "0.0.0.0", port = 3838, launch = TRUE)
 \item{launch}{If true, the system's default web browser will be launched automatically after the app is started}
 }
 \value{
-Runs a Shiny application in the default web browser.
+Runs a Shiny application in the default web browser
 }
 \description{
 ReViewCNV
