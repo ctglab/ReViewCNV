@@ -34,11 +34,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
   # Read genes annotation data ----------------------------------------------
 
-  genes_annotation_38 <- readRDS(system.file(
+  genes_annotation_37 <- readRDS(system.file(
     "genes_annotation_37.rds",
     package = "ReViewCNV"
   ))
-  genes_annotation_37 <- readRDS(system.file(
+  genes_annotation_38 <- readRDS(system.file(
     "genes_annotation_38.rds",
     package = "ReViewCNV"
   ))
@@ -221,8 +221,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           return(NULL)
         }
       }
-    }) |>
-      shiny::bindCache(input$chr)
+    })
+    # |>
+    #   shiny::bindCache(input$chr)
 
     Coordinates_all <- shiny::reactive({
       if (is.null(input$FastCall_Results_1) | input$Genome == "") {
@@ -868,11 +869,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
     }) |>
       shiny::bindCache(
-        input$Prob,
+        #     input$Prob,
         input$slider,
-        input$chr,
-        input$FastCall_Results_1,
-        rv$download_flag
+        #     input$chr,
+        input$FastCall_Results_1
+        #     rv$download_flag
       )
 
     # Observe click event -----------------------------------------------------
@@ -1092,8 +1093,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_1)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_1())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, file_data_1())
 
     subset_data_1_range <- shiny::reactive({
       if (is.null(subset_data_1())) {
@@ -1175,8 +1177,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_2)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_2())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, file_data_2())
 
     subset_data_2_range <- shiny::reactive({
       if (is.null(file_data_2())) {
@@ -1258,8 +1261,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_3)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_3())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, file_data_3())
 
     subset_data_3_range <- shiny::reactive({
       if (is.null(file_data_3())) {
@@ -1276,8 +1280,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     rects_1 <- shiny::reactive({
       fast_call_1() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_1())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, fast_call_1())
 
     rects_1_range <- shiny::reactive({
       if (is.null(input$slider) | input$Genome == "") {
@@ -1287,15 +1292,17 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           filter(Start >= input$slider[1] & End <= input$slider[2])
         return(rects_1_range)
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_1())
+    })
+    # |>
+    #   shiny::bindCache(input$slider, rects_1())
 
     # Second individual
 
     rects_2 <- shiny::reactive({
       fast_call_2() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_2())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, fast_call_2())
 
     rects_2_range <- shiny::reactive({
       if (is.null(input$slider[1]) | input$Genome == "") {
@@ -1304,15 +1311,17 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         rects_2() |>
           filter(Start >= input$slider[1] & End <= input$slider[2])
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_2())
+    })
+    # |>
+    #   shiny::bindCache(input$slider, rects_2())
 
     # Third individual
 
     rects_3 <- shiny::reactive({
       fast_call_3() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_3())
+    })
+    # |>
+    #   shiny::bindCache(input$chr, fast_call_3())
 
     rects_3_range <- shiny::reactive({
       if (is.null(input$slider[1]) | input$Genome == "") {
@@ -1321,14 +1330,15 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         rects_3() |>
           filter(Start >= input$slider[1] & End <= input$slider[2])
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_3())
+    })
+    # |>
+    #   shiny::bindCache(input$slider, rects_3())
 
     # Subsetting variants annotations data ---------------------------------------------
 
     Annot_SV_D <- shiny::reactive({
       if (input$AnnotSV) {
-        "AnnotSV BenignSV (v. 3.4)"
+        "AnnotSV BenignSV (v. 3.5)"
       } else {
         return(NULL)
       }
@@ -1353,8 +1363,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     GnomAD_D <- shiny::reactive({
       if (input$GnomAD_Genome) {
         c(
-          "gnomad_v2.1_sv.controls_only.site",
-          "gnomad.v4.1.sv.non_neuro_controls.sites"
+          "gnomAD v2.1 SV (controls) sites",
+          "gnomAD v4.1 Genome SV non neuro controls"
         )
       } else {
         return(NULL)
@@ -1363,7 +1373,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     GnomAD_Exome_D <- shiny::reactive({
       if (input$GnomAD_Exome) {
-        GnomAD_Exome_D <- "gnomad.v4.1.cnv.non_neuro_controls"
+        GnomAD_Exome_D <- "gnomAD.v4.1 Exome CNV non neuro controls"
       } else {
         return(NULL)
       }
@@ -1454,15 +1464,16 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(
-        input$Genome,
-        input$chr,
-        input$Type,
-        input$Freq,
-        Annotations_list(),
-        fast_call_1()
-      )
+    })
+    # |>
+    #   shiny::bindCache(
+    #     input$Genome,
+    #     input$chr,
+    #     input$Type,
+    #     input$Freq,
+    #     Annotations_list(),
+    #     fast_call_1()
+    #   )
 
     CNV1 <- shiny::reactive({
       if (!is.null(Annotations_subset())) {
@@ -1525,8 +1536,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(CNV1(), CNV_FC())
+    })
+    # |>
+    #   shiny::bindCache(CNV1(), CNV_FC())
 
     CNV3 <- shiny::reactive({
       if (!is.null(CNV2())) {
@@ -1572,37 +1584,41 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(CNV2())
+    })
+    # |>
+    #   shiny::bindCache(CNV2())
 
     # Subsetting genes annotations data ---------------------------------------
 
     genes_annotations_1 <- shiny::reactive({
-      if (input$Genome == "GRCh37") {
-        return(
-          genes_annotation_37
-        )
-      }
-      if (input$Genome == "GRCh38") {
-        return(
-          genes_annotation_38
-        )
+      if (is.null(input$Genome)) {
+        return(NULL)
       } else {
-        (return(NULL))
+        if (input$Genome == "GRCh37") {
+          return(
+            genes_annotation_37
+          )
+        } else {
+          return(
+            genes_annotation_38
+          )
+        }
       }
-    }) |>
-      shiny::bindCache(input$Genome)
+    })
+    # |>
+    #   shiny::bindCache(input$Genome)
 
     genes_annotations <- shiny::reactive({
-      if (input$GenomeBrowser) {
+      if (!is.null(input$GenomeBrowser)) {
         genes_annotations <- genes_annotations_1() |>
           filter(Chr == input$chr)
         return(genes_annotations)
       } else {
         (return(NULL))
       }
-    }) |>
-      shiny::bindCache(input$chr)
+    })
+    # |>
+    #   shiny::bindCache(input$chr, input$GenomeBrowser, genes_annotations_1())
 
     rect_1_genes_annotation <- list(
       type = "line",
@@ -1628,26 +1644,28 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         return(NULL)
       }
     })
+    # |>
+    #   shiny::bindCache(genes_annotations(), input$chr)
 
     # Subsetting exons annotations --------------------------------------------
 
     exons_annotations_1 <- shiny::reactive({
-      if (input$GenomeBrowser) {
-        if (input$Genome == "GRCh37") {
-          exons <- exons_annotation_37
-          return(exons)
-        }
-        if (input$Genome == "GRCh38") {
-          exons <- exons_annotation_38
-          return(exons)
-        } else {
-          (return(NULL))
-        }
+      if (is.null(input$Genome)) {
+        return(NULL)
       } else {
-        (return(NULL))
+        if (input$Genome == "GRCh37") {
+          return(
+            exons_annotation_37
+          )
+        } else {
+          return(
+            exons_annotation_38
+          )
+        }
       }
-    }) |>
-      shiny::bindCache(input$Genome)
+    })
+    # |>
+    #   shiny::bindCache(input$Genome)
 
     exons_annotations <- shiny::reactive({
       if (dim(rects_1_range())[1] > 0) {
@@ -1664,13 +1682,14 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         (return(NULL))
       }
-    }) |>
-      shiny::bindCache(
-        input$chr,
-        rects_1_range(),
-        genes_annotations(),
-        exons_annotations_1()
-      )
+    })
+    # |>
+    #   shiny::bindCache(
+    #     input$chr,
+    #     rects_1_range(),
+    #     genes_annotations(),
+    #     exons_annotations_1()
+    #   )
 
     rect_1_exons_annotation <- list(
       type = "rect",
@@ -1703,11 +1722,14 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         return(NULL)
       }
     })
+    # |>
+    #   shiny::bindCache(exons_annotations())
 
     shapes <- shiny::reactive({
       c(rect_genes_annotation(), rect_exons_annotation())
-    }) |>
-      shiny::bindCache(rect_genes_annotation(), rect_exons_annotation())
+    })
+    # |>
+    #   shiny::bindCache(rect_genes_annotation(), rect_exons_annotation())
 
     # First button -------------------------------------------------------
 
@@ -1845,8 +1867,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(input$FastCall_Results_1, input$Genome)
+    })
+    # |>
+    #   shiny::bindCache(input$FastCall_Results_1, input$Genome)
 
     # pal 1---------------------------------------------------------------------
 
