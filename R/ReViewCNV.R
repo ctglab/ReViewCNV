@@ -1386,8 +1386,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           filter(Chromosome == input$chr) |>
           filter(Frequency > as.numeric(input$Freq)) |>
           filter(Database %in% !!Annotations_list()) |>
-          dplyr::collect() |>
           filter(stringr::str_detect(calls, input$Type)) |>
+          dplyr::collect() |>
           dplyr::inner_join(
             rects_1(),
             dplyr::join_by(overlaps(Start, End, Start, End))
@@ -1421,8 +1421,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           filter(Chromosome == input$chr) |>
           filter(Frequency > as.numeric(input$Freq)) |>
           filter(Database %in% !!Annotations_list()) |>
-          dplyr::collect() |>
           filter(stringr::str_detect(calls, input$Type)) |>
+          dplyr::collect() |>
           dplyr::inner_join(
             rects_1(),
             dplyr::join_by(overlaps(Start, End, Start, End))
@@ -3021,21 +3021,21 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 yaxis = list(
                   range = c(
                     min = min(
-                      floor(min(
+                      min(
                         min(subset_data_1_range()$Log2R),
                         min(subset_data_2_range()$Log2R),
                         min(subset_data_3_range()$Log2R)
-                      )) -
+                      ) -
                         0.1
                     ),
                     max = max(
                       max(subset_data_1_range()$Log2R),
                       max(subset_data_2_range()$Log2R),
                       max(subset_data_3_range()$Log2R)
-                    )
+                    ) +
+                      0.1
                   )
-                ) +
-                  0.1
+                )
               )
           }
         } else {
