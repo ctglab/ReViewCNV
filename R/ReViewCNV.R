@@ -66,6 +66,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
   ))
 
   # ui ----------------------------------------------------------------------
+  # ui ----------------------------------------------------------------------
 
   ui <- bslib::page_sidebar(
     theme = bslib::bs_theme(
@@ -205,7 +206,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Coordinates -----------------------------------
 
     Coordinates <- shiny::reactive({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+      if (input$Genome == "") {
         return(NULL)
       } else {
         if (input$Genome == "GRCh37") {
@@ -221,22 +222,18 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           return(NULL)
         }
       }
-    }) |>
-      shiny::bindCache(input$chr)
+    })
 
     Coordinates_all <- shiny::reactive({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+      if (input$Genome == "") {
         return(NULL)
       } else {
         if (input$Genome == "GRCh37") {
-          Coordinates <- hg37_Chromosomes_Coordinates
-          return(Coordinates)
-        }
-        if (input$Genome == "GRCh38") {
-          Coordinates <- hg38_Chromosomes_Coordinates
-          return(Coordinates)
+          Coordinates_all <- hg37_Chromosomes_Coordinates
+          return(Coordinates_all)
         } else {
-          return(NULL)
+          Coordinates_all <- hg38_Chromosomes_Coordinates
+          return(Coordinates_all)
         }
       }
     })
@@ -244,7 +241,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Coordinates for all chromosome introductory map -------------------------
 
     Chromosomes_Coordinates <- shiny::reactive({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+      if (input$Genome == "") {
         return(NULL)
       } else {
         Coordinates_all() |>
@@ -339,7 +336,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     })
 
     fast_call_1 <- shiny::reactive({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+      if (is.null(input$FastCall_Results_1)) {
         return(NULL)
       } else {
         fast_call_1 <- utils::read.table(
@@ -404,7 +401,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     })
 
     CNV_all_Chromosomes <- shiny::reactive({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+      if (is.null(input$FastCall_Results_1) || input$Genome == "") {
         return(NULL)
       } else {
         fast_call_1() |>
@@ -695,185 +692,196 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # Plot all chromosomes ----------------------------------------------------
 
-    output$Plot_all_chr <- plotly::renderPlotly({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
-        return(NULL)
-      } else {
-        rect_1_Chromosome <- list(
-          type = "polygon",
-          fillcolor = "snow",
-          line = list(color = "black")
+    CNV <- shiny::reactive({
+      req(input$FastCall_Results_1, input$Genome)
+
+      CNV_all_Chromosomes() |>
+        dplyr::left_join(
+          Chromosomes_Coordinates(),
+          dplyr::join_by(Chromosome)
         )
+    })
 
-        rect_Chromosome <- list()
-        for (i in c(1:dim(Chromosomes_Coordinates())[1])) {
-          rect_1_Chromosome[["x0"]] <- Chromosomes_Coordinates()[i, ]$Start
-          rect_1_Chromosome[["x1"]] <- Chromosomes_Coordinates()[i, ]$End
-          rect_1_Chromosome[["y0"]] <- Chromosomes_Coordinates()[i, ]$level -
-            0.8
-          rect_1_Chromosome[["y1"]] <- Chromosomes_Coordinates()[i, ]$level +
-            0.8
-          rect_Chromosome <- c(rect_Chromosome, list(rect_1_Chromosome))
-        }
+    rect <- shiny::reactive({
+      req(input$FastCall_Results_1, input$Genome)
 
-        CNV <- CNV_all_Chromosomes() |>
-          dplyr::left_join(
-            Chromosomes_Coordinates(),
-            dplyr::join_by(Chromosome)
-          )
-
-        rect_CNV_2DEL <-
-          CNV |>
-          filter(Mutation == "2-DEL")
-
-        rect_CNV_DEL <-
-          CNV |>
-          filter(Mutation == "DEL")
-
-        rect_CNV_AMP <-
-          CNV |>
-          filter(Mutation == "AMP")
-
-        rect_CNV_2AMP <-
-          CNV |>
-          filter(Mutation == "2-AMP")
-
-        rect_2_CNV_2DEL <- list(
-          type = "polygon",
-          fillcolor = "#CDBE70",
-          line = list(color = "#CDBE70")
-        )
-
-        rect_2DEL <- list()
-        for (i in c(1:dim(rect_CNV_2DEL)[1])) {
-          rect_2_CNV_2DEL[["x0"]] <- rect_CNV_2DEL[i, ]$Start.x
-          rect_2_CNV_2DEL[["x1"]] <- rect_CNV_2DEL[i, ]$End.x
-          rect_2_CNV_2DEL[["y0"]] <- rect_CNV_2DEL[i, ]$level.x - 0.8
-          rect_2_CNV_2DEL[["y1"]] <- rect_CNV_2DEL[i, ]$level.x + 0.8
-          rect_2DEL <- c(rect_2DEL, list(rect_2_CNV_2DEL))
-        }
-
-        rect_2_CNV_DEL <- list(
-          type = "polygon",
-          fillcolor = "#CDBE70",
-          line = list(color = "#CDBE70")
-        )
-
-        rect_DEL <- list()
-        for (i in c(1:dim(rect_CNV_DEL)[1])) {
-          rect_2_CNV_DEL[["x0"]] <- rect_CNV_DEL[i, ]$Start.x
-          rect_2_CNV_DEL[["x1"]] <- rect_CNV_DEL[i, ]$End.x
-          rect_2_CNV_DEL[["y0"]] <- rect_CNV_DEL[i, ]$level.x - 0.8
-          rect_2_CNV_DEL[["y1"]] <- rect_CNV_DEL[i, ]$level.x + 0.8
-          rect_DEL <- c(rect_DEL, list(rect_2_CNV_DEL))
-        }
-
-        rect_2_CNV_AMP <- list(
-          type = "polygon",
-          fillcolor = "#27408B",
-          line = list(color = "#27408B")
-        )
-
-        rect_AMP <- list()
-        for (i in c(1:dim(rect_CNV_AMP)[1])) {
-          rect_2_CNV_AMP[["x0"]] <- rect_CNV_AMP[i, ]$Start.x
-          rect_2_CNV_AMP[["x1"]] <- rect_CNV_AMP[i, ]$End.x
-          rect_2_CNV_AMP[["y0"]] <- rect_CNV_AMP[i, ]$level.x - 0.8
-          rect_2_CNV_AMP[["y1"]] <- rect_CNV_AMP[i, ]$level.x + 0.8
-          rect_AMP <- c(rect_AMP, list(rect_2_CNV_AMP))
-        }
-
-        rect_2_CNV_2AMP <- list(
-          type = "polygon",
-          fillcolor = "#27408B",
-          line = list(color = "#27408B")
-        )
-
-        rect_2AMP <- list()
-        for (i in c(1:dim(rect_CNV_2AMP)[1])) {
-          rect_2_CNV_2AMP[["x0"]] <- rect_CNV_2AMP[i, ]$Start.x
-          rect_2_CNV_2AMP[["x1"]] <- rect_CNV_2AMP[i, ]$End.x
-          rect_2_CNV_2AMP[["y0"]] <- rect_CNV_2AMP[i, ]$level.x - 0.8
-          rect_2_CNV_2AMP[["y1"]] <- rect_CNV_2AMP[i, ]$level.x + 0.8
-          rect_2AMP <- c(rect_2AMP, list(rect_2_CNV_2AMP))
-        }
-
-        rect <- c(rect_Chromosome)
-
-        if (dim(rect_CNV_2AMP)[1] > 0) {
-          rect <- append(rect, rect_2AMP)
-        }
-
-        if (dim(rect_CNV_AMP)[1] > 0) {
-          rect <- append(rect, rect_AMP)
-        }
-
-        if (dim(rect_CNV_DEL)[1] > 0) {
-          rect <- append(rect, rect_DEL)
-        }
-
-        if (dim(rect_CNV_2DEL)[1] > 0) {
-          rect <- append(rect, rect_2DEL)
-        }
-
-        fig_all <- plotly::plot_ly() |>
-          layout(
-            shapes = rect,
-            xaxis = list(title = "Chromosome coordinate"),
-            yaxis = list(
-              title = "Chromosome",
-              range = c(-1, 46.8),
-              zeroline = FALSE,
-              showline = FALSE,
-              showgrid = FALSE,
-              tickmode = "array",
-              tickvals = c(Chromosomes_Coordinates()$level),
-              ticktext = c(Chromosomes_Coordinates()$Chromoseome_n)
-            )
-          )
-
-        fig_all2 <- fig_all |>
-          plotly::add_trace(
-            data = CNV,
-            type = "scatter",
-            mode = "markers",
-            x = ~End.x,
-            y = ~ level.x + 0.8,
-            color = "red",
-            marker = list(size = 2),
-            showlegend = FALSE,
-            text = ~ paste(
-              " Chromosome: ",
-              Chromosome,
-              "<br>",
-              "Start: ",
-              Start.x,
-              "<br>",
-              "End: ",
-              End.x,
-              "<br>",
-              "Mutation: ",
-              Mutation
-            ),
-            hoverinfo = "text",
-            hoverlabel = list(bgcolor = "yellow")
-          )
-
-        plt <- fig_all2 |>
-          plotly::partial_bundle() |>
-          plotly::toWebGL()
-
-        session_store$plt <- plt
-        session_store$plt
-      }
-    }) |>
-      shiny::bindCache(
-        input$Prob,
-        input$slider,
-        input$chr,
-        input$FastCall_Results_1,
-        rv$download_flag
+      rect_1_Chromosome <- list(
+        type = "polygon",
+        fillcolor = "snow",
+        line = list(color = "black")
       )
+
+      rect_Chromosome <- list()
+      for (i in c(1:dim(Chromosomes_Coordinates())[1])) {
+        rect_1_Chromosome[["x0"]] <- Chromosomes_Coordinates()[i, ]$Start
+        rect_1_Chromosome[["x1"]] <- Chromosomes_Coordinates()[i, ]$End
+        rect_1_Chromosome[["y0"]] <- Chromosomes_Coordinates()[i, ]$level -
+          0.8
+        rect_1_Chromosome[["y1"]] <- Chromosomes_Coordinates()[i, ]$level +
+          0.8
+        rect_Chromosome <- c(rect_Chromosome, list(rect_1_Chromosome))
+      }
+
+      rect_CNV_2DEL <-
+        CNV() |>
+        filter(Mutation == "2-DEL")
+
+      rect_CNV_DEL <-
+        CNV() |>
+        filter(Mutation == "DEL")
+
+      rect_CNV_AMP <-
+        CNV() |>
+        filter(Mutation == "AMP")
+
+      rect_CNV_2AMP <-
+        CNV() |>
+        filter(Mutation == "2-AMP")
+
+      rect_2_CNV_2DEL <- list(
+        type = "polygon",
+        fillcolor = "#CDBE70",
+        line = list(color = "#CDBE70")
+      )
+
+      rect_2DEL <- list()
+      for (i in c(1:dim(rect_CNV_2DEL)[1])) {
+        rect_2_CNV_2DEL[["x0"]] <- rect_CNV_2DEL[i, ]$Start.x
+        rect_2_CNV_2DEL[["x1"]] <- rect_CNV_2DEL[i, ]$End.x
+        rect_2_CNV_2DEL[["y0"]] <- rect_CNV_2DEL[i, ]$level.x - 0.8
+        rect_2_CNV_2DEL[["y1"]] <- rect_CNV_2DEL[i, ]$level.x + 0.8
+        rect_2DEL <- c(rect_2DEL, list(rect_2_CNV_2DEL))
+      }
+
+      rect_2_CNV_DEL <- list(
+        type = "polygon",
+        fillcolor = "#CDBE70",
+        line = list(color = "#CDBE70")
+      )
+
+      rect_DEL <- list()
+      for (i in c(1:dim(rect_CNV_DEL)[1])) {
+        rect_2_CNV_DEL[["x0"]] <- rect_CNV_DEL[i, ]$Start.x
+        rect_2_CNV_DEL[["x1"]] <- rect_CNV_DEL[i, ]$End.x
+        rect_2_CNV_DEL[["y0"]] <- rect_CNV_DEL[i, ]$level.x - 0.8
+        rect_2_CNV_DEL[["y1"]] <- rect_CNV_DEL[i, ]$level.x + 0.8
+        rect_DEL <- c(rect_DEL, list(rect_2_CNV_DEL))
+      }
+
+      rect_2_CNV_AMP <- list(
+        type = "polygon",
+        fillcolor = "#27408B",
+        line = list(color = "#27408B")
+      )
+
+      rect_AMP <- list()
+      for (i in c(1:dim(rect_CNV_AMP)[1])) {
+        rect_2_CNV_AMP[["x0"]] <- rect_CNV_AMP[i, ]$Start.x
+        rect_2_CNV_AMP[["x1"]] <- rect_CNV_AMP[i, ]$End.x
+        rect_2_CNV_AMP[["y0"]] <- rect_CNV_AMP[i, ]$level.x - 0.8
+        rect_2_CNV_AMP[["y1"]] <- rect_CNV_AMP[i, ]$level.x + 0.8
+        rect_AMP <- c(rect_AMP, list(rect_2_CNV_AMP))
+      }
+
+      rect_2_CNV_2AMP <- list(
+        type = "polygon",
+        fillcolor = "#27408B",
+        line = list(color = "#27408B")
+      )
+
+      rect_2AMP <- list()
+      for (i in c(1:dim(rect_CNV_2AMP)[1])) {
+        rect_2_CNV_2AMP[["x0"]] <- rect_CNV_2AMP[i, ]$Start.x
+        rect_2_CNV_2AMP[["x1"]] <- rect_CNV_2AMP[i, ]$End.x
+        rect_2_CNV_2AMP[["y0"]] <- rect_CNV_2AMP[i, ]$level.x - 0.8
+        rect_2_CNV_2AMP[["y1"]] <- rect_CNV_2AMP[i, ]$level.x + 0.8
+        rect_2AMP <- c(rect_2AMP, list(rect_2_CNV_2AMP))
+      }
+
+      rect <- c(rect_Chromosome)
+
+      if (dim(rect_CNV_2AMP)[1] > 0) {
+        rect <- append(rect, rect_2AMP)
+      }
+
+      if (dim(rect_CNV_AMP)[1] > 0) {
+        rect <- append(rect, rect_AMP)
+      }
+
+      if (dim(rect_CNV_DEL)[1] > 0) {
+        rect <- append(rect, rect_DEL)
+      }
+
+      if (dim(rect_CNV_2DEL)[1] > 0) {
+        rect <- append(rect, rect_2DEL)
+      }
+    })
+    #  Select plot ------------------------------------------------------------
+
+    output$Plot <- shiny::renderUI({
+      req(input$FastCall_Results_1, input$Genome)
+
+      if (input$chr == "All") {
+        plotly::plotlyOutput("Plot_all_chr", width = "100%", height = "100%")
+      } else {
+        plotly::plotlyOutput("Plot_single_chr", width = "100%", height = "100%")
+      }
+    })
+
+    # Plot all chromosomes ----------------------------------------------------
+
+    output$Plot_all_chr <- plotly::renderPlotly({
+      req(input$FastCall_Results_1, input$Genome)
+
+      fig_all <- plotly::plot_ly() |>
+        layout(
+          shapes = rect(),
+          xaxis = list(title = "Chromosome coordinate"),
+          yaxis = list(
+            title = "Chromosome",
+            range = c(-1, 46.8),
+            zeroline = FALSE,
+            showline = FALSE,
+            showgrid = FALSE,
+            tickmode = "array",
+            tickvals = c(Chromosomes_Coordinates()$level),
+            ticktext = c(Chromosomes_Coordinates()$Chromoseome_n)
+          )
+        ) |>
+        plotly::add_trace(
+          data = CNV(),
+          type = "scatter",
+          mode = "markers",
+          x = ~End.x,
+          y = ~ level.x + 0.8,
+          color = "red",
+          marker = list(size = 2),
+          showlegend = FALSE,
+          text = ~ paste(
+            " Chromosome: ",
+            Chromosome,
+            "<br>",
+            "Start: ",
+            Start.x,
+            "<br>",
+            "End: ",
+            End.x,
+            "<br>",
+            "Mutation: ",
+            Mutation
+          ),
+          hoverinfo = "text",
+          hoverlabel = list(bgcolor = "yellow")
+        )
+
+      plt <- fig_all |>
+        plotly::partial_bundle() |>
+        plotly::toWebGL()
+
+      plt
+
+      session_store$plt <- fig_all
+    })
 
     # Observe click event -----------------------------------------------------
 
@@ -1092,8 +1100,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_1)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_1())
+    })
 
     subset_data_1_range <- shiny::reactive({
       if (is.null(subset_data_1())) {
@@ -1175,8 +1182,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_2)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_2())
+    })
 
     subset_data_2_range <- shiny::reactive({
       if (is.null(file_data_2())) {
@@ -1258,8 +1264,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
         return(subset_data_3)
       }
-    }) |>
-      shiny::bindCache(input$chr, file_data_3())
+    })
 
     subset_data_3_range <- shiny::reactive({
       if (is.null(file_data_3())) {
@@ -1276,43 +1281,38 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     rects_1 <- shiny::reactive({
       fast_call_1() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_1())
+    })
 
     rects_1_range <- shiny::reactive({
-      if (is.null(input$slider) | input$Genome == "") {
+      if (is.null(input$slider) || input$Genome == "") {
         return(NULL)
       } else {
         rects_1_range <- rects_1() |>
           filter(Start >= input$slider[1] & End <= input$slider[2])
         return(rects_1_range)
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_1())
+    })
 
     # Second individual
 
     rects_2 <- shiny::reactive({
       fast_call_2() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_2())
+    })
 
     rects_2_range <- shiny::reactive({
-      if (is.null(input$slider[1]) | input$Genome == "") {
+      if (is.null(input$slider[1]) || input$Genome == "") {
         return(NULL)
       } else {
         rects_2() |>
           filter(Start >= input$slider[1] & End <= input$slider[2])
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_2())
+    })
 
     # Third individual
 
     rects_3 <- shiny::reactive({
       fast_call_3() |> filter(Chromosome == input$chr)
-    }) |>
-      shiny::bindCache(input$chr, fast_call_3())
+    })
 
     rects_3_range <- shiny::reactive({
       if (is.null(input$slider[1]) | input$Genome == "") {
@@ -1321,8 +1321,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         rects_3() |>
           filter(Start >= input$slider[1] & End <= input$slider[2])
       }
-    }) |>
-      shiny::bindCache(input$slider, rects_3())
+    })
 
     # Subsetting variants annotations data ---------------------------------------------
 
@@ -1454,15 +1453,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(
-        input$Genome,
-        input$chr,
-        input$Type,
-        input$Freq,
-        Annotations_list(),
-        fast_call_1()
-      )
+    })
 
     CNV1 <- shiny::reactive({
       if (!is.null(Annotations_subset())) {
@@ -1525,8 +1516,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(CNV1(), CNV_FC())
+    })
 
     CNV3 <- shiny::reactive({
       if (!is.null(CNV2())) {
@@ -1572,8 +1562,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(CNV2())
+    })
 
     # Subsetting genes annotations data ---------------------------------------
 
@@ -1591,8 +1580,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           )
         }
       }
-    }) |>
-      shiny::bindCache(input$Genome)
+    })
 
     genes_annotations <- shiny::reactive({
       if (!is.null(input$GenomeBrowser)) {
@@ -1602,8 +1590,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         (return(NULL))
       }
-    }) |>
-      shiny::bindCache(input$chr, input$GenomeBrowser, genes_annotations_1())
+    })
 
     rect_1_genes_annotation <- list(
       type = "line",
@@ -1628,8 +1615,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(genes_annotations(), input$chr)
+    })
 
     # Subsetting exons annotations --------------------------------------------
 
@@ -1647,8 +1633,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           )
         }
       }
-    }) |>
-      shiny::bindCache(input$Genome)
+    })
 
     exons_annotations <- shiny::reactive({
       if (dim(rects_1_range())[1] > 0) {
@@ -1665,13 +1650,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         (return(NULL))
       }
-    }) |>
-      shiny::bindCache(
-        input$chr,
-        rects_1_range(),
-        genes_annotations(),
-        exons_annotations_1()
-      )
+    })
 
     rect_1_exons_annotation <- list(
       type = "rect",
@@ -1703,13 +1682,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(exons_annotations())
+    })
 
     shapes <- shiny::reactive({
       c(rect_genes_annotation(), rect_exons_annotation())
-    }) |>
-      shiny::bindCache(rect_genes_annotation(), rect_exons_annotation())
+    })
 
     # First button -------------------------------------------------------
 
@@ -1783,9 +1760,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Setting the range slider for coordinates------------------------------------------------
 
     output$limits <- shiny::renderUI({
-      if (is.null(input$FastCall_Results_1) | input$Genome == "") {
-        return(NULL)
-      } else if (h$val == -1) {
+      req(input$FastCall_Results_1)
+      req(input$Genome)
+
+      if (h$val == -1) {
         if (input$chr != "All") {
           shiny::sliderInput(
             "slider",
@@ -1840,15 +1818,22 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Download ----------------------------------------------------------------
 
     output$Download <- shiny::renderUI({
-      if (!is.null(input$FastCall_Results_1)) {
-        if (input$Genome %in% c("GRCh37", "GRCh38")) {
-          shiny::downloadButton("downloadplot", "Download HTML")
+      if (!is.null(input$FastCall_Results_1) && input$Genome != "") {
+        if (input$chr == "All") {
+          shiny::downloadButton(
+            "downloadplot1",
+            "Download HTML single Chromosome"
+          )
+        } else {
+          shiny::downloadButton(
+            "downloadplot2",
+            "Download HTML all Chromosomes"
+          )
         }
       } else {
         return(NULL)
       }
-    }) |>
-      shiny::bindCache(input$FastCall_Results_1, input$Genome)
+    })
 
     # pal 1---------------------------------------------------------------------
 
@@ -4843,11 +4828,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           is.null(input$ShareAxes) |
           x$val == 1
       ) {
-        plt <- (pl)
+        plt2 <- (pl)
       } else if (is.null(input$FastCall_Results_3) | z$val == 1) {
         if (input$GenomeBrowser) {
           if (input$ShareAxes) {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               nrows = 2,
@@ -4856,7 +4841,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           } else {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               nrows = 2,
@@ -4866,7 +4851,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           }
         } else {
           if (input$ShareAxes) {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               nrows = 2,
@@ -4875,7 +4860,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           } else {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               nrows = 2,
@@ -4887,7 +4872,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       } else {
         if (input$GenomeBrowser) {
           if (input$ShareAxes) {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               pl_3,
@@ -4897,7 +4882,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           } else {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               pl_3,
@@ -4908,7 +4893,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           }
         } else {
           if (input$ShareAxes) {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               pl_3,
@@ -4918,7 +4903,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           } else {
-            plt <- plotly::subplot(
+            plt2 <- plotly::subplot(
               pl,
               pl_2,
               pl_3,
@@ -4929,12 +4914,12 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           }
         }
       }
-      plt <- plt |>
+      plt2 <- plt2 |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
 
-      session_store$plt <- plt
-      session_store$plt
+      session_store$plt2 <- plt2
+      session_store$plt2
     }) |>
       shiny::bindCache(
         input$chr,
@@ -4971,7 +4956,35 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         h$val
       )
 
-    output$downloadplot <- shiny::downloadHandler(
+    output$downloadplot1 <- shiny::downloadHandler(
+      filename = function() {
+        paste(
+          Sys.Date(),
+          " all_chomosomes.html",
+          sep = ""
+        )
+      },
+      content = function(file) {
+        tryCatch(
+          {
+            # export plotly html widget as a temp file to download.
+            htmlwidgets::saveWidget(
+              plotly::as_widget(shiny::isolate(session_store$plt)),
+              file,
+              selfcontained = TRUE
+            )
+            rv$download_flag <- rv$download_flag + 1
+          },
+          error = function(e) {
+            message("Download error: ", e$message)
+            writeLines(e$message, "/tmp/render_error.log")
+          }
+        )
+      },
+      contentType = "text/html"
+    )
+
+    output$downloadplot2 <- shiny::downloadHandler(
       filename = function() {
         paste(
           Sys.Date(),
@@ -4991,7 +5004,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           {
             # export plotly html widget as a temp file to download.
             htmlwidgets::saveWidget(
-              plotly::as_widget(shiny::isolate(session_store$plt)),
+              plotly::as_widget(shiny::isolate(session_store$plt2)),
               file,
               selfcontained = TRUE
             )
