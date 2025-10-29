@@ -8,20 +8,22 @@ RUN apk add --no-cache --update-cache bash
 #Install linux libaries
 RUN apk update
 RUN apk add --no-cache --update-cache R R-dev openssl-dev pandoc \
-gcc  tzdata g++ libffi-dev curl 
+gcc  tzdata g++ libffi-dev curl
 
 #Install R packages
 RUN installr -d -t gfortran plotly
 RUN installr -d \
         -t "zlib-dev" \
-        shiny      
-RUN installr -d dplyr 
-RUN installr -d readr 
+        shiny
+RUN installr -d dplyr
+RUN installr -d readr
 RUN installr -d htmlwidgets
 RUN installr -d bslib
+
+RUN mkdir -p ~/.R && echo "LDFLAGS+=-fPIC" >> ~/.R/Makevars
 RUN installr -d \
     -t "make openssl-dev cmake linux-headers apache-arrow-dev" \
-    -a "openssl libarrow_dataset libarrow" arrow@14.0.2.1
+    -a "openssl libarrow_dataset libarrow" arrow@19.0.1.1
 
 #Create work directory and copy required files and folders into it
 RUN mkdir -p /app
