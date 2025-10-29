@@ -714,7 +714,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Plot all chromosomes ----------------------------------------------------
 
     CNV <- shiny::reactive({
-      req(input$FastCall_Results_1, input$Genome)
+      shiny::req(input$FastCall_Results_1, input$Genome)
 
       CNV_all_Chromosomes() |>
         dplyr::left_join(
@@ -724,7 +724,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     })
 
     rect <- shiny::reactive({
-      req(input$FastCall_Results_1, input$Genome)
+      shiny::req(input$FastCall_Results_1, input$Genome)
 
       rect_1_Chromosome <- list(
         type = "polygon",
@@ -840,7 +840,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     #  Select plot ------------------------------------------------------------
 
     output$Plot <- shiny::renderUI({
-      req(input$FastCall_Results_1, input$Genome)
+      shiny::req(input$FastCall_Results_1, input$Genome)
 
       if (input$chr == "All") {
         plotly::plotlyOutput("Plot_all_chr", width = "100%", height = "100%")
@@ -852,7 +852,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Plot all chromosomes ----------------------------------------------------
 
     output$Plot_all_chr <- plotly::renderPlotly({
-      req(input$FastCall_Results_1, input$Genome)
+      shiny::req(input$FastCall_Results_1, input$Genome)
 
       fig_all <- plotly::plot_ly() |>
         layout(
@@ -1800,8 +1800,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Setting the range slider for coordinates------------------------------------------------
 
     output$limits <- shiny::renderUI({
-      req(input$FastCall_Results_1)
-      req(input$Genome)
+      shiny::req(input$FastCall_Results_1)
+      shiny::req(input$Genome)
 
       if (h$val == -1) {
         if (input$chr != "All") {

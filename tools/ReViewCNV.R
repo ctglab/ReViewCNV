@@ -68,6 +68,10 @@ ui <- bslib::page_sidebar(
       "Bed",
       "If available load the bed file of annotated targeted regions"
     ),
+    shiny::fileInput(
+      "True_set",
+      "If available load the True set"
+    ),
     shiny::checkboxInput(
       "GenomeBrowser",
       "Show genes annotations",
@@ -77,7 +81,7 @@ ui <- bslib::page_sidebar(
     shiny::checkboxInput(
       "ShareAxes",
       "Share x axis",
-      value = FALSE,
+      value = TRUE,
       width = NULL
     ),
     shiny::checkboxInput(
@@ -387,6 +391,24 @@ server <- function(input, output, session) {
     }
   })
 
+
+  # True set ----------------------------------------------------------------
+
+  True_set <- shiny::reactive({
+    if (is.null(input$True_set)) {
+      return(NULL)
+    } else {
+      True_set <- utils::read.table(input$True_set$datapath,
+        header = F,
+        fill = T,
+        quote = "\""
+      )
+      names(True_set) = c("Chromosome", "Start", "End")
+      return(True_set)}
+  })
+
+
+
   # File and FastCall data second individual ----------------------------------
 
   file_data_2_pre <- shiny::reactive({
@@ -457,11 +479,11 @@ server <- function(input, output, session) {
   })
 
   fast_call_2 <- shiny::reactive({
-    if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+    if (is.null(input$FastCall_Results_2) | input$Genome == "") {
       return(NULL)
     } else {
       fast_call_2 <- utils::read.table(
-        input$FastCall_Results_1$datapath,
+        input$FastCall_Results_2$datapath,
         header = T,
         fill = T,
         quote = "\""
@@ -493,7 +515,7 @@ server <- function(input, output, session) {
             Mutation = case_when(
               Call == -2 ~ "2-DEL",
               Call == -1 ~ "DEL",
-              Call == 1 ~ "AMP",
+              Call %in% c(1, "+1") ~ "AMP",
               TRUE ~ "2-AMP"
             )
           )
@@ -591,11 +613,11 @@ server <- function(input, output, session) {
   })
 
   fast_call_3 <- shiny::reactive({
-    if (is.null(input$FastCall_Results_1) | input$Genome == "") {
+    if (is.null(input$FastCall_Results_3) | input$Genome == "") {
       return(NULL)
     } else {
       fast_call_3 <- utils::read.table(
-        input$FastCall_Results_1$datapath,
+        input$FastCall_Results_3$datapath,
         header = T,
         fill = T,
         quote = "\""
@@ -627,7 +649,7 @@ server <- function(input, output, session) {
             Mutation = case_when(
               Call == -2 ~ "2-DEL",
               Call == -1 ~ "DEL",
-              Call == 1 ~ "AMP",
+              Call %in% c(1, "+1") ~ "AMP",
               TRUE ~ "2-AMP"
             )
           )
@@ -1298,6 +1320,25 @@ server <- function(input, output, session) {
     }
   })
 
+
+  # Subsetting True set ------------------------------------------------
+
+
+  rects_True_set <- shiny::reactive({
+    True_set() |> filter(Chromosome == input$chr)
+  })
+
+  rects_True_set_range <- shiny::reactive({
+    if (is.null(input$slider) || input$Genome == "") {
+      return(NULL)
+    } else {
+      rects_True_set_range <- rects_True_set() |>
+        filter(Start >= input$slider[1] & End <= input$slider[2])
+      return(rects_True_set_range)
+    }
+  })
+
+
   # Subsetting variants annotations data ---------------------------------------------
 
   Annot_SV_D <- shiny::reactive({
@@ -1860,8 +1901,8 @@ server <- function(input, output, session) {
   output$Plot_single_chr <- plotly::renderPlotly({
     if (
       !(is.null(input$FastCall_Results_1) |
-        is.null(input$slider_Annotations[1]) |
-        is.null(input$slider_Annotations[2]))
+          is.null(input$slider_Annotations[1]) |
+          is.null(input$slider_Annotations[2]))
     ) {
       if (!(is.null(CNV3()))) {
         if (dim(CNV3())[1] > 0) {
@@ -2006,93 +2047,149 @@ server <- function(input, output, session) {
     }
 
     # Plot genes annotations --------------------------------------------------
-    if (input$GenomeBrowser) {
-      fig2 <- plotly::plot_ly(
-        data = genes_annotations(),
-        type = "scatter",
-        mode = "markers",
-        x = ~middle_gene,
-        y = ~level,
-        color = I("#008000"),
-        text = ~ paste(
-          " RefSeq ID:",
-          RefSeq_ID,
-          "<br>",
-          "Gene Symbol:",
-          Gene_Symbol,
-          "<br>",
-          "Start:",
-          Start,
-          "<br>",
-          "End:",
-          End
+
+
+    fig2 <- plotly::plot_ly(
+      data = genes_annotations(),
+      type = "scatter",
+      mode = "markers",
+      x = ~middle_gene,
+      y = ~level,
+      color = I("#008000"),
+      text = ~ paste(
+        " RefSeq ID:",
+        RefSeq_ID,
+        "<br>",
+        "Gene Symbol:",
+        Gene_Symbol,
+        "<br>",
+        "Start:",
+        Start,
+        "<br>",
+        "End:",
+        End
+      ),
+      hoverinfo = "text",
+      marker = list(size = 2),
+      showlegend = FALSE,
+      hoverlabel = list(bgcolor = "#008000", align = "left")
+    ) |>
+      layout(
+        shapes = shapes(),
+        xaxis = list(
+          title = "Chromosome coordinates",
+          range = c(
+            min = input$slider[1],
+            max = input$slider[2]
+          )
         ),
-        hoverinfo = "text",
-        marker = list(size = 2),
-        showlegend = FALSE,
-        hoverlabel = list(bgcolor = "#008000", align = "left")
-      ) |>
-        layout(
-          shapes = shapes(),
-          xaxis = list(
-            title = "Chromosome coordinates",
-            range = c(
-              min = input$slider[1],
-              max = input$slider[2]
-            )
+        yaxis = list(
+          showline = F,
+          tickvals = c(1, 2),
+          title = "Genes",
+          ticktext = c("+", "\u2212"),
+          tickfont = list(size = 20, family = "Arial black")
+        )
+      )
+
+    if (!is.null(exons_annotations())) {
+      fig2 <- fig2 |>
+        plotly::add_trace(
+          data = exons_annotations(),
+          type = "scatter",
+          mode = "markers",
+          x = ~Start,
+          y = ~ level + 0.3,
+          color = I("#008000"),
+          opacity = 0.4,
+          text = ~ paste(
+            " RefSeq ID:",
+            RefSeq_ID,
+            "<br>",
+            "Gene Symbol:",
+            Gene_Symbol,
+            "<br>",
+            "Exon:",
+            Exon_number,
+            "<br>",
+            "Exon Start:",
+            Start,
+            "<br>",
+            "Exon End:",
+            End,
+            "<br>",
+            "Direction:",
+            Direction
           ),
-          yaxis = list(
-            showline = F,
-            tickvals = c(1, 2),
-            title = "Genes",
-            ticktext = c("+", "\u2212"),
-            tickfont = list(size = 20, family = "Arial black")
+          hoverinfo = "text",
+          marker = list(size = 2),
+          showlegend = FALSE,
+          hoverlabel = list(
+            bgcolor = "#008000",
+            opacity = 0.4,
+            align = "left"
           )
         )
+    }
+    fig2 |>
+      plotly::partial_bundle() |>
+      plotly::toWebGL()
 
-      if (!is.null(exons_annotations())) {
-        fig2 <- fig2 |>
-          plotly::add_trace(
-            data = exons_annotations(),
-            type = "scatter",
-            mode = "markers",
-            x = ~Start,
-            y = ~ level + 0.3,
-            color = I("#008000"),
-            opacity = 0.4,
-            text = ~ paste(
-              " RefSeq ID:",
-              RefSeq_ID,
-              "<br>",
-              "Gene Symbol:",
-              Gene_Symbol,
-              "<br>",
-              "Exon:",
-              Exon_number,
-              "<br>",
-              "Exon Start:",
-              Start,
-              "<br>",
-              "Exon End:",
-              End,
-              "<br>",
-              "Direction:",
-              Direction
+
+
+    # Plot True set -----------------------------------------------------------
+
+
+    if (!is.null(input$True_set)) {
+
+
+      rect_True <- list(
+        type = "rect",
+        fillcolor = "black",
+        line = list(color = "black"),
+        opacity = 1
+      )
+
+      rect_T <- list()
+
+
+      for (i in c(1:dim(rects_True_set_range())[1])) {
+        rect_True[["x0"]] <- rects_True_set_range()[i, ]$Start
+        rect_True[["x1"]] <- rects_True_set_range()[i, ]$End
+        rect_True[["y0"]] <- -1
+        rect_True[["y1"]] <-  1
+        rect_T <- c(rect_T, list(rect_True))
+      }
+
+      rect_TT <- c()
+
+      if (dim(rects_True_set_range())[1] > 0) {
+        rect_TT <-rect_T
+
+
+
+        pl_True_set <-  plotly::plot_ly() |>
+          layout(
+            shapes = rect_TT,
+            xaxis = list(
+              title = "Chromosome coordinates",
+              range = c(
+                min = input$slider[1],
+                max = input$slider[2]
+              )
             ),
-            hoverinfo = "text",
-            marker = list(size = 2),
-            showlegend = FALSE,
-            hoverlabel = list(
-              bgcolor = "#008000",
-              opacity = 0.4,
-              align = "left"
+            yaxis = list(
+              title = "True Set",
+              range = list(-1,1
+              ),
+              tickformat = ",d"
             )
           )
+
       }
-      fig2 |>
-        plotly::partial_bundle() |>
-        plotly::toWebGL()
+      else{pl_True_set <-NULL}
     }
+
 
     # Plot for the first individual -----------------------------------------------
 
@@ -2957,7 +3054,9 @@ server <- function(input, output, session) {
                 )
               )
             )
-        } else if (is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)) {
+        } else if (
+          is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)
+        ) {
           pl_1 <- pl_1 |>
             layout(
               yaxis = list(
@@ -3032,7 +3131,28 @@ server <- function(input, output, session) {
         }
       }
 
-      if (input$GenomeBrowser) {
+      if (!is.null(input$GenomeBrowser) & !is.null(input$True_set)) {
+        if(!is.null(pl_True_set)){
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            pl_True_set,
+            fig,
+            nrows = 4,
+            heights = c(1/8, 3/8, 1/8, 3/8),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
+        else{pl <- plotly::subplot(
+          fig2,
+          pl_1,
+          fig,
+          nrows = 3,
+          heights = c(1 / 6, 2 / 6, 3 / 6),
+          shareX = TRUE,
+          titleY = TRUE
+        )}
+      } else if(input$GenomeBrowser) {
         pl <- plotly::subplot(
           fig2,
           pl_1,
@@ -3041,8 +3161,28 @@ server <- function(input, output, session) {
           heights = c(1 / 6, 2 / 6, 3 / 6),
           shareX = TRUE,
           titleY = TRUE
-        )
-      } else {
+        )}
+      else if(input$True_set) {
+        if(!is.null(pl_True_set)){
+          pl <- plotly::subplot(
+            pl_1,
+            pl_True_set,
+            fig,
+            nrows = 3,
+            heights = c(1 / 6, 1 / 6, 4 / 6),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
+        else{  pl <- plotly::subplot(
+          pl_1,
+          fig,
+          nrows = 2,
+          heights = c(1 / 2, 1 / 2),
+          shareX = TRUE,
+          titleY = TRUE
+        )}
+      }
+      else{
         pl <- plotly::subplot(
           pl_1,
           fig,
@@ -4904,7 +5044,7 @@ server <- function(input, output, session) {
       input$GenomeBrowser,
       input$HSLM_1,
       input$FastCall_Results_1,
-      input$True_Set,
+      input$True_set,
       input$HSLM_2,
       input$FastCall_Results_2,
       input$HSLM_3,
