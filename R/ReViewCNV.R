@@ -721,7 +721,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
     })
 
-    # Plot all chromosomes ----------------------------------------------------
+    # CNV for all Chromosomes ----------------------------------------------------
 
     CNV <- shiny::reactive({
       shiny::req(input$FastCall_Results_1, input$Genome)
@@ -847,17 +847,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         rect <- append(rect, rect_2DEL)
       }
     })
-    #  Select plot ------------------------------------------------------------
 
-    output$Plot <- shiny::renderUI({
-      shiny::req(input$FastCall_Results_1, input$Genome)
-
-      if (input$chr == "All") {
-        plotly::plotlyOutput("Plot_all_chr", width = "100%", height = "100%")
-      } else {
-        plotly::plotlyOutput("Plot_single_chr", width = "100%", height = "100%")
-      }
-    })
 
     # Plot all chromosomes ----------------------------------------------------
 
@@ -939,7 +929,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         shiny::updateSliderInput(
           session,
           "slider",
-          value = c(Start() - 30000, End() + 30000)
+          value = c(Start() - 100, End() + 100)
         )
       }
     })
@@ -1933,6 +1923,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     # Plot variants --------------------------------------------------------
 
     output$Plot_single_chr <- plotly::renderPlotly({
+      shiny::req(input$FastCall_Results_1, input$Genome)
+
       if (
         !(is.null(input$FastCall_Results_1) |
           is.null(input$slider_Annotations[1]) |
@@ -2212,7 +2204,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
         for (i in c(1:dim(rects_True_DEL)[1])) {
           rect_True_DEL[["x0"]] <- rects_True_DEL[i, ]$Start
-          rect_True_DEL[["x1"]] <-  rects_True_DEL[i, ]$End
+          rect_True_DEL[["x1"]] <- rects_True_DEL[i, ]$End
           rect_True_DEL[["y0"]] <- -1
           rect_True_DEL[["y1"]] <-  1
           rect_T_DEL <- c(rect_T_DEL, list(rect_True_DEL))
@@ -2232,11 +2224,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         rect_T_2DEL <- list()
 
         for (i in c(1:dim(rects_True_2DEL)[1])) {
-          rect_True_DEL[["x0"]] <- rects_True_2DEL[i, ]$Start
-          rect_True_DEL[["x1"]] <-  rects_True_2DEL[i, ]$End
-          rect_True_DEL[["y0"]] <- -1
-          rect_True_DEL[["y1"]] <-  1
-          rect_T_DEL <- c(rect_T_2DEL, list(rect_True_2DEL))
+          rect_True_2DEL[["x0"]] <- rects_True_2DEL[i, ]$Start
+          rect_True_2DEL[["x1"]] <-  rects_True_2DEL[i, ]$End
+          rect_True_2DEL[["y0"]] <- -1
+          rect_True_2DEL[["y1"]] <-  1
+          rect_T_2DEL <- c(rect_T_2DEL, list(rect_True_2DEL))
         }
 
 
@@ -3314,7 +3306,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             shareX = TRUE,
             titleY = TRUE
           )}
-        } else if(input$GenomeBrowser) {
+        }
+      else if(!is.null(input$GenomeBrowser) & is.null(input$True_set)) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3324,7 +3317,8 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             shareX = TRUE,
             titleY = TRUE
           )}
-        else if(input$True_set) {
+
+      else if(is.null(input$GenomeBrowser) & !is.null(input$True_set)) {
           if(!is.null(pl_True_set)){
             pl <- plotly::subplot(
             pl_1,
@@ -3344,7 +3338,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             titleY = TRUE
           )}
         }
-        else{
+      else{
           pl <- plotly::subplot(
             pl_1,
             fig,
@@ -3355,7 +3349,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           )
         }
 
-        pl_1 <- pl_1 |>
+        pl <- pl |>
           plotly::partial_bundle() |>
           plotly::toWebGL()
       }
