@@ -26,5 +26,6 @@ utils::globalVariables(c(
   "calls",
   "n_overlap",
   "level",
-  "overlaps"
+  "overlaps",
+  "Type"
 ))
