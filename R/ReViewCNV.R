@@ -427,7 +427,17 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       fill = T,
       quote = "\""
     )
-      names(True_set) = c("Chromosome", "Start", "End")
+
+
+      if(dim(True_set)[2] == 3) {names(True_set) = c("Chromosome", "Start", "End")
+      True_set <- True_set |>  dplyr::mutate(Type = "")}
+      if(dim(True_set)[2] == 4) {names(True_set) = c("Chromosome", "Start", "End","Type")}
+
+
+      True_set <- True_set |>
+        dplyr::mutate(Type = stringr::str_replace(Type, "DUP", "AMP"))
+
+
       return(True_set)}
     })
 
@@ -2167,30 +2177,158 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       if (!is.null(input$True_set)) {
 
 
-        rect_True <- list(
+        rects_True_2DEL <-
+          rects_True_set_range() |>
+          filter(Type == "2-DEL")
+
+        rects_True_DEL <-
+          rects_True_set_range() |>
+          filter(Type == "DEL")
+
+        rects_True_AMP <-
+          rects_True_set_range() |>
+          filter(Type == "AMP")
+
+        rects_True_2AMP <-
+          rects_True_set_range() |>
+          filter(Type == "2-AMP")
+
+        rects_True_NA <-
+          rects_True_set_range() |>
+          filter(Type == "")
+
+
+
+        #DEL
+
+        rect_True_DEL <- list(
+          type = "rect",
+          fillcolor =  "#EEDD82",
+          line = list(color =  "#EEDD82"),
+          opacity = 0.6
+        )
+
+        rect_T_DEL <- list()
+
+        for (i in c(1:dim(rects_True_DEL)[1])) {
+          rect_True_DEL[["x0"]] <- rects_True_DEL[i, ]$Start
+          rect_True_DEL[["x1"]] <-  rects_True_DEL[i, ]$End
+          rect_True_DEL[["y0"]] <- -1
+          rect_True_DEL[["y1"]] <-  1
+          rect_T_DEL <- c(rect_T_DEL, list(rect_True_DEL))
+        }
+
+
+        #2DEL
+
+
+        rect_True_2DEL <- list(
+          type = "rect",
+          fillcolor =  "#CDBE70",
+          line = list(color = "#CDBE70"),
+          opacity = 0.6
+        )
+
+        rect_T_2DEL <- list()
+
+        for (i in c(1:dim(rects_True_2DEL)[1])) {
+          rect_True_DEL[["x0"]] <- rects_True_2DEL[i, ]$Start
+          rect_True_DEL[["x1"]] <-  rects_True_2DEL[i, ]$End
+          rect_True_DEL[["y0"]] <- -1
+          rect_True_DEL[["y1"]] <-  1
+          rect_T_DEL <- c(rect_T_2DEL, list(rect_True_2DEL))
+        }
+
+
+
+        #AMP
+
+        rect_True_AMP <- list(
+          type = "rect",
+          fillcolor =  "#4876FF",
+          line = list(color = "#4876FF"),
+          opacity = 0.6
+        )
+
+        rect_T_AMP <- list()
+
+        for (i in c(1:dim(rects_True_AMP)[1])) {
+          rect_True_AMP[["x0"]] <- rects_True_AMP[i, ]$Start
+          rect_True_AMP[["x1"]] <-  rects_True_AMP[i, ]$End
+          rect_True_AMP[["y0"]] <- -1
+          rect_True_AMP[["y1"]] <-  1
+          rect_T_AMP <- c(rect_T_AMP, list(rect_True_AMP))
+        }
+
+
+
+        #2AMP
+
+
+        rect_True_2AMP <- list(
+          type = "rect",
+          fillcolor = "#27408B",
+          line = list(color = "#27408B"),
+          opacity = 0.6
+        )
+
+        rect_T_2AMP <- list()
+
+        for (i in c(1:dim(rects_True_2AMP)[1])) {
+          rect_True_2AMP[["x0"]] <- rects_True_2AMP[i, ]$Start
+          rect_True_2AMP[["x1"]] <-  rects_True_2AMP[i, ]$End
+          rect_True_2AMP[["y0"]] <- -1
+          rect_True_2AMP[["y1"]] <-  1
+          rect_T_2AMP <- c(rect_T_2AMP, list(rect_True_2AMP))
+        }
+
+        #NA
+
+
+        rect_True_NA <- list(
           type = "rect",
           fillcolor = "black",
           line = list(color = "black"),
           opacity = 1
         )
 
-        rect_T <- list()
+        rect_T_NA <- list()
 
+        for (i in c(1:dim(rects_True_NA)[1])) {
+          rect_True_NA[["x0"]] <- rects_True_NA[i, ]$Start
+          rect_True_NA[["x1"]] <-  rects_True_NA[i, ]$End
+          rect_True_NA[["y0"]] <- -1
+          rect_True_NA[["y1"]] <-  1
+          rect_T_NA <- c(rect_T_NA, list(rect_True_NA))
+    }
 
-        for (i in c(1:dim(rects_True_set_range())[1])) {
-          rect_True[["x0"]] <- rects_True_set_range()[i, ]$Start
-          rect_True[["x1"]] <- rects_True_set_range()[i, ]$End
-          rect_True[["y0"]] <- -1
-          rect_True[["y1"]] <-  1
-          rect_T <- c(rect_T, list(rect_True))
-        }
+        #All together
 
         rect_TT <- c()
 
-        if (dim(rects_True_set_range())[1] > 0) {
-          rect_TT <-rect_T
+
+        if (dim(rects_True_AMP)[1] > 0) {
+          rect_TT <- append(rect_TT, rect_T_AMP)
+        }
+
+        if (dim(rects_True_DEL)[1] > 0) {
+          rect_TT <- append(rect_TT, rect_T_DEL)
+        }
+
+        if (dim(rects_True_2AMP)[1] > 0) {
+          rect_TT <- append(rect_TT, rect_T_2AMP)
+        }
+
+        if (dim(rects_True_2DEL)[1] > 0) {
+          rect_TT <- append(rect_TT, rect_T_2DEL)
+        }
+
+        if (dim(rects_True_NA)[1] > 0) {
+          rect_TT <- append(rect_TT, rect_T_NA)
+        }
 
 
+  if(dim(rects_True_set_range())[1] >0){
 
         pl_True_set <-  plotly::plot_ly() |>
           layout(
