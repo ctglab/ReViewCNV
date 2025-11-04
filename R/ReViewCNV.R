@@ -1428,7 +1428,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           filter(stringr::str_detect(calls, input$Type)) |>
           dplyr::collect() |>
           dplyr::inner_join(
-            rects_1(),
+            rects_1_range(),
             dplyr::join_by(overlaps(Start, End, Start, End))
           ) |>
           rename(
@@ -1463,7 +1463,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           filter(stringr::str_detect(calls, input$Type)) |>
           dplyr::collect() |>
           dplyr::inner_join(
-            rects_1(),
+            rects_1_range(),
             dplyr::join_by(overlaps(Start, End, Start, End))
           ) |>
           rename(
@@ -2069,7 +2069,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             plotly::toWebGL()
         }
       } else {
-        return(NULL)
+        fig <- NULL
       }
 
       # Plot genes annotations --------------------------------------------------
@@ -3261,7 +3261,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             )
         }
 
-        if (input$GenomeBrowser) {
+        if (!is.null(input$GenomeBrowser)) {
           if (input$Genome == "GRCh38") {
             pl_1 <- pl_1 |>
               plotly::add_trace(
@@ -3285,8 +3285,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           }
         }
 
-        if (!is.null(input$GenomeBrowser) & !is.null(input$True_set)) {
-          if(!is.null(pl_True_set)){
+
+
+        if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
+
+          if(!is.null(pl_True_set) & !is.null(CNV3()) ){
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3297,7 +3300,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             shareX = TRUE,
             titleY = TRUE
           )}
-          else{pl <- plotly::subplot(
+
+          else if (is.null(pl_True_set) & !is.null(CNV3()))    {
+            pl <- plotly::subplot(
             fig2,
             pl_1,
             fig,
@@ -3306,8 +3311,21 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             shareX = TRUE,
             titleY = TRUE
           )}
+
+          else{
+            pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            nrows = 2,
+            heights = c(1 /5, 4/5),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
         }
-      else if(!is.null(input$GenomeBrowser) & is.null(input$True_set)) {
+
+      else if(isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
+
+        if(!is.null(CNV3()) ){
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3318,8 +3336,21 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             titleY = TRUE
           )}
 
-      else if(is.null(input$GenomeBrowser) & !is.null(input$True_set)) {
-          if(!is.null(pl_True_set)){
+        else{
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            nrows = 2,
+            heights = c(1/5, 4/5),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
+      }
+
+
+      else if(!isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
+
+          if(!is.null(pl_True_set) & !is.null(CNV3())){
             pl <- plotly::subplot(
             pl_1,
             pl_True_set,
@@ -3329,25 +3360,38 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             shareX = TRUE,
             titleY = TRUE
             )}
-          else{  pl <- plotly::subplot(
+
+        else if (is.null(pl_True_set) & !is.null(CNV3()))    {
+           pl <- plotly::subplot(
             pl_1,
             fig,
             nrows = 2,
             heights = c(1 / 2, 1 / 2),
             shareX = TRUE,
             titleY = TRUE
-          )}
-        }
-      else{
+           )}
+       else{pl <- pl_1}
+      }
+
+
+
+        else if (!isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
+        if (!is.null(CNV3())){
+
           pl <- plotly::subplot(
             pl_1,
             fig,
             nrows = 2,
-            heights = c(1 / 2, 1 / 2),
+            heights = c(1/2, 1 / 2),
             shareX = TRUE,
             titleY = TRUE
           )
         }
+
+        else{pl <- pl_1}}
+
+
+
 
         pl <- pl |>
           plotly::partial_bundle() |>

@@ -391,23 +391,33 @@ server <- function(input, output, session) {
     }
   })
 
-
   # True set ----------------------------------------------------------------
 
   True_set <- shiny::reactive({
     if (is.null(input$True_set)) {
       return(NULL)
     } else {
-      True_set <- utils::read.table(input$True_set$datapath,
+      True_set <- utils::read.table(
+        input$True_set$datapath,
         header = F,
         fill = T,
         quote = "\""
       )
-      names(True_set) = c("Chromosome", "Start", "End")
-      return(True_set)}
+
+      if (dim(True_set)[2] == 3) {
+        names(True_set) = c("Chromosome", "Start", "End")
+        True_set <- True_set |> dplyr::mutate(Type = "")
+      }
+      if (dim(True_set)[2] == 4) {
+        names(True_set) = c("Chromosome", "Start", "End", "Type")
+      }
+
+      True_set <- True_set |>
+        dplyr::mutate(Type = stringr::str_replace(Type, "DUP", "AMP"))
+
+      return(True_set)
+    }
   })
-
-
 
   # File and FastCall data second individual ----------------------------------
 
@@ -687,10 +697,10 @@ server <- function(input, output, session) {
     }
   })
 
-  # Plot all chromosomes ----------------------------------------------------
+  # CNV for all Chromosomes ----------------------------------------------------
 
   CNV <- shiny::reactive({
-    req(input$FastCall_Results_1, input$Genome)
+    shiny::req(input$FastCall_Results_1, input$Genome)
 
     CNV_all_Chromosomes() |>
       dplyr::left_join(
@@ -700,7 +710,7 @@ server <- function(input, output, session) {
   })
 
   rect <- shiny::reactive({
-    req(input$FastCall_Results_1, input$Genome)
+    shiny::req(input$FastCall_Results_1, input$Genome)
 
     rect_1_Chromosome <- list(
       type = "polygon",
@@ -813,22 +823,11 @@ server <- function(input, output, session) {
       rect <- append(rect, rect_2DEL)
     }
   })
-  #  Select plot ------------------------------------------------------------
-
-  output$Plot <- shiny::renderUI({
-    req(input$FastCall_Results_1, input$Genome)
-
-    if (input$chr == "All") {
-      plotly::plotlyOutput("Plot_all_chr", width = "100%", height = "100%")
-    } else {
-      plotly::plotlyOutput("Plot_single_chr", width = "100%", height = "100%")
-    }
-  })
 
   # Plot all chromosomes ----------------------------------------------------
 
   output$Plot_all_chr <- plotly::renderPlotly({
-    req(input$FastCall_Results_1, input$Genome)
+    shiny::req(input$FastCall_Results_1, input$Genome)
 
     fig_all <- plotly::plot_ly() |>
       layout(
@@ -905,7 +904,7 @@ server <- function(input, output, session) {
       shiny::updateSliderInput(
         session,
         "slider",
-        value = c(Start() - 30000, End() + 30000)
+        value = c(Start() - 100, End() + 100)
       )
     }
   })
@@ -1320,9 +1319,7 @@ server <- function(input, output, session) {
     }
   })
 
-
   # Subsetting True set ------------------------------------------------
-
 
   rects_True_set <- shiny::reactive({
     True_set() |> filter(Chromosome == input$chr)
@@ -1337,7 +1334,6 @@ server <- function(input, output, session) {
       return(rects_True_set_range)
     }
   })
-
 
   # Subsetting variants annotations data ---------------------------------------------
 
@@ -1404,7 +1400,7 @@ server <- function(input, output, session) {
         filter(stringr::str_detect(calls, input$Type)) |>
         dplyr::collect() |>
         dplyr::inner_join(
-          rects_1(),
+          rects_1_range(),
           dplyr::join_by(overlaps(Start, End, Start, End))
         ) |>
         rename(
@@ -1439,7 +1435,7 @@ server <- function(input, output, session) {
         filter(stringr::str_detect(calls, input$Type)) |>
         dplyr::collect() |>
         dplyr::inner_join(
-          rects_1(),
+          rects_1_range(),
           dplyr::join_by(overlaps(Start, End, Start, End))
         ) |>
         rename(
@@ -1776,8 +1772,8 @@ server <- function(input, output, session) {
   # Setting the range slider for coordinates------------------------------------------------
 
   output$limits <- shiny::renderUI({
-    req(input$FastCall_Results_1)
-    req(input$Genome)
+    shiny::req(input$FastCall_Results_1)
+    shiny::req(input$Genome)
 
     if (h$val == -1) {
       if (input$chr != "All") {
@@ -1899,10 +1895,12 @@ server <- function(input, output, session) {
   # Plot variants --------------------------------------------------------
 
   output$Plot_single_chr <- plotly::renderPlotly({
+    shiny::req(input$FastCall_Results_1, input$Genome)
+
     if (
       !(is.null(input$FastCall_Results_1) |
-          is.null(input$slider_Annotations[1]) |
-          is.null(input$slider_Annotations[2]))
+        is.null(input$slider_Annotations[1]) |
+        is.null(input$slider_Annotations[2]))
     ) {
       if (!(is.null(CNV3()))) {
         if (dim(CNV3())[1] > 0) {
@@ -2043,11 +2041,10 @@ server <- function(input, output, session) {
           plotly::toWebGL()
       }
     } else {
-      return(NULL)
+      fig <- NULL
     }
 
     # Plot genes annotations --------------------------------------------------
-
 
     fig2 <- plotly::plot_ly(
       data = genes_annotations(),
@@ -2135,40 +2132,150 @@ server <- function(input, output, session) {
       plotly::partial_bundle() |>
       plotly::toWebGL()
 
-
-
     # Plot True set -----------------------------------------------------------
 
-
     if (!is.null(input$True_set)) {
+      rects_True_2DEL <-
+        rects_True_set_range() |>
+        filter(Type == "2-DEL")
 
+      rects_True_DEL <-
+        rects_True_set_range() |>
+        filter(Type == "DEL")
 
-      rect_True <- list(
+      rects_True_AMP <-
+        rects_True_set_range() |>
+        filter(Type == "AMP")
+
+      rects_True_2AMP <-
+        rects_True_set_range() |>
+        filter(Type == "2-AMP")
+
+      rects_True_NA <-
+        rects_True_set_range() |>
+        filter(Type == "")
+
+      #DEL
+
+      rect_True_DEL <- list(
+        type = "rect",
+        fillcolor = "#EEDD82",
+        line = list(color = "#EEDD82"),
+        opacity = 0.6
+      )
+
+      rect_T_DEL <- list()
+
+      for (i in c(1:dim(rects_True_DEL)[1])) {
+        rect_True_DEL[["x0"]] <- rects_True_DEL[i, ]$Start
+        rect_True_DEL[["x1"]] <- rects_True_DEL[i, ]$End
+        rect_True_DEL[["y0"]] <- -1
+        rect_True_DEL[["y1"]] <- 1
+        rect_T_DEL <- c(rect_T_DEL, list(rect_True_DEL))
+      }
+
+      #2DEL
+
+      rect_True_2DEL <- list(
+        type = "rect",
+        fillcolor = "#CDBE70",
+        line = list(color = "#CDBE70"),
+        opacity = 0.6
+      )
+
+      rect_T_2DEL <- list()
+
+      for (i in c(1:dim(rects_True_2DEL)[1])) {
+        rect_True_2DEL[["x0"]] <- rects_True_2DEL[i, ]$Start
+        rect_True_2DEL[["x1"]] <- rects_True_2DEL[i, ]$End
+        rect_True_2DEL[["y0"]] <- -1
+        rect_True_2DEL[["y1"]] <- 1
+        rect_T_2DEL <- c(rect_T_2DEL, list(rect_True_2DEL))
+      }
+
+      #AMP
+
+      rect_True_AMP <- list(
+        type = "rect",
+        fillcolor = "#4876FF",
+        line = list(color = "#4876FF"),
+        opacity = 0.6
+      )
+
+      rect_T_AMP <- list()
+
+      for (i in c(1:dim(rects_True_AMP)[1])) {
+        rect_True_AMP[["x0"]] <- rects_True_AMP[i, ]$Start
+        rect_True_AMP[["x1"]] <- rects_True_AMP[i, ]$End
+        rect_True_AMP[["y0"]] <- -1
+        rect_True_AMP[["y1"]] <- 1
+        rect_T_AMP <- c(rect_T_AMP, list(rect_True_AMP))
+      }
+
+      #2AMP
+
+      rect_True_2AMP <- list(
+        type = "rect",
+        fillcolor = "#27408B",
+        line = list(color = "#27408B"),
+        opacity = 0.6
+      )
+
+      rect_T_2AMP <- list()
+
+      for (i in c(1:dim(rects_True_2AMP)[1])) {
+        rect_True_2AMP[["x0"]] <- rects_True_2AMP[i, ]$Start
+        rect_True_2AMP[["x1"]] <- rects_True_2AMP[i, ]$End
+        rect_True_2AMP[["y0"]] <- -1
+        rect_True_2AMP[["y1"]] <- 1
+        rect_T_2AMP <- c(rect_T_2AMP, list(rect_True_2AMP))
+      }
+
+      #NA
+
+      rect_True_NA <- list(
         type = "rect",
         fillcolor = "black",
         line = list(color = "black"),
         opacity = 1
       )
 
-      rect_T <- list()
+      rect_T_NA <- list()
 
-
-      for (i in c(1:dim(rects_True_set_range())[1])) {
-        rect_True[["x0"]] <- rects_True_set_range()[i, ]$Start
-        rect_True[["x1"]] <- rects_True_set_range()[i, ]$End
-        rect_True[["y0"]] <- -1
-        rect_True[["y1"]] <-  1
-        rect_T <- c(rect_T, list(rect_True))
+      for (i in c(1:dim(rects_True_NA)[1])) {
+        rect_True_NA[["x0"]] <- rects_True_NA[i, ]$Start
+        rect_True_NA[["x1"]] <- rects_True_NA[i, ]$End
+        rect_True_NA[["y0"]] <- -1
+        rect_True_NA[["y1"]] <- 1
+        rect_T_NA <- c(rect_T_NA, list(rect_True_NA))
       }
+
+      #All together
 
       rect_TT <- c()
 
+      if (dim(rects_True_AMP)[1] > 0) {
+        rect_TT <- append(rect_TT, rect_T_AMP)
+      }
+
+      if (dim(rects_True_DEL)[1] > 0) {
+        rect_TT <- append(rect_TT, rect_T_DEL)
+      }
+
+      if (dim(rects_True_2AMP)[1] > 0) {
+        rect_TT <- append(rect_TT, rect_T_2AMP)
+      }
+
+      if (dim(rects_True_2DEL)[1] > 0) {
+        rect_TT <- append(rect_TT, rect_T_2DEL)
+      }
+
+      if (dim(rects_True_NA)[1] > 0) {
+        rect_TT <- append(rect_TT, rect_T_NA)
+      }
+
       if (dim(rects_True_set_range())[1] > 0) {
-        rect_TT <-rect_T
-
-
-
-        pl_True_set <-  plotly::plot_ly() |>
+        pl_True_set <- plotly::plot_ly() |>
           layout(
             shapes = rect_TT,
             xaxis = list(
@@ -2180,16 +2287,14 @@ server <- function(input, output, session) {
             ),
             yaxis = list(
               title = "True Set",
-              range = list(-1,1
-              ),
+              range = list(-1, 1),
               tickformat = ",d"
             )
           )
-
+      } else {
+        pl_True_set <- NULL
       }
-      else{pl_True_set <-NULL}
     }
-
 
     # Plot for the first individual -----------------------------------------------
 
@@ -3054,9 +3159,7 @@ server <- function(input, output, session) {
                 )
               )
             )
-        } else if (
-          is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)
-        ) {
+        } else if (is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)) {
           pl_1 <- pl_1 |>
             layout(
               yaxis = list(
@@ -3107,7 +3210,7 @@ server <- function(input, output, session) {
           )
       }
 
-      if (input$GenomeBrowser) {
+      if (!is.null(input$GenomeBrowser)) {
         if (input$Genome == "GRCh38") {
           pl_1 <- pl_1 |>
             plotly::add_trace(
@@ -3131,39 +3234,61 @@ server <- function(input, output, session) {
         }
       }
 
-      if (!is.null(input$GenomeBrowser) & !is.null(input$True_set)) {
-        if(!is.null(pl_True_set)){
+      if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
+        if (!is.null(pl_True_set) & !is.null(CNV3())) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
             pl_True_set,
             fig,
             nrows = 4,
-            heights = c(1/8, 3/8, 1/8, 3/8),
+            heights = c(1 / 8, 3 / 8, 1 / 8, 3 / 8),
             shareX = TRUE,
             titleY = TRUE
-          )}
-        else{pl <- plotly::subplot(
-          fig2,
-          pl_1,
-          fig,
-          nrows = 3,
-          heights = c(1 / 6, 2 / 6, 3 / 6),
-          shareX = TRUE,
-          titleY = TRUE
-        )}
-      } else if(input$GenomeBrowser) {
-        pl <- plotly::subplot(
-          fig2,
-          pl_1,
-          fig,
-          nrows = 3,
-          heights = c(1 / 6, 2 / 6, 3 / 6),
-          shareX = TRUE,
-          titleY = TRUE
-        )}
-      else if(input$True_set) {
-        if(!is.null(pl_True_set)){
+          )
+        } else if (is.null(pl_True_set) & !is.null(CNV3())) {
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            fig,
+            nrows = 3,
+            heights = c(1 / 6, 2 / 6, 3 / 6),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        } else {
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            nrows = 2,
+            heights = c(1 / 5, 4 / 5),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        }
+      } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
+        if (!is.null(CNV3())) {
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            fig,
+            nrows = 3,
+            heights = c(1 / 6, 2 / 6, 3 / 6),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        } else {
+          pl <- plotly::subplot(
+            fig2,
+            pl_1,
+            nrows = 2,
+            heights = c(1 / 5, 4 / 5),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        }
+      } else if (!isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
+        if (!is.null(pl_True_set) & !is.null(CNV3())) {
           pl <- plotly::subplot(
             pl_1,
             pl_True_set,
@@ -3172,28 +3297,35 @@ server <- function(input, output, session) {
             heights = c(1 / 6, 1 / 6, 4 / 6),
             shareX = TRUE,
             titleY = TRUE
-          )}
-        else{  pl <- plotly::subplot(
-          pl_1,
-          fig,
-          nrows = 2,
-          heights = c(1 / 2, 1 / 2),
-          shareX = TRUE,
-          titleY = TRUE
-        )}
-      }
-      else{
-        pl <- plotly::subplot(
-          pl_1,
-          fig,
-          nrows = 2,
-          heights = c(1 / 2, 1 / 2),
-          shareX = TRUE,
-          titleY = TRUE
-        )
+          )
+        } else if (is.null(pl_True_set) & !is.null(CNV3())) {
+          pl <- plotly::subplot(
+            pl_1,
+            fig,
+            nrows = 2,
+            heights = c(1 / 2, 1 / 2),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        } else {
+          pl <- pl_1
+        }
+      } else if (!isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
+        if (!is.null(CNV3())) {
+          pl <- plotly::subplot(
+            pl_1,
+            fig,
+            nrows = 2,
+            heights = c(1 / 2, 1 / 2),
+            shareX = TRUE,
+            titleY = TRUE
+          )
+        } else {
+          pl <- pl_1
+        }
       }
 
-      pl_1 <- pl_1 |>
+      pl <- pl |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
     }
