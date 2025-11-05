@@ -1834,12 +1834,12 @@ server <- function(input, output, session) {
       if (input$chr == "All") {
         shiny::downloadButton(
           "downloadplot1",
-          "Download HTML single Chromosome"
+          "Download HTML"
         )
       } else {
         shiny::downloadButton(
           "downloadplot2",
-          "Download HTML all Chromosomes"
+          "Download HTML"
         )
       }
     } else {

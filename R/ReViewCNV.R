@@ -1858,12 +1858,12 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         if (input$chr == "All") {
           shiny::downloadButton(
             "downloadplot1",
-            "Download HTML single Chromosome"
+            "Download HTML"
           )
         } else {
           shiny::downloadButton(
             "downloadplot2",
-            "Download HTML all Chromosomes"
+            "Download HTML"
           )
         }
       } else {
