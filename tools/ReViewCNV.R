@@ -40,7 +40,6 @@ exons_annotation_38 <- readRDS("Exons_38.rds")
 hg37_Chromosomes_Coordinates <- readRDS("hg37_Coordinates.rds")
 hg38_Chromosomes_Coordinates <- readRDS("hg38_Coordinates.rds")
 
-
 # ui ----------------------------------------------------------------------
 
 ui <- bslib::page_sidebar(
@@ -69,7 +68,7 @@ ui <- bslib::page_sidebar(
       "If available load the bed file of annotated targeted regions"
     ),
     shiny::fileInput(
-      "True_set",
+      "True_set_1",
       "If available load the True set"
     ),
     shiny::checkboxInput(
@@ -391,33 +390,92 @@ server <- function(input, output, session) {
     }
   })
 
-  # True set ----------------------------------------------------------------
+  # True set 1 ----------------------------------------------------------------
 
-  True_set <- shiny::reactive({
-    if (is.null(input$True_set)) {
+  True_set_1<- shiny::reactive({
+    if (is.null(input$True_set_1)) {
       return(NULL)
     } else {
-      True_set <- utils::read.table(
-        input$True_set$datapath,
+      True_set_1 <- utils::read.table(
+        input$True_set_1$datapath,
         header = F,
         fill = T,
         quote = "\""
       )
 
-      if (dim(True_set)[2] == 3) {
-        names(True_set) = c("Chromosome", "Start", "End")
-        True_set <- True_set |> dplyr::mutate(Type = "")
+      if (dim(True_set_1)[2] == 3) {
+        names(True_set_1) = c("Chromosome", "Start", "End")
+        True_set_1 <- True_set_1 |> dplyr::mutate(Type = "")
       }
-      if (dim(True_set)[2] == 4) {
-        names(True_set) = c("Chromosome", "Start", "End", "Type")
+      if (dim(True_set_1)[2] == 4) {
+        names(True_set_1) = c("Chromosome", "Start", "End", "Type")
       }
 
-      True_set <- True_set |>
+      True_set_1 <- True_set_1 |>
         dplyr::mutate(Type = stringr::str_replace(Type, "DUP", "AMP"))
 
-      return(True_set)
+      return(True_set_1)
     }
   })
+
+
+  # True set 2 ----------------------------------------------------------------
+
+  True_set_2<- shiny::reactive({
+    if (is.null(input$True_set_2)) {
+      return(NULL)
+    } else {
+      True_set_2 <- utils::read.table(
+        input$True_set_2$datapath,
+        header = F,
+        fill = T,
+        quote = "\""
+      )
+
+      if (dim(True_set_2)[2] == 3) {
+        names(True_set_2) = c("Chromosome", "Start", "End")
+        True_set_2 <- True_set_2 |> dplyr::mutate(Type = "")
+      }
+      if (dim(True_set_2)[2] == 4) {
+        names(True_set_2) = c("Chromosome", "Start", "End", "Type")
+      }
+
+      True_set_2 <- True_set_2 |>
+        dplyr::mutate(Type = stringr::str_replace(Type, "DUP", "AMP"))
+
+      return(True_set_2)
+    }
+  })
+
+  # True set 3 ----------------------------------------------------------------
+
+  True_set_3<- shiny::reactive({
+    if (is.null(input$True_set_3)) {
+      return(NULL)
+    } else {
+      True_set_3 <- utils::read.table(
+        input$True_set_3$datapath,
+        header = F,
+        fill = T,
+        quote = "\""
+      )
+
+      if (dim(True_set_3)[2] == 3) {
+        names(True_set_3) = c("Chromosome", "Start", "End")
+        True_set_3 <- True_set_3 |> dplyr::mutate(Type = "")
+      }
+      if (dim(True_set_3)[2] == 4) {
+        names(True_set_3) = c("Chromosome", "Start", "End", "Type")
+      }
+
+      True_set_3 <- True_set_3 |>
+        dplyr::mutate(Type = stringr::str_replace(Type, "DUP", "AMP"))
+
+      return(True_set_3)
+    }
+  })
+
+
 
   # File and FastCall data second individual ----------------------------------
 
@@ -1319,21 +1377,60 @@ server <- function(input, output, session) {
     }
   })
 
-  # Subsetting True set ------------------------------------------------
+  # Subsetting True set 1 ------------------------------------------------
 
-  rects_True_set <- shiny::reactive({
-    True_set() |> filter(Chromosome == input$chr)
+  rects_1_True_set <- shiny::reactive({
+    True_set_1() |> filter(Chromosome == input$chr)
   })
 
-  rects_True_set_range <- shiny::reactive({
+  rects_1_True_set_range <- shiny::reactive({
     if (is.null(input$slider) || input$Genome == "") {
       return(NULL)
     } else {
-      rects_True_set_range <- rects_True_set() |>
+      rects_1_True_set_range <- rects_1_True_set() |>
         filter(Start >= input$slider[1] & End <= input$slider[2])
-      return(rects_True_set_range)
+      return(rects_1_True_set_range)
     }
   })
+
+
+  # Subsetting True set 2 ------------------------------------------------
+
+  rects_2_True_set <- shiny::reactive({
+    True_set_2() |> filter(Chromosome == input$chr)
+  })
+
+  rects_2_True_set_range <- shiny::reactive({
+    if (is.null(input$slider) || input$Genome == "") {
+      return(NULL)
+    } else {
+      rects_2_True_set_range <- rects_2_True_set() |>
+        filter(Start >= input$slider[1] & End <= input$slider[2])
+      return(rects_2_True_set_range)
+    }
+  })
+
+
+
+  # Subsetting True set 3 ------------------------------------------------
+
+
+  rects_3_True_set <- shiny::reactive({
+    True_set_3() |> filter(Chromosome == input$chr)
+  })
+
+  rects_3_True_set_range <- shiny::reactive({
+    if (is.null(input$slider) || input$Genome == "") {
+      return(NULL)
+    } else {
+      rects_3_True_set_range <- rects_3_True_set() |>
+        filter(Start >= input$slider[1] & End <= input$slider[2])
+      return(rects_3_True_set_range)
+    }
+  })
+
+
+
 
   # Subsetting variants annotations data ---------------------------------------------
 
@@ -1392,79 +1489,82 @@ server <- function(input, output, session) {
   })
 
   Annotations_subset <- shiny::reactive({
-    if (input$Genome == "GRCh37") {
-      Annotations_37 |>
-        filter(Chromosome == input$chr) |>
-        filter(Frequency > as.numeric(input$Freq)) |>
-        filter(Database %in% !!Annotations_list()) |>
-        filter(stringr::str_detect(calls, input$Type)) |>
-        dplyr::collect() |>
-        dplyr::inner_join(
-          rects_1_range(),
-          dplyr::join_by(overlaps(Start, End, Start, End))
-        ) |>
-        rename(
-          chr = Chromosome.x,
-          Start = Start.x,
-          End = End.x,
-          End_FastCall = End.y,
-          Start_FastCall = Start.y
-        ) |>
-        select(
-          "Unique_ID",
-          "ID",
-          "chr",
-          "Start",
-          "Start_FastCall",
-          "End_FastCall",
-          "End",
-          "calls",
-          "Length",
-          "Frequency",
-          "Database",
-          "middle",
-          "Frequency",
-          "AnnotSV_Present"
-        ) |>
-        arrange(End_FastCall, End)
-    } else if (input$Genome == "GRCh38") {
-      Annotations_38 |>
-        filter(Chromosome == input$chr) |>
-        filter(Frequency > as.numeric(input$Freq)) |>
-        filter(Database %in% !!Annotations_list()) |>
-        filter(stringr::str_detect(calls, input$Type)) |>
-        dplyr::collect() |>
-        dplyr::inner_join(
-          rects_1_range(),
-          dplyr::join_by(overlaps(Start, End, Start, End))
-        ) |>
-        rename(
-          chr = Chromosome.x,
-          Start = Start.x,
-          End = End.x,
-          End_FastCall = End.y,
-          Start_FastCall = Start.y
-        ) |>
-        select(
-          "Unique_ID",
-          "ID",
-          "chr",
-          "Start",
-          "Start_FastCall",
-          "End_FastCall",
-          "End",
-          "calls",
-          "Length",
-          "Frequency",
-          "Database",
-          "middle",
-          "Frequency",
-          "AnnotSV_Present"
-        ) |>
-        arrange(End_FastCall, End)
-    } else {
-      return(NULL)
+    if(!is.null(rects_1_range())){
+      if (input$Genome == "GRCh37") {
+        Annotations_37 |>
+          filter(Chromosome == input$chr) |>
+          filter(Frequency > as.numeric(input$Freq)) |>
+          filter(Database %in% !!Annotations_list()) |>
+          filter(stringr::str_detect(calls, input$Type)) |>
+          dplyr::collect() |>
+          dplyr::inner_join(
+            rects_1_range(),
+            dplyr::join_by(overlaps(Start, End, Start, End))
+          ) |>
+          rename(
+            chr = Chromosome.x,
+            Start = Start.x,
+            End = End.x,
+            End_FastCall = End.y,
+            Start_FastCall = Start.y
+          ) |>
+          select(
+            "Unique_ID",
+            "ID",
+            "chr",
+            "Start",
+            "Start_FastCall",
+            "End_FastCall",
+            "End",
+            "calls",
+            "Length",
+            "Frequency",
+            "Database",
+            "middle",
+            "Frequency",
+            "AnnotSV_Present"
+          ) |>
+          arrange(End_FastCall, End)
+      } else if (input$Genome == "GRCh38") {
+        Annotations_38 |>
+          filter(Chromosome == input$chr) |>
+          filter(Frequency > as.numeric(input$Freq)) |>
+          filter(Database %in% !!Annotations_list()) |>
+          filter(stringr::str_detect(calls, input$Type)) |>
+          dplyr::collect() |>
+          dplyr::inner_join(
+            rects_1_range(),
+            dplyr::join_by(overlaps(Start, End, Start, End))
+          ) |>
+          rename(
+            chr = Chromosome.x,
+            Start = Start.x,
+            End = End.x,
+            End_FastCall = End.y,
+            Start_FastCall = Start.y
+          ) |>
+          select(
+            "Unique_ID",
+            "ID",
+            "chr",
+            "Start",
+            "Start_FastCall",
+            "End_FastCall",
+            "End",
+            "calls",
+            "Length",
+            "Frequency",
+            "Database",
+            "middle",
+            "Frequency",
+            "AnnotSV_Present"
+          ) |>
+          arrange(End_FastCall, End)
+      } else {
+        return(NULL)
+      }
     }
+    else{return(NULL)}
   })
 
   CNV1 <- shiny::reactive({
@@ -1723,7 +1823,12 @@ server <- function(input, output, session) {
         shiny::fileInput(
           "HSLM_2",
           "If available load the HSLM/TR level CN estimation file"
+        ),
+        shiny::fileInput(
+          "True_set_2",
+          "If available load the True set"
         )
+
       )
     } else {
       return(NULL)
@@ -1762,6 +1867,10 @@ server <- function(input, output, session) {
         shiny::fileInput(
           "HSLM_3",
           "If available load the HSLM/TR level CN estimation file"
+        ),
+        shiny::fileInput(
+          "True_set_3",
+          "If available load the True set"
         )
       )
     } else {
@@ -1899,8 +2008,8 @@ server <- function(input, output, session) {
 
     if (
       !(is.null(input$FastCall_Results_1) |
-        is.null(input$slider_Annotations[1]) |
-        is.null(input$slider_Annotations[2]))
+          is.null(input$slider_Annotations[1]) |
+          is.null(input$slider_Annotations[2]))
     ) {
       if (!(is.null(CNV3()))) {
         if (dim(CNV3())[1] > 0) {
@@ -2132,152 +2241,152 @@ server <- function(input, output, session) {
       plotly::partial_bundle() |>
       plotly::toWebGL()
 
-    # Plot True set -----------------------------------------------------------
+    # Plot True set 1-----------------------------------------------------------
 
-    if (!is.null(input$True_set)) {
-      rects_True_2DEL <-
-        rects_True_set_range() |>
+    if (!is.null(input$True_set_1)) {
+      rects_1_True_2DEL <-
+        rects_1_True_set_range() |>
         filter(Type == "2-DEL")
 
-      rects_True_DEL <-
-        rects_True_set_range() |>
+      rects_1_True_DEL <-
+        rects_1_True_set_range() |>
         filter(Type == "DEL")
 
-      rects_True_AMP <-
-        rects_True_set_range() |>
+      rects_1_True_AMP <-
+        rects_1_True_set_range() |>
         filter(Type == "AMP")
 
-      rects_True_2AMP <-
-        rects_True_set_range() |>
+      rects_1_True_2AMP <-
+        rects_1_True_set_range() |>
         filter(Type == "2-AMP")
 
-      rects_True_NA <-
-        rects_True_set_range() |>
+      rects_1_True_NA <-
+        rects_1_True_set_range() |>
         filter(Type == "")
 
       #DEL
 
-      rect_True_DEL <- list(
+      rect_1_True_DEL <- list(
         type = "rect",
         fillcolor = "#EEDD82",
         line = list(color = "#EEDD82"),
         opacity = 0.6
       )
 
-      rect_T_DEL <- list()
+      rect_1_T_DEL <- list()
 
-      for (i in c(1:dim(rects_True_DEL)[1])) {
-        rect_True_DEL[["x0"]] <- rects_True_DEL[i, ]$Start
-        rect_True_DEL[["x1"]] <- rects_True_DEL[i, ]$End
-        rect_True_DEL[["y0"]] <- -1
-        rect_True_DEL[["y1"]] <- 1
-        rect_T_DEL <- c(rect_T_DEL, list(rect_True_DEL))
+      for (i in c(1:dim(rects_1_True_DEL)[1])) {
+        rect_1_True_DEL[["x0"]] <- rects_1_True_DEL[i, ]$Start
+        rect_1_True_DEL[["x1"]] <- rects_1_True_DEL[i, ]$End
+        rect_1_True_DEL[["y0"]] <- -1
+        rect_1_True_DEL[["y1"]] <- 1
+        rect_1_T_DEL <- c(rect_1_T_DEL, list(rect_1_True_DEL))
       }
 
       #2DEL
 
-      rect_True_2DEL <- list(
+      rect_1_True_2DEL <- list(
         type = "rect",
         fillcolor = "#CDBE70",
         line = list(color = "#CDBE70"),
         opacity = 0.6
       )
 
-      rect_T_2DEL <- list()
+      rect_1_T_2DEL <- list()
 
-      for (i in c(1:dim(rects_True_2DEL)[1])) {
-        rect_True_2DEL[["x0"]] <- rects_True_2DEL[i, ]$Start
-        rect_True_2DEL[["x1"]] <- rects_True_2DEL[i, ]$End
-        rect_True_2DEL[["y0"]] <- -1
-        rect_True_2DEL[["y1"]] <- 1
-        rect_T_2DEL <- c(rect_T_2DEL, list(rect_True_2DEL))
+      for (i in c(1:dim(rects_1_True_2DEL)[1])) {
+        rect_1_True_2DEL[["x0"]] <- rects_1_True_2DEL[i, ]$Start
+        rect_1_True_2DEL[["x1"]] <- rects_1_True_2DEL[i, ]$End
+        rect_1_True_2DEL[["y0"]] <- -1
+        rect_1_True_2DEL[["y1"]] <- 1
+        rect_1_T_2DEL <- c(rect_1_T_2DEL, list(rect_1_True_2DEL))
       }
 
       #AMP
 
-      rect_True_AMP <- list(
+      rect_1_True_AMP <- list(
         type = "rect",
         fillcolor = "#4876FF",
         line = list(color = "#4876FF"),
         opacity = 0.6
       )
 
-      rect_T_AMP <- list()
+      rect_1_T_AMP <- list()
 
-      for (i in c(1:dim(rects_True_AMP)[1])) {
-        rect_True_AMP[["x0"]] <- rects_True_AMP[i, ]$Start
-        rect_True_AMP[["x1"]] <- rects_True_AMP[i, ]$End
-        rect_True_AMP[["y0"]] <- -1
-        rect_True_AMP[["y1"]] <- 1
-        rect_T_AMP <- c(rect_T_AMP, list(rect_True_AMP))
+      for (i in c(1:dim(rects_1_True_AMP)[1])) {
+        rect_1_True_AMP[["x0"]] <- rects_1_True_AMP[i, ]$Start
+        rect_1_True_AMP[["x1"]] <- rects_1_True_AMP[i, ]$End
+        rect_1_True_AMP[["y0"]] <- -1
+        rect_1_True_AMP[["y1"]] <- 1
+        rect_1_T_AMP <- c(rect_1_T_AMP, list(rect_1_True_AMP))
       }
 
       #2AMP
 
-      rect_True_2AMP <- list(
+      rect_1_True_2AMP <- list(
         type = "rect",
         fillcolor = "#27408B",
         line = list(color = "#27408B"),
         opacity = 0.6
       )
 
-      rect_T_2AMP <- list()
+      rect_1_T_2AMP <- list()
 
-      for (i in c(1:dim(rects_True_2AMP)[1])) {
-        rect_True_2AMP[["x0"]] <- rects_True_2AMP[i, ]$Start
-        rect_True_2AMP[["x1"]] <- rects_True_2AMP[i, ]$End
-        rect_True_2AMP[["y0"]] <- -1
-        rect_True_2AMP[["y1"]] <- 1
-        rect_T_2AMP <- c(rect_T_2AMP, list(rect_True_2AMP))
+      for (i in c(1:dim(rects_1_True_2AMP)[1])) {
+        rect_1_True_2AMP[["x0"]] <- rects_1_True_2AMP[i, ]$Start
+        rect_1_True_2AMP[["x1"]] <- rects_1_True_2AMP[i, ]$End
+        rect_1_True_2AMP[["y0"]] <- -1
+        rect_1_True_2AMP[["y1"]] <- 1
+        rect_1_T_2AMP <- c(rect_1_T_2AMP, list(rect_1_True_2AMP))
       }
 
       #NA
 
-      rect_True_NA <- list(
+      rect_1_True_NA <- list(
         type = "rect",
         fillcolor = "black",
         line = list(color = "black"),
         opacity = 1
       )
 
-      rect_T_NA <- list()
+      rect_1_T_NA <- list()
 
-      for (i in c(1:dim(rects_True_NA)[1])) {
-        rect_True_NA[["x0"]] <- rects_True_NA[i, ]$Start
-        rect_True_NA[["x1"]] <- rects_True_NA[i, ]$End
-        rect_True_NA[["y0"]] <- -1
-        rect_True_NA[["y1"]] <- 1
-        rect_T_NA <- c(rect_T_NA, list(rect_True_NA))
+      for (i in c(1:dim(rects_1_True_NA)[1])) {
+        rect_1_True_NA[["x0"]] <- rects_1_True_NA[i, ]$Start
+        rect_1_True_NA[["x1"]] <- rects_1_True_NA[i, ]$End
+        rect_1_True_NA[["y0"]] <- -1
+        rect_1_True_NA[["y1"]] <- 1
+        rect_1_T_NA <- c(rect_1_T_NA, list(rect_1_True_NA))
       }
 
       #All together
 
-      rect_TT <- c()
+      rect_1_TT <- c()
 
-      if (dim(rects_True_AMP)[1] > 0) {
-        rect_TT <- append(rect_TT, rect_T_AMP)
+      if (dim(rects_1_True_AMP)[1] > 0) {
+        rect_1_TT <- append(rect_1_TT, rect_1_T_AMP)
       }
 
-      if (dim(rects_True_DEL)[1] > 0) {
-        rect_TT <- append(rect_TT, rect_T_DEL)
+      if (dim(rects_1_True_DEL)[1] > 0) {
+        rect_1_TT <- append(rect_1_TT, rect_1_T_DEL)
       }
 
-      if (dim(rects_True_2AMP)[1] > 0) {
-        rect_TT <- append(rect_TT, rect_T_2AMP)
+      if (dim(rects_1_True_2AMP)[1] > 0) {
+        rect_1_TT <- append(rect_1_TT, rect_1_T_2AMP)
       }
 
-      if (dim(rects_True_2DEL)[1] > 0) {
-        rect_TT <- append(rect_TT, rect_T_2DEL)
+      if (dim(rects_1_True_2DEL)[1] > 0) {
+        rect_1_TT <- append(rect_1_TT, rect_1_T_2DEL)
       }
 
-      if (dim(rects_True_NA)[1] > 0) {
-        rect_TT <- append(rect_TT, rect_T_NA)
+      if (dim(rects_1_True_NA)[1] > 0) {
+        rect_1_TT <- append(rect_1_TT, rect_1_T_NA)
       }
 
-      if (dim(rects_True_set_range())[1] > 0) {
-        pl_True_set <- plotly::plot_ly() |>
+      if (dim(rects_1_True_set_range())[1] > 0) {
+        pl_True_set_1 <- plotly::plot_ly() |>
           layout(
-            shapes = rect_TT,
+            shapes = rect_1_TT,
             xaxis = list(
               title = "Chromosome coordinates",
               range = c(
@@ -2288,13 +2397,355 @@ server <- function(input, output, session) {
             yaxis = list(
               title = "True Set",
               range = list(-1, 1),
-              tickformat = ",d"
-            )
-          )
+              tickformat = ",d",
+              zeroline = FALSE,
+              showline = FALSE,
+              showticklabels = FALSE,
+              showgrid = FALSE))
       } else {
-        pl_True_set <- NULL
+        pl_True_set_1 <- NULL
       }
     }
+
+
+
+    # Plot True set 2-----------------------------------------------------------
+
+
+    if (!is.null(input$True_set_2)) {
+      rects_2_True_2DEL <-
+        rects_2_True_set_range() |>
+        filter(Type == "2-DEL")
+
+      rects_2_True_DEL <-
+        rects_2_True_set_range() |>
+        filter(Type == "DEL")
+
+      rects_2_True_AMP <-
+        rects_2_True_set_range() |>
+        filter(Type == "AMP")
+
+      rects_2_True_2AMP <-
+        rects_2_True_set_range() |>
+        filter(Type == "2-AMP")
+
+      rects_2_True_NA <-
+        rects_2_True_set_range() |>
+        filter(Type == "")
+
+      #DEL
+
+      rect_2_True_DEL <- list(
+        type = "rect",
+        fillcolor = "#EEDD82",
+        line = list(color = "#EEDD82"),
+        opacity = 0.6
+      )
+
+      rect_2_T_DEL <- list()
+
+      for (i in c(1:dim(rects_2_True_DEL)[1])) {
+        rect_2_True_DEL[["x0"]] <- rects_2_True_DEL[i, ]$Start
+        rect_2_True_DEL[["x1"]] <- rects_2_True_DEL[i, ]$End
+        rect_2_True_DEL[["y0"]] <- -1
+        rect_2_True_DEL[["y1"]] <- 1
+        rect_2_T_DEL <- c(rect_2_T_DEL, list(rect_2_True_DEL))
+      }
+
+      #2DEL
+
+      rect_2_True_2DEL <- list(
+        type = "rect",
+        fillcolor = "#CDBE70",
+        line = list(color = "#CDBE70"),
+        opacity = 0.6
+      )
+
+      rect_2_T_2DEL <- list()
+
+      for (i in c(1:dim(rects_2_True_2DEL)[1])) {
+        rect_2_True_2DEL[["x0"]] <- rects_2_True_2DEL[i, ]$Start
+        rect_2_True_2DEL[["x1"]] <- rects_2_True_2DEL[i, ]$End
+        rect_2_True_2DEL[["y0"]] <- -1
+        rect_2_True_2DEL[["y1"]] <- 1
+        rect_2_T_2DEL <- c(rect_2_T_2DEL, list(rect_2_True_2DEL))
+      }
+
+      #AMP
+
+      rect_2_True_AMP <- list(
+        type = "rect",
+        fillcolor = "#4876FF",
+        line = list(color = "#4876FF"),
+        opacity = 0.6
+      )
+
+      rect_2_T_AMP <- list()
+
+      for (i in c(1:dim(rects_2_True_AMP)[1])) {
+        rect_2_True_AMP[["x0"]] <- rects_2_True_AMP[i, ]$Start
+        rect_2_True_AMP[["x1"]] <- rects_2_True_AMP[i, ]$End
+        rect_2_True_AMP[["y0"]] <- -1
+        rect_2_True_AMP[["y1"]] <- 1
+        rect_2_T_AMP <- c(rect_2_T_AMP, list(rect_2_True_AMP))
+      }
+
+      #2AMP
+
+      rect_2_True_2AMP <- list(
+        type = "rect",
+        fillcolor = "#27408B",
+        line = list(color = "#27408B"),
+        opacity = 0.6
+      )
+
+      rect_2_T_2AMP <- list()
+
+      for (i in c(1:dim(rects_2_True_2AMP)[1])) {
+        rect_2_True_2AMP[["x0"]] <- rects_2_True_2AMP[i, ]$Start
+        rect_2_True_2AMP[["x1"]] <- rects_2_True_2AMP[i, ]$End
+        rect_2_True_2AMP[["y0"]] <- -1
+        rect_2_True_2AMP[["y1"]] <- 1
+        rect_2_T_2AMP <- c(rect_2_T_2AMP, list(rect_2_True_2AMP))
+      }
+
+      #NA
+
+      rect_2_True_NA <- list(
+        type = "rect",
+        fillcolor = "black",
+        line = list(color = "black"),
+        opacity = 1
+      )
+
+      rect_2_T_NA <- list()
+
+      for (i in c(1:dim(rects_2_True_NA)[1])) {
+        rect_2_True_NA[["x0"]] <- rects_2_True_NA[i, ]$Start
+        rect_2_True_NA[["x1"]] <- rects_2_True_NA[i, ]$End
+        rect_2_True_NA[["y0"]] <- -1
+        rect_2_True_NA[["y1"]] <- 1
+        rect_2_T_NA <- c(rect_2_T_NA, list(rect_2_True_NA))
+      }
+
+      #All together
+
+      rect_2_TT <- c()
+
+      if (dim(rects_2_True_AMP)[1] > 0) {
+        rect_2_TT <- append(rect_2_TT, rect_2_T_AMP)
+      }
+
+      if (dim(rects_2_True_DEL)[1] > 0) {
+        rect_2_TT <- append(rect_2_TT, rect_2_T_DEL)
+      }
+
+      if (dim(rects_2_True_2AMP)[1] > 0) {
+        rect_2_TT <- append(rect_2_TT, rect_2_T_2AMP)
+      }
+
+      if (dim(rects_2_True_2DEL)[1] > 0) {
+        rect_2_TT <- append(rect_2_TT, rect_2_T_2DEL)
+      }
+
+      if (dim(rects_2_True_NA)[1] > 0) {
+        rect_2_TT <- append(rect_2_TT, rect_2_T_NA)
+      }
+
+      if (dim(rects_2_True_set_range())[1] > 0) {
+        pl_True_set_2 <- plotly::plot_ly() |>
+          layout(
+            shapes = rect_2_TT,
+            xaxis = list(
+              title = "Chromosome coordinates",
+              range = c(
+                min = input$slider[1],
+                max = input$slider[2]
+              )
+            ),
+            yaxis = list(
+              title = "True Set",
+              range = list(-1, 1),
+              tickformat = ",d",
+              zeroline = FALSE,
+              showline = FALSE,
+              showticklabels = FALSE,
+              showgrid = FALSE)
+          )
+      } else {
+        pl_True_set_2 <- NULL
+      }
+    }
+
+
+    # Plot True set 3-----------------------------------------------------------
+
+    if (!is.null(input$True_set_3)) {
+      rects_3_True_2DEL <-
+        rects_3_True_set_range() |>
+        filter(Type == "2-DEL")
+
+      rects_3_True_DEL <-
+        rects_3_True_set_range() |>
+        filter(Type == "DEL")
+
+      rects_3_True_AMP <-
+        rects_3_True_set_range() |>
+        filter(Type == "AMP")
+
+      rects_3_True_2AMP <-
+        rects_3_True_set_range() |>
+        filter(Type == "2-AMP")
+
+      rects_3_True_NA <-
+        rects_3_True_set_range() |>
+        filter(Type == "")
+
+      #DEL
+
+      rect_3_True_DEL <- list(
+        type = "rect",
+        fillcolor = "#EEDD82",
+        line = list(color = "#EEDD82"),
+        opacity = 0.6
+      )
+
+      rect_3_T_DEL <- list()
+
+      for (i in c(1:dim(rects_3_True_DEL)[1])) {
+        rect_3_True_DEL[["x0"]] <- rects_3_True_DEL[i, ]$Start
+        rect_3_True_DEL[["x1"]] <- rects_3_True_DEL[i, ]$End
+        rect_3_True_DEL[["y0"]] <- -1
+        rect_3_True_DEL[["y1"]] <- 1
+        rect_3_T_DEL <- c(rect_3_T_DEL, list(rect_3_True_DEL))
+      }
+
+      #2DEL
+
+      rect_3_True_2DEL <- list(
+        type = "rect",
+        fillcolor = "#CDBE70",
+        line = list(color = "#CDBE70"),
+        opacity = 0.6
+      )
+
+      rect_3_T_2DEL <- list()
+
+      for (i in c(1:dim(rects_3_True_2DEL)[1])) {
+        rect_3_True_2DEL[["x0"]] <- rects_3_True_2DEL[i, ]$Start
+        rect_3_True_2DEL[["x1"]] <- rects_3_True_2DEL[i, ]$End
+        rect_3_True_2DEL[["y0"]] <- -1
+        rect_3_True_2DEL[["y1"]] <- 1
+        rect_3_T_2DEL <- c(rect_3_T_2DEL, list(rect_3_True_2DEL))
+      }
+
+      #AMP
+
+      rect_3_True_AMP <- list(
+        type = "rect",
+        fillcolor = "#4876FF",
+        line = list(color = "#4876FF"),
+        opacity = 0.6
+      )
+
+      rect_3_T_AMP <- list()
+
+      for (i in c(1:dim(rects_3_True_AMP)[1])) {
+        rect_3_True_AMP[["x0"]] <- rects_3_True_AMP[i, ]$Start
+        rect_3_True_AMP[["x1"]] <- rects_3_True_AMP[i, ]$End
+        rect_3_True_AMP[["y0"]] <- -1
+        rect_3_True_AMP[["y1"]] <- 1
+        rect_3_T_AMP <- c(rect_3_T_AMP, list(rect_3_True_AMP))
+      }
+
+      #2AMP
+
+      rect_3_True_2AMP <- list(
+        type = "rect",
+        fillcolor = "#27408B",
+        line = list(color = "#27408B"),
+        opacity = 0.6
+      )
+
+      rect_3_T_2AMP <- list()
+
+      for (i in c(1:dim(rects_3_True_2AMP)[1])) {
+        rect_3_True_2AMP[["x0"]] <- rects_3_True_2AMP[i, ]$Start
+        rect_3_True_2AMP[["x1"]] <- rects_3_True_2AMP[i, ]$End
+        rect_3_True_2AMP[["y0"]] <- -1
+        rect_3_True_2AMP[["y1"]] <- 1
+        rect_3_T_2AMP <- c(rect_3_T_2AMP, list(rect_3_True_2AMP))
+      }
+
+      #NA
+
+      rect_3_True_NA <- list(
+        type = "rect",
+        fillcolor = "black",
+        line = list(color = "black"),
+        opacity = 1
+      )
+
+      rect_3_T_NA <- list()
+
+      for (i in c(1:dim(rects_3_True_NA)[1])) {
+        rect_3_True_NA[["x0"]] <- rects_3_True_NA[i, ]$Start
+        rect_3_True_NA[["x1"]] <- rects_3_True_NA[i, ]$End
+        rect_3_True_NA[["y0"]] <- -1
+        rect_3_True_NA[["y1"]] <- 1
+        rect_3_T_NA <- c(rect_3_T_NA, list(rect_3_True_NA))
+      }
+
+      #All together
+
+      rect_3_TT <- c()
+
+      if (dim(rects_3_True_AMP)[1] > 0) {
+        rect_3_TT <- append(rect_3_TT, rect_3_T_AMP)
+      }
+
+      if (dim(rects_3_True_DEL)[1] > 0) {
+        rect_3_TT <- append(rect_3_TT, rect_3_T_DEL)
+      }
+
+      if (dim(rects_3_True_2AMP)[1] > 0) {
+        rect_3_TT <- append(rect_3_TT, rect_3_T_2AMP)
+      }
+
+      if (dim(rects_3_True_2DEL)[1] > 0) {
+        rect_3_TT <- append(rect_3_TT, rect_3_T_2DEL)
+      }
+
+      if (dim(rects_3_True_NA)[1] > 0) {
+        rect_3_TT <- append(rect_3_TT, rect_3_T_NA)
+      }
+
+      if (dim(rects_3_True_set_range())[1] > 0) {
+        pl_True_set_3 <- plotly::plot_ly() |>
+          layout(
+            shapes = rect_3_TT,
+            xaxis = list(
+              title = "Chromosome coordinates",
+              range = c(
+                min = input$slider[1],
+                max = input$slider[2]
+              )
+            ),
+            yaxis = list(
+              title = "True Set",
+              range = list(-1, 1),
+              tickformat = ",d",
+              zeroline = FALSE,
+              showline = FALSE,
+              showticklabels = FALSE,
+              showgrid = FALSE)
+          )
+      } else {
+        pl_True_set_3 <- NULL
+      }
+    }
+
+
 
     # Plot for the first individual -----------------------------------------------
 
@@ -3159,7 +3610,9 @@ server <- function(input, output, session) {
                 )
               )
             )
-        } else if (is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)) {
+        } else if (
+          is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)
+        ) {
           pl_1 <- pl_1 |>
             layout(
               yaxis = list(
@@ -3234,19 +3687,19 @@ server <- function(input, output, session) {
         }
       }
 
-      if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
-        if (!is.null(pl_True_set) & !is.null(CNV3())) {
+      if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set_1)) {
+        if (!is.null(pl_True_set_1) &  !is.null(Annotations_list())) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
-            pl_True_set,
+            pl_True_set_1,
             fig,
             nrows = 4,
             heights = c(1 / 8, 3 / 8, 1 / 8, 3 / 8),
             shareX = TRUE,
             titleY = TRUE
           )
-        } else if (is.null(pl_True_set) & !is.null(CNV3())) {
+        } else if (is.null(pl_True_set_1) & !is.null(Annotations_list())) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3266,8 +3719,8 @@ server <- function(input, output, session) {
             titleY = TRUE
           )
         }
-      } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
-        if (!is.null(CNV3())) {
+      } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set_1)) {
+        if (!is.null(Annotations_list())) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3287,18 +3740,18 @@ server <- function(input, output, session) {
             titleY = TRUE
           )
         }
-      } else if (!isTRUE(input$GenomeBrowser) & !is.null(input$True_set)) {
-        if (!is.null(pl_True_set) & !is.null(CNV3())) {
+      } else if (!isTRUE(input$GenomeBrowser) & !is.null(input$True_set_1)) {
+        if (!is.null(pl_True_set_1) & !is.null(Annotations_list())) {
           pl <- plotly::subplot(
             pl_1,
-            pl_True_set,
+            pl_True_set_1,
             fig,
             nrows = 3,
             heights = c(1 / 6, 1 / 6, 4 / 6),
             shareX = TRUE,
             titleY = TRUE
           )
-        } else if (is.null(pl_True_set) & !is.null(CNV3())) {
+        } else if (is.null(pl_True_set_1) & !is.null(Annotations_list())) {
           pl <- plotly::subplot(
             pl_1,
             fig,
@@ -3310,8 +3763,8 @@ server <- function(input, output, session) {
         } else {
           pl <- pl_1
         }
-      } else if (!isTRUE(input$GenomeBrowser) & is.null(input$True_set)) {
-        if (!is.null(CNV3())) {
+      } else if (!isTRUE(input$GenomeBrowser) & is.null(input$True_set_1)) {
+        if (!is.null(Annotations_list())) {
           pl <- plotly::subplot(
             pl_1,
             fig,
@@ -4185,10 +4638,33 @@ server <- function(input, output, session) {
             )
           )
       }
-      pl_2 <- pl_2 |>
+
+
+      if (!is.null(input$True_set_2)) {
+        if (!is.null(pl_True_set_2)){
+          pl_B <- plotly::subplot(
+            pl_2,
+            pl_True_set_2,
+            nrows = 2,
+            heights = c(4/5, 1 /5),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
+        else {
+          pl_B <- pl_2
+        }
+
+      } else {
+        pl_B <- pl_2
+      }
+
+
+
+      pl_B <- pl_B |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
     }
+
 
     # Plot for third individual -----------------------------------------------
 
@@ -5059,10 +5535,38 @@ server <- function(input, output, session) {
           )
       }
 
-      pl_3 <- pl_3 |>
+
+
+
+      if (!is.null(input$True_set_3)) {
+        if (!is.null(pl_True_set_3)){
+          pl_C <- plotly::subplot(
+            pl_3,
+            pl_True_set_3,
+            nrows = 2,
+            heights = c(4/5, 1 /5),
+            shareX = TRUE,
+            titleY = TRUE
+          )}
+        else {
+          pl_C <- pl_3
+        }
+
+      } else {
+        pl_C <- pl_3
+      }
+
+
+
+
+      pl_C <- pl_C |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
     }
+
+
+
+
 
     # Final plot --------------------------------------------------------------
 
@@ -5079,7 +5583,7 @@ server <- function(input, output, session) {
         if (input$ShareAxes) {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
+            pl_B,
             nrows = 2,
             heights = c(3 / 4, 1 / 4),
             shareX = TRUE,
@@ -5088,7 +5592,7 @@ server <- function(input, output, session) {
         } else {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
+            pl_B,
             nrows = 2,
             heights = c(3 / 4, 1 / 4),
             titleY = TRUE
@@ -5098,7 +5602,7 @@ server <- function(input, output, session) {
         if (input$ShareAxes) {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
+            pl_B,
             nrows = 2,
             heights = c(2 / 3, 1 / 3),
             shareX = TRUE,
@@ -5107,7 +5611,7 @@ server <- function(input, output, session) {
         } else {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
+            pl_B,
             nrows = 2,
             heights = c(2 / 3, 1 / 3),
             titleY = TRUE
@@ -5119,8 +5623,8 @@ server <- function(input, output, session) {
         if (input$ShareAxes) {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
-            pl_3,
+            pl_B,
+            pl_C,
             nrows = 3,
             heights = c(3 / 5, 1 / 5, 1 / 5),
             shareX = TRUE,
@@ -5129,8 +5633,8 @@ server <- function(input, output, session) {
         } else {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
-            pl_3,
+            pl_B,
+            pl_C,
             nrows = 3,
             heights = c(3 / 5, 1 / 5, 1 / 5),
             titleY = TRUE
@@ -5140,8 +5644,8 @@ server <- function(input, output, session) {
         if (input$ShareAxes) {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
-            pl_3,
+            pl_B,
+            pl_C,
             nrows = 3,
             heights = c(2 / 4, 1 / 4, 1 / 4),
             shareX = TRUE,
@@ -5150,8 +5654,8 @@ server <- function(input, output, session) {
         } else {
           plt2 <- plotly::subplot(
             pl,
-            pl_2,
-            pl_3,
+            pl_B,
+            pl_C,
             nrows = 3,
             heights = c(2 / 4, 1 / 4, 1 / 4),
             titleY = TRUE
@@ -5176,7 +5680,9 @@ server <- function(input, output, session) {
       input$GenomeBrowser,
       input$HSLM_1,
       input$FastCall_Results_1,
-      input$True_set,
+      input$True_set_1,
+      input$True_set_2,
+      input$True_set_3,
       input$HSLM_2,
       input$FastCall_Results_2,
       input$HSLM_3,
