@@ -3734,7 +3734,20 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               shareX = TRUE,
               titleY = TRUE
             )
-          } else {
+          } else if (!is.null(pl_True_set_1) & is.null(Annotations_list())) {
+            pl <- plotly::subplot(
+              fig2,
+              pl_1,
+              pl_True_set_1,
+              nrows = 3,
+              heights = c(1 / 6, 4/6, 1/6),
+              shareX = TRUE,
+              titleY = TRUE
+            )
+          }
+
+
+          else {
             pl <- plotly::subplot(
               fig2,
               pl_1,
