@@ -2031,11 +2031,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     output$Plot_single_chr <- plotly::renderPlotly({
       shiny::req(input$FastCall_Results_1, input$Genome)
 
-      if (
-        !(is.null(input$FastCall_Results_1) |
-          is.null(input$slider_Annotations[1]) |
-          is.null(input$slider_Annotations[2]))
-      ) {
         if (!(is.null(CNV3()))) {
           if (dim(CNV3())[1] > 0) {
             CNV_Gain <- CNV3() |>
@@ -2174,9 +2169,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             plotly::partial_bundle() |>
             plotly::toWebGL()
         }
-      } else {
-        fig <- NULL
-      }
+
 
       # Plot genes annotations --------------------------------------------------
 
@@ -3757,6 +3750,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           }
+
+
+
         } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set_1)) {
           if (!is.null(Annotations_list())) {
             pl <- plotly::subplot(
