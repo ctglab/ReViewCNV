@@ -38,7 +38,7 @@ COPY inst/www /app/www
 COPY inst/hg38_Coordinates.rds /app
 COPY inst/hg37_Coordinates.rds /app
 COPY tools/ReViewCNV.R /app
-CMD  Rscript ReViewCNV.R
+CMD ["Rscript", "ReViewCNV.R"]
 
 
 
