@@ -49,7 +49,7 @@ _sudo docker buildx build  -t reviewcnv ._
 
 ##### To run the Docker use:
 
-_sudo docker run --name reviewcnv  -p 6868:6868 reviewcnv Rscript ReViewCNV.R_
+_sudo docker run --name reviewcnv  -p 6868:6868 reviewcnv_
 
 
 <br/>
