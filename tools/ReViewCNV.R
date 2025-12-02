@@ -12,9 +12,7 @@ library(arrow)
 # Specify the application port
 options(shiny.maxRequestSize = 50 * 1024^2) #max dim for input files
 options(shiny.host = "0.0.0.0")
-options(shiny.port =
-
-  )
+options(shiny.port =6868)
 addResourcePath(prefix = 'www', directoryPath = 'www')
 shinyOptions(cache = cachem::cache_mem(max_size = 500e6))
 options(warn = -1)
@@ -35,12 +33,14 @@ genes_annotation_37 <- readRDS("genes_annotation_37.rds")
 # Read exons annotations --------------------------------------------------
 
 exons_annotation_37 <- readRDS("Exons_37.rds")
+
 exons_annotation_38 <- readRDS("Exons_38.rds")
 
 # Read chromosome coordinates --------------------------------------------
 
 hg37_Chromosomes_Coordinates <- readRDS("hg37_Coordinates.rds")
 hg38_Chromosomes_Coordinates <- readRDS("hg38_Coordinates.rds")
+
 
 # ui ----------------------------------------------------------------------
 
