@@ -19,6 +19,7 @@ RUN installr -d dplyr
 RUN installr -d readr
 RUN installr -d htmlwidgets
 RUN installr -d bslib
+RUN installr -d cachem
 
 RUN mkdir -p ~/.R && echo "LDFLAGS+=-fPIC" >> ~/.R/Makevars
 RUN installr -d \

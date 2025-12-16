@@ -10,9 +10,15 @@ library(arrow)
 # Arguments ---------------------------------------------------------------
 
 # Specify the application port
-options(shiny.maxRequestSize = 50 * 1024^2) #max dim for input files
-options(shiny.host = "0.0.0.0")
-options(shiny.port =6868)
+
+port <- as.integer(Sys.getenv("SHINYPROXY_PORT", "6868"))
+options(shiny.port = port, shiny.host = "0.0.0.0")
+
+options(shiny.maxRequestSize = 50 * 1024^2)
+
+options(shiny.fullstacktrace = TRUE)
+
+
 addResourcePath(prefix = 'www', directoryPath = 'www')
 shinyOptions(cache = cachem::cache_mem(max_size = 500e6))
 options(warn = -1)
