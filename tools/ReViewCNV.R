@@ -12,9 +12,6 @@ library(arrow)
 # Specify the application port
 
 
-port <- as.integer(Sys.getenv("SHINYPROXY_PORT", "6868"))
-options(shiny.port = port, shiny.host = "0.0.0.0")
-
 options(shiny.maxRequestSize = 50 * 1024^2)
 
 options(shiny.fullstacktrace = TRUE)
