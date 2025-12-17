@@ -39,7 +39,8 @@ COPY inst/www /app/www
 COPY inst/hg38_Coordinates.rds /app
 COPY inst/hg37_Coordinates.rds /app
 COPY tools/ReViewCNV.R /app
-ENTRYPOINT ["Rscript", "ReViewCNV.R"]
+
+CMD R -e "shiny::runApp('/app', host='0.0.0.0', port=as.numeric(Sys.getenv('PORT')))"
 
 
 
