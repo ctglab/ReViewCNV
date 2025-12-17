@@ -38,7 +38,7 @@ COPY inst/Exons_38.rds  /app
 COPY inst/www /app/www
 COPY inst/hg38_Coordinates.rds /app
 COPY inst/hg37_Coordinates.rds /app
-COPY tools/ReViewCNV.R /app
+COPY tools/ReViewCNV.R ./app.R
 
 CMD R -e "port <- as.numeric(Sys.getenv('PORT', '6868')); shiny::runApp('/app', host='0.0.0.0', port=port)"
 
