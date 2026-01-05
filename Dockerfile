@@ -27,8 +27,8 @@ RUN installr -d \
     -a "openssl libarrow_dataset libarrow" arrow@19.0.1.1
 
 
-# Make Shiny listen on 3838, 0.0.0.0 by default
-RUN printf "\noptions(shiny.port=3838, shiny.host='0.0.0.0')\n" \
+# Make Shiny listen on 6868, 0.0.0.0 by default
+RUN printf "\noptions(shiny.port=6868, shiny.host='0.0.0.0')\n" \
     >> /usr/local/lib/R/etc/Rprofile.site
 
 
@@ -49,7 +49,7 @@ COPY tools/ReViewCNV.R ./app.R
 
 
 # Expose the Shiny port
-EXPOSE 3838
+EXPOSE 6868
 
 
 # Create non-root user (Alpine BusyBox tools)
