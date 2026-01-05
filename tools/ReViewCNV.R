@@ -9,11 +9,7 @@ library(arrow)
 
 # Arguments ---------------------------------------------------------------
 
-# Specify the application port
-
-
 options(shiny.maxRequestSize = 50 * 1024^2)
-
 options(shiny.fullstacktrace = TRUE)
 
 
@@ -398,7 +394,7 @@ server <- function(input, output, session) {
 
   # True set 1 ----------------------------------------------------------------
 
-  True_set_1<- shiny::reactive({
+  True_set_1 <- shiny::reactive({
     if (is.null(input$True_set_1)) {
       return(NULL)
     } else {
@@ -424,10 +420,9 @@ server <- function(input, output, session) {
     }
   })
 
-
   # True set 2 ----------------------------------------------------------------
 
-  True_set_2<- shiny::reactive({
+  True_set_2 <- shiny::reactive({
     if (is.null(input$True_set_2)) {
       return(NULL)
     } else {
@@ -455,7 +450,7 @@ server <- function(input, output, session) {
 
   # True set 3 ----------------------------------------------------------------
 
-  True_set_3<- shiny::reactive({
+  True_set_3 <- shiny::reactive({
     if (is.null(input$True_set_3)) {
       return(NULL)
     } else {
@@ -480,8 +475,6 @@ server <- function(input, output, session) {
       return(True_set_3)
     }
   })
-
-
 
   # File and FastCall data second individual ----------------------------------
 
@@ -1399,7 +1392,6 @@ server <- function(input, output, session) {
     }
   })
 
-
   # Subsetting True set 2 ------------------------------------------------
 
   rects_2_True_set <- shiny::reactive({
@@ -1416,10 +1408,7 @@ server <- function(input, output, session) {
     }
   })
 
-
-
   # Subsetting True set 3 ------------------------------------------------
-
 
   rects_3_True_set <- shiny::reactive({
     True_set_3() |> filter(Chromosome == input$chr)
@@ -1434,9 +1423,6 @@ server <- function(input, output, session) {
       return(rects_3_True_set_range)
     }
   })
-
-
-
 
   # Subsetting variants annotations data ---------------------------------------------
 
@@ -1495,7 +1481,7 @@ server <- function(input, output, session) {
   })
 
   Annotations_subset <- shiny::reactive({
-    if(!is.null(rects_1_range())){
+    if (!is.null(rects_1_range())) {
       if (input$Genome == "GRCh37") {
         Annotations_37 |>
           filter(Chromosome == input$chr) |>
@@ -1569,8 +1555,9 @@ server <- function(input, output, session) {
       } else {
         return(NULL)
       }
+    } else {
+      return(NULL)
     }
-    else{return(NULL)}
   })
 
   CNV1 <- shiny::reactive({
@@ -1834,7 +1821,6 @@ server <- function(input, output, session) {
           "True_set_2",
           "If available load the True set"
         )
-
       )
     } else {
       return(NULL)
@@ -2151,7 +2137,6 @@ server <- function(input, output, session) {
         plotly::toWebGL()
     }
 
-
     # Plot genes annotations --------------------------------------------------
 
     fig2 <- plotly::plot_ly(
@@ -2400,16 +2385,15 @@ server <- function(input, output, session) {
               zeroline = FALSE,
               showline = FALSE,
               showticklabels = FALSE,
-              showgrid = FALSE))
+              showgrid = FALSE
+            )
+          )
       } else {
         pl_True_set_1 <- NULL
       }
     }
 
-
-
     # Plot True set 2-----------------------------------------------------------
-
 
     if (!is.null(input$True_set_2)) {
       rects_2_True_2DEL <-
@@ -2569,13 +2553,13 @@ server <- function(input, output, session) {
               zeroline = FALSE,
               showline = FALSE,
               showticklabels = FALSE,
-              showgrid = FALSE)
+              showgrid = FALSE
+            )
           )
       } else {
         pl_True_set_2 <- NULL
       }
     }
-
 
     # Plot True set 3-----------------------------------------------------------
 
@@ -2737,14 +2721,13 @@ server <- function(input, output, session) {
               zeroline = FALSE,
               showline = FALSE,
               showticklabels = FALSE,
-              showgrid = FALSE)
+              showgrid = FALSE
+            )
           )
       } else {
         pl_True_set_3 <- NULL
       }
     }
-
-
 
     # Plot for the first individual -----------------------------------------------
 
@@ -3609,9 +3592,7 @@ server <- function(input, output, session) {
                 )
               )
             )
-        } else if (
-          is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)
-        ) {
+        } else if (is.null(input$HSLM_3) | is.null(input$FastCall_Results_3)) {
           pl_1 <- pl_1 |>
             layout(
               yaxis = list(
@@ -3687,7 +3668,7 @@ server <- function(input, output, session) {
       }
 
       if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set_1)) {
-        if (!is.null(pl_True_set_1) &  !is.null(Annotations_list())) {
+        if (!is.null(pl_True_set_1) & !is.null(Annotations_list())) {
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3714,14 +3695,11 @@ server <- function(input, output, session) {
             pl_1,
             pl_True_set_1,
             nrows = 3,
-            heights = c(1 / 6, 4/6, 1/6),
+            heights = c(1 / 6, 4 / 6, 1 / 6),
             shareX = TRUE,
             titleY = TRUE
           )
-        }
-
-
-        else {
+        } else {
           pl <- plotly::subplot(
             fig2,
             pl_1,
@@ -3731,9 +3709,6 @@ server <- function(input, output, session) {
             titleY = TRUE
           )
         }
-
-
-
       } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set_1)) {
         if (!is.null(Annotations_list())) {
           pl <- plotly::subplot(
@@ -4654,32 +4629,27 @@ server <- function(input, output, session) {
           )
       }
 
-
       if (!is.null(input$True_set_2)) {
-        if (!is.null(pl_True_set_2)){
+        if (!is.null(pl_True_set_2)) {
           pl_B <- plotly::subplot(
             pl_2,
             pl_True_set_2,
             nrows = 2,
-            heights = c(4/5, 1 /5),
+            heights = c(4 / 5, 1 / 5),
             shareX = TRUE,
             titleY = TRUE
-          )}
-        else {
+          )
+        } else {
           pl_B <- pl_2
         }
-
       } else {
         pl_B <- pl_2
       }
-
-
 
       pl_B <- pl_B |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
     }
-
 
     # Plot for third individual -----------------------------------------------
 
@@ -5550,38 +5520,27 @@ server <- function(input, output, session) {
           )
       }
 
-
-
-
       if (!is.null(input$True_set_3)) {
-        if (!is.null(pl_True_set_3)){
+        if (!is.null(pl_True_set_3)) {
           pl_C <- plotly::subplot(
             pl_3,
             pl_True_set_3,
             nrows = 2,
-            heights = c(4/5, 1 /5),
+            heights = c(4 / 5, 1 / 5),
             shareX = TRUE,
             titleY = TRUE
-          )}
-        else {
+          )
+        } else {
           pl_C <- pl_3
         }
-
       } else {
         pl_C <- pl_3
       }
-
-
-
 
       pl_C <- pl_C |>
         plotly::partial_bundle() |>
         plotly::toWebGL()
     }
-
-
-
-
 
     # Final plot --------------------------------------------------------------
 

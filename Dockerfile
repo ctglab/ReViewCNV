@@ -26,6 +26,12 @@ RUN installr -d \
     -t "make openssl-dev cmake linux-headers apache-arrow-dev" \
     -a "openssl libarrow_dataset libarrow" arrow@19.0.1.1
 
+
+# Make Shiny listen on 3838, 0.0.0.0 by default
+RUN printf "\noptions(shiny.port=3838, shiny.host='0.0.0.0')\n" \
+    >> /usr/local/lib/R/etc/Rprofile.site
+
+
 #Create work directory and copy required files and folders into it
 RUN mkdir -p /app
 WORKDIR /app
@@ -40,7 +46,25 @@ COPY inst/hg38_Coordinates.rds /app
 COPY inst/hg37_Coordinates.rds /app
 COPY tools/ReViewCNV.R ./app.R
 
-CMD R -e "port <- as.numeric(Sys.getenv('PORT', '6868')); shiny::runApp('/app', host='0.0.0.0', port=port)"
+
+
+# Expose the Shiny port
+EXPOSE 3838
+
+
+# Create non-root user (Alpine BusyBox tools)
+RUN addgroup -g 1000 -S shiny \
+ && adduser  -u 1000 -S -D -H -s /sbin/nologin -G shiny -h /home/shiny shiny \
+ && chown -R shiny:shiny /app
+USER shiny
+
+# Start the app
+CMD ["R", "-q", "-e", "shiny::runApp('/app')"]
+
+
+
+
+
 
 
 
