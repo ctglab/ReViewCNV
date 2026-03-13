@@ -403,7 +403,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       return(fast_call_1)
     })
 
-    CNV_all_Chromosomes <- shiny::reactive({
+    CNV <- shiny::reactive({
       if (is.null(input$FastCall_Results_1) || input$Genome == "") {
         return(NULL)
       } else {
@@ -411,7 +411,10 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           dplyr::left_join(
             Chromosomes_Coordinates(),
             dplyr::join_by(Chromosome)
-          )
+          )|>
+          rename(End = End.y) |>
+          rename(Start = Start.y) |>
+          rename(level.x = level)
       }
     })
 
@@ -782,15 +785,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # CNV for all Chromosomes ----------------------------------------------------
 
-    CNV <- shiny::reactive({
-      shiny::req(input$FastCall_Results_1, input$Genome)
-
-      CNV_all_Chromosomes() |>
-        dplyr::left_join(
-          Chromosomes_Coordinates(),
-          dplyr::join_by(Chromosome)
-        )
-    })
 
     rect <- shiny::reactive({
       shiny::req(input$FastCall_Results_1, input$Genome)
@@ -890,6 +884,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
       rect <- c(rect_Chromosome)
 
+
       if (dim(rect_CNV_2AMP)[1] > 0) {
         rect <- append(rect, rect_2AMP)
       }
@@ -905,6 +900,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       if (dim(rect_CNV_2DEL)[1] > 0) {
         rect <- append(rect, rect_2DEL)
       }
+
+      return(rect)
+
     })
 
     # Plot all chromosomes ----------------------------------------------------
