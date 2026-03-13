@@ -31,16 +31,26 @@ ReViewCNV()
 ```
 
   
-It is also possible to install the Dockerized version of the app (see below). 
-</p>
+It is also possible to install the Dockerized version of the app (see below) through DockerHub or from GitHub (see below)
 <p align="justify">
 The ShinyApp has been developed in R (v. 4.4.5) using RStudio as IDE and the following R libraries: arrow, bslib, dplyr, htmlwidgets,plotly, shiny, shinyHugePlot and stringr. The base image used for the Dockerfile is rhub/rminimal.
 </p>
 
 <br/>
 
+### Downloding the image from DockerHub and running it
 
-### Building and running the Docker
+##### Download the last version of the image with:
+
+_sudo docker pull ctglabcnr/reviewcnv:latest_
+
+##### And then run it with : 
+
+_sudo docker run --name reviewcnv -p 6868:6868  -it ctglabcnr/reviewcnv:latest_
+
+<br/>
+
+### Downlaoding the image from GitHub, building and running it
 
 
 ##### To build the image, download the repository, open the terminal, go to the folder with the downloaded files and run the command below (this will take around 25 minutes):
@@ -73,6 +83,7 @@ _singularity run  ReViewCNV.sif  Rscript ReViewCNV.R_ (if using singularity)
 _apptainer run  ReViewCNV.sif  Rscript ReViewCNV.R_ (if using apptainer)
 
 
+<br/>
 
 ### How to use the app
 <p align="justify">
