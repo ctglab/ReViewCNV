@@ -933,19 +933,22 @@ server <- function(input, output, session) {
 
   # Observe click event -----------------------------------------------------
 
-  hover_reactive <- shiny::reactiveVal()
+  hover_reactive <- shiny::reactiveVal(NULL)
+
+  shiny::observeEvent(
+    plotly::event_data("plotly_click"),
+    {
+      if (input$chr != "All" || h$val != 1) {
+        return()
+      }
+
+      hover_reactive(plotly::event_data("plotly_click"))
+    },
+    ignoreInit = TRUE
+  )
 
   shiny::observe({
-    hover_data <- plotly::event_data("plotly_click")
-    if (!is.null(hover_data)) {
-      hover_reactive(hover_data)
-    } else {
-      return(NULL)
-    }
-  })
-
-  shiny::observe({
-    if (!is.null(hover_reactive()) & h$val == 1 ) {
+    if (!is.null(hover_reactive()) & h$val == 1 & input$chr == "All") {
       shiny::updateSelectInput(
         session,
         "chr",
@@ -979,7 +982,7 @@ server <- function(input, output, session) {
         b <- "Y"
       }
       c <- paste0("chr", b)
-      c
+      return(c)
     } else {
       return(NA_real_)
     }
@@ -5739,6 +5742,5 @@ server <- function(input, output, session) {
     contentType = "text/html"
   )
 }
-
 
 shinyApp(ui, server)
