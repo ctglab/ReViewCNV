@@ -945,7 +945,7 @@ server <- function(input, output, session) {
   })
 
   shiny::observe({
-    if (!is.null(hover_reactive()) & h$val == 1) {
+    if (!is.null(hover_reactive()) & h$val == 1 ) {
       shiny::updateSelectInput(
         session,
         "chr",

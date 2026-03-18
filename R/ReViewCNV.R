@@ -411,7 +411,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           dplyr::left_join(
             Chromosomes_Coordinates(),
             dplyr::join_by(Chromosome)
-          )|>
+          ) |>
           rename(End = End.y) |>
           rename(Start = Start.y) |>
           rename(level.x = level)
@@ -420,7 +420,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # True set 1 ----------------------------------------------------------------
 
-    True_set_1<- shiny::reactive({
+    True_set_1 <- shiny::reactive({
       if (is.null(input$True_set_1)) {
         return(NULL)
       } else {
@@ -446,10 +446,9 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
     })
 
-
     # True set 2 ----------------------------------------------------------------
 
-    True_set_2<- shiny::reactive({
+    True_set_2 <- shiny::reactive({
       if (is.null(input$True_set_2)) {
         return(NULL)
       } else {
@@ -477,7 +476,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # True set 3 ----------------------------------------------------------------
 
-    True_set_3<- shiny::reactive({
+    True_set_3 <- shiny::reactive({
       if (is.null(input$True_set_3)) {
         return(NULL)
       } else {
@@ -502,8 +501,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         return(True_set_3)
       }
     })
-
-
 
     # File and FastCall data second individual ----------------------------------
 
@@ -785,7 +782,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # CNV for all Chromosomes ----------------------------------------------------
 
-
     rect <- shiny::reactive({
       shiny::req(input$FastCall_Results_1, input$Genome)
 
@@ -884,7 +880,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
       rect <- c(rect_Chromosome)
 
-
       if (dim(rect_CNV_2AMP)[1] > 0) {
         rect <- append(rect, rect_2AMP)
       }
@@ -902,7 +897,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
 
       return(rect)
-
     })
 
     # Plot all chromosomes ----------------------------------------------------
@@ -962,19 +956,22 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
 
     # Observe click event -----------------------------------------------------
 
-    hover_reactive <- shiny::reactiveVal()
+    hover_reactive <- shiny::reactiveVal(NULL)
+
+    shiny::observeEvent(
+      plotly::event_data("plotly_click"),
+      {
+        if (input$chr != "All" || h$val != 1) {
+          return()
+        }
+
+        hover_reactive(plotly::event_data("plotly_click"))
+      },
+      ignoreInit = TRUE
+    )
 
     shiny::observe({
-      hover_data <- plotly::event_data("plotly_click")
-      if (!is.null(hover_data)) {
-        hover_reactive(hover_data)
-      } else {
-        return(NULL)
-      }
-    })
-
-    shiny::observe({
-      if (!is.null(hover_reactive()) & h$val == 1) {
+      if (!is.null(hover_reactive()) & h$val == 1 & input$chr == "All") {
         shiny::updateSelectInput(
           session,
           "chr",
@@ -1008,7 +1005,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
           b <- "Y"
         }
         c <- paste0("chr", b)
-        c
+        return(c)
       } else {
         return(NA_real_)
       }
@@ -1416,7 +1413,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
     })
 
-
     # Subsetting True set 2 ------------------------------------------------
 
     rects_2_True_set <- shiny::reactive({
@@ -1433,10 +1429,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
       }
     })
 
-
-
     # Subsetting True set 3 ------------------------------------------------
-
 
     rects_3_True_set <- shiny::reactive({
       True_set_3() |> filter(Chromosome == input$chr)
@@ -1451,9 +1444,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         return(rects_3_True_set_range)
       }
     })
-
-
-
 
     # Subsetting variants annotations data ---------------------------------------------
 
@@ -1512,82 +1502,83 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     })
 
     Annotations_subset <- shiny::reactive({
-      if(!is.null(rects_1_range())){
-      if (input$Genome == "GRCh37") {
-        Annotations_37 |>
-          filter(Chromosome == input$chr) |>
-          filter(Frequency > as.numeric(input$Freq)) |>
-          filter(Database %in% !!Annotations_list()) |>
-          filter(stringr::str_detect(calls, input$Type)) |>
-          dplyr::collect() |>
-          dplyr::inner_join(
-            rects_1_range(),
-            dplyr::join_by(overlaps(Start, End, Start, End))
-          ) |>
-          rename(
-            chr = Chromosome.x,
-            Start = Start.x,
-            End = End.x,
-            End_FastCall = End.y,
-            Start_FastCall = Start.y
-          ) |>
-          select(
-            "Unique_ID",
-            "ID",
-            "chr",
-            "Start",
-            "Start_FastCall",
-            "End_FastCall",
-            "End",
-            "calls",
-            "Length",
-            "Frequency",
-            "Database",
-            "middle",
-            "Frequency",
-            "AnnotSV_Present"
-          ) |>
-          arrange(End_FastCall, End)
-      } else if (input$Genome == "GRCh38") {
-        Annotations_38 |>
-          filter(Chromosome == input$chr) |>
-          filter(Frequency > as.numeric(input$Freq)) |>
-          filter(Database %in% !!Annotations_list()) |>
-          filter(stringr::str_detect(calls, input$Type)) |>
-          dplyr::collect() |>
-          dplyr::inner_join(
-            rects_1_range(),
-            dplyr::join_by(overlaps(Start, End, Start, End))
-          ) |>
-          rename(
-            chr = Chromosome.x,
-            Start = Start.x,
-            End = End.x,
-            End_FastCall = End.y,
-            Start_FastCall = Start.y
-          ) |>
-          select(
-            "Unique_ID",
-            "ID",
-            "chr",
-            "Start",
-            "Start_FastCall",
-            "End_FastCall",
-            "End",
-            "calls",
-            "Length",
-            "Frequency",
-            "Database",
-            "middle",
-            "Frequency",
-            "AnnotSV_Present"
-          ) |>
-          arrange(End_FastCall, End)
+      if (!is.null(rects_1_range())) {
+        if (input$Genome == "GRCh37") {
+          Annotations_37 |>
+            filter(Chromosome == input$chr) |>
+            filter(Frequency > as.numeric(input$Freq)) |>
+            filter(Database %in% !!Annotations_list()) |>
+            filter(stringr::str_detect(calls, input$Type)) |>
+            dplyr::collect() |>
+            dplyr::inner_join(
+              rects_1_range(),
+              dplyr::join_by(overlaps(Start, End, Start, End))
+            ) |>
+            rename(
+              chr = Chromosome.x,
+              Start = Start.x,
+              End = End.x,
+              End_FastCall = End.y,
+              Start_FastCall = Start.y
+            ) |>
+            select(
+              "Unique_ID",
+              "ID",
+              "chr",
+              "Start",
+              "Start_FastCall",
+              "End_FastCall",
+              "End",
+              "calls",
+              "Length",
+              "Frequency",
+              "Database",
+              "middle",
+              "Frequency",
+              "AnnotSV_Present"
+            ) |>
+            arrange(End_FastCall, End)
+        } else if (input$Genome == "GRCh38") {
+          Annotations_38 |>
+            filter(Chromosome == input$chr) |>
+            filter(Frequency > as.numeric(input$Freq)) |>
+            filter(Database %in% !!Annotations_list()) |>
+            filter(stringr::str_detect(calls, input$Type)) |>
+            dplyr::collect() |>
+            dplyr::inner_join(
+              rects_1_range(),
+              dplyr::join_by(overlaps(Start, End, Start, End))
+            ) |>
+            rename(
+              chr = Chromosome.x,
+              Start = Start.x,
+              End = End.x,
+              End_FastCall = End.y,
+              Start_FastCall = Start.y
+            ) |>
+            select(
+              "Unique_ID",
+              "ID",
+              "chr",
+              "Start",
+              "Start_FastCall",
+              "End_FastCall",
+              "End",
+              "calls",
+              "Length",
+              "Frequency",
+              "Database",
+              "middle",
+              "Frequency",
+              "AnnotSV_Present"
+            ) |>
+            arrange(End_FastCall, End)
+        } else {
+          return(NULL)
+        }
       } else {
         return(NULL)
       }
-      }
-      else{return(NULL)}
     })
 
     CNV1 <- shiny::reactive({
@@ -1851,7 +1842,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             "True_set_2",
             "If available load the True set"
           )
-
         )
       } else {
         return(NULL)
@@ -2029,145 +2019,144 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
     output$Plot_single_chr <- plotly::renderPlotly({
       shiny::req(input$FastCall_Results_1, input$Genome)
 
-        if (!(is.null(CNV3()))) {
-          if (dim(CNV3())[1] > 0) {
-            CNV_Gain <- CNV3() |>
-              filter(calls == "Gain")
+      if (!(is.null(CNV3()))) {
+        if (dim(CNV3())[1] > 0) {
+          CNV_Gain <- CNV3() |>
+            filter(calls == "Gain")
 
-            CNV_Loss <- CNV3() |>
-              filter(calls == "Loss")
+          CNV_Loss <- CNV3() |>
+            filter(calls == "Loss")
 
-            rect_1_CNV_Gain <- list(
-              type = "polygon",
-              fillcolor = "blue",
-              line = list(color = "blue")
-            )
+          rect_1_CNV_Gain <- list(
+            type = "polygon",
+            fillcolor = "blue",
+            line = list(color = "blue")
+          )
 
-            rect_CNV_Gain <- list()
-            for (i in c(1:dim(CNV_Gain)[1])) {
-              rect_1_CNV_Gain[["x0"]] <- CNV_Gain[i, ]$Start
-              rect_1_CNV_Gain[["x1"]] <- CNV_Gain[i, ]$End
-              rect_1_CNV_Gain[["y0"]] <- CNV_Gain[i, ]$level - 0.6
-              rect_1_CNV_Gain[["y1"]] <- CNV_Gain[i, ]$level - 0.3
-              rect_CNV_Gain <- c(rect_CNV_Gain, list(rect_1_CNV_Gain))
-            }
-
-            rect_1_CNV_Loss <- list(
-              type = "polygon",
-              fillcolor = "orange",
-              line = list(color = "orange")
-            )
-
-            rect_CNV_Loss <- list()
-            for (i in c(1:dim(CNV_Loss)[1])) {
-              rect_1_CNV_Loss[["x0"]] <- CNV_Loss[i, ]$Start
-              rect_1_CNV_Loss[["x1"]] <- CNV_Loss[i, ]$End
-              rect_1_CNV_Loss[["y0"]] <- CNV_Loss[i, ]$level - 0.6
-              rect_1_CNV_Loss[["y1"]] <- CNV_Loss[i, ]$level - 0.3
-              rect_1_CNV_Loss[["name"]] <- CNV_Loss[i, ]$ID
-              rect_CNV_Loss <- c(rect_CNV_Loss, list(rect_1_CNV_Loss))
-            }
-
-            rect <- c()
-
-            if (dim(CNV_Loss)[1] > 0) {
-              rect <- append(rect, rect_CNV_Loss)
-            }
-
-            if (dim(CNV_Gain)[1] > 0) {
-              rect <- append(rect, rect_CNV_Gain)
-            }
-            fig <- plotly::plot_ly() |>
-              layout(
-                shapes = rect,
-                xaxis = list(
-                  title = "Chromosome coordinates",
-                  range = c(
-                    min = input$slider[1],
-                    max = input$slider[2]
-                  )
-                ),
-                yaxis = list(
-                  title = "Polymorphisms",
-                  range = list(
-                    (input$slider_Annotations[1]),
-                    (input$slider_Annotations[2])
-                  ),
-                  tickformat = ",d"
-                )
-              ) |>
-              plotly::add_trace(
-                data = CNV_Gain,
-                type = "scatter",
-                mode = "markers",
-                x = ~middle,
-                y = ~ level - 0.3,
-                color = I("blue"),
-                text = ~ paste(
-                  " Database:",
-                  Database,
-                  "<br>",
-                  "ID:",
-                  ID,
-                  "<br>",
-                  "Start:",
-                  Start,
-                  "<br>",
-                  "End:",
-                  End,
-                  "<br>",
-                  "Length: ",
-                  Length,
-                  "<br>",
-                  "Reported frequency: ",
-                  Frequency
-                ),
-                hoverinfo = "text",
-                marker = list(size = 2),
-                showlegend = FALSE,
-                hoverlabel = list(bgcolor = "blue", align = "left")
-              ) |>
-              plotly::add_trace(
-                data = CNV_Loss,
-                type = "scatter",
-                mode = "markers",
-                x = ~middle,
-                y = ~ level - 0.3,
-                color = I("orange"),
-                text = ~ paste(
-                  " Database:",
-                  Database,
-                  "<br>",
-                  "ID:",
-                  ID,
-                  "<br>",
-                  "Start:",
-                  Start,
-                  "<br>",
-                  "End:",
-                  End,
-                  "<br>",
-                  "Length: ",
-                  Length,
-                  "<br>",
-                  "Reported frequency: ",
-                  Frequency
-                ),
-                hoverinfo = "text",
-                marker = list(size = 2),
-                showlegend = FALSE,
-                hoverlabel = list(bgcolor = "orange", align = "left")
-              ) |>
-              plotly::partial_bundle() |>
-              plotly::toWebGL()
+          rect_CNV_Gain <- list()
+          for (i in c(1:dim(CNV_Gain)[1])) {
+            rect_1_CNV_Gain[["x0"]] <- CNV_Gain[i, ]$Start
+            rect_1_CNV_Gain[["x1"]] <- CNV_Gain[i, ]$End
+            rect_1_CNV_Gain[["y0"]] <- CNV_Gain[i, ]$level - 0.6
+            rect_1_CNV_Gain[["y1"]] <- CNV_Gain[i, ]$level - 0.3
+            rect_CNV_Gain <- c(rect_CNV_Gain, list(rect_1_CNV_Gain))
           }
-        } else {
-          fig <- plotly::plot_ly(type = "scatter", mode = "markers") |>
-            layout(yaxis = list(range = list(0, 20))) |>
+
+          rect_1_CNV_Loss <- list(
+            type = "polygon",
+            fillcolor = "orange",
+            line = list(color = "orange")
+          )
+
+          rect_CNV_Loss <- list()
+          for (i in c(1:dim(CNV_Loss)[1])) {
+            rect_1_CNV_Loss[["x0"]] <- CNV_Loss[i, ]$Start
+            rect_1_CNV_Loss[["x1"]] <- CNV_Loss[i, ]$End
+            rect_1_CNV_Loss[["y0"]] <- CNV_Loss[i, ]$level - 0.6
+            rect_1_CNV_Loss[["y1"]] <- CNV_Loss[i, ]$level - 0.3
+            rect_1_CNV_Loss[["name"]] <- CNV_Loss[i, ]$ID
+            rect_CNV_Loss <- c(rect_CNV_Loss, list(rect_1_CNV_Loss))
+          }
+
+          rect <- c()
+
+          if (dim(CNV_Loss)[1] > 0) {
+            rect <- append(rect, rect_CNV_Loss)
+          }
+
+          if (dim(CNV_Gain)[1] > 0) {
+            rect <- append(rect, rect_CNV_Gain)
+          }
+          fig <- plotly::plot_ly() |>
+            layout(
+              shapes = rect,
+              xaxis = list(
+                title = "Chromosome coordinates",
+                range = c(
+                  min = input$slider[1],
+                  max = input$slider[2]
+                )
+              ),
+              yaxis = list(
+                title = "Polymorphisms",
+                range = list(
+                  (input$slider_Annotations[1]),
+                  (input$slider_Annotations[2])
+                ),
+                tickformat = ",d"
+              )
+            ) |>
+            plotly::add_trace(
+              data = CNV_Gain,
+              type = "scatter",
+              mode = "markers",
+              x = ~middle,
+              y = ~ level - 0.3,
+              color = I("blue"),
+              text = ~ paste(
+                " Database:",
+                Database,
+                "<br>",
+                "ID:",
+                ID,
+                "<br>",
+                "Start:",
+                Start,
+                "<br>",
+                "End:",
+                End,
+                "<br>",
+                "Length: ",
+                Length,
+                "<br>",
+                "Reported frequency: ",
+                Frequency
+              ),
+              hoverinfo = "text",
+              marker = list(size = 2),
+              showlegend = FALSE,
+              hoverlabel = list(bgcolor = "blue", align = "left")
+            ) |>
+            plotly::add_trace(
+              data = CNV_Loss,
+              type = "scatter",
+              mode = "markers",
+              x = ~middle,
+              y = ~ level - 0.3,
+              color = I("orange"),
+              text = ~ paste(
+                " Database:",
+                Database,
+                "<br>",
+                "ID:",
+                ID,
+                "<br>",
+                "Start:",
+                Start,
+                "<br>",
+                "End:",
+                End,
+                "<br>",
+                "Length: ",
+                Length,
+                "<br>",
+                "Reported frequency: ",
+                Frequency
+              ),
+              hoverinfo = "text",
+              marker = list(size = 2),
+              showlegend = FALSE,
+              hoverlabel = list(bgcolor = "orange", align = "left")
+            ) |>
             plotly::partial_bundle() |>
             plotly::toWebGL()
         }
-
+      } else {
+        fig <- plotly::plot_ly(type = "scatter", mode = "markers") |>
+          layout(yaxis = list(range = list(0, 20))) |>
+          plotly::partial_bundle() |>
+          plotly::toWebGL()
+      }
 
       # Plot genes annotations --------------------------------------------------
 
@@ -2417,16 +2406,15 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 zeroline = FALSE,
                 showline = FALSE,
                 showticklabels = FALSE,
-                showgrid = FALSE))
+                showgrid = FALSE
+              )
+            )
         } else {
           pl_True_set_1 <- NULL
         }
       }
 
-
-
       # Plot True set 2-----------------------------------------------------------
-
 
       if (!is.null(input$True_set_2)) {
         rects_2_True_2DEL <-
@@ -2586,13 +2574,13 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 zeroline = FALSE,
                 showline = FALSE,
                 showticklabels = FALSE,
-                showgrid = FALSE)
+                showgrid = FALSE
+              )
             )
         } else {
           pl_True_set_2 <- NULL
         }
       }
-
 
       # Plot True set 3-----------------------------------------------------------
 
@@ -2754,14 +2742,13 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
                 zeroline = FALSE,
                 showline = FALSE,
                 showticklabels = FALSE,
-                showgrid = FALSE)
+                showgrid = FALSE
+              )
             )
         } else {
           pl_True_set_3 <- NULL
         }
       }
-
-
 
       # Plot for the first individual -----------------------------------------------
 
@@ -3704,7 +3691,7 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
         }
 
         if (isTRUE(input$GenomeBrowser) & !is.null(input$True_set_1)) {
-          if (!is.null(pl_True_set_1) &  !is.null(Annotations_list())) {
+          if (!is.null(pl_True_set_1) & !is.null(Annotations_list())) {
             pl <- plotly::subplot(
               fig2,
               pl_1,
@@ -3731,14 +3718,11 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               pl_1,
               pl_True_set_1,
               nrows = 3,
-              heights = c(1 / 6, 4/6, 1/6),
+              heights = c(1 / 6, 4 / 6, 1 / 6),
               shareX = TRUE,
               titleY = TRUE
             )
-          }
-
-
-          else {
+          } else {
             pl <- plotly::subplot(
               fig2,
               pl_1,
@@ -3748,9 +3732,6 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
               titleY = TRUE
             )
           }
-
-
-
         } else if (isTRUE(input$GenomeBrowser) & is.null(input$True_set_1)) {
           if (!is.null(Annotations_list())) {
             pl <- plotly::subplot(
@@ -4671,32 +4652,27 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             )
         }
 
-
         if (!is.null(input$True_set_2)) {
-          if (!is.null(pl_True_set_2)){
-          pl_B <- plotly::subplot(
-            pl_2,
-            pl_True_set_2,
-            nrows = 2,
-            heights = c(4/5, 1 /5),
-            shareX = TRUE,
-            titleY = TRUE
-          )}
-          else {
+          if (!is.null(pl_True_set_2)) {
+            pl_B <- plotly::subplot(
+              pl_2,
+              pl_True_set_2,
+              nrows = 2,
+              heights = c(4 / 5, 1 / 5),
+              shareX = TRUE,
+              titleY = TRUE
+            )
+          } else {
             pl_B <- pl_2
           }
-
         } else {
           pl_B <- pl_2
         }
-
-
 
         pl_B <- pl_B |>
           plotly::partial_bundle() |>
           plotly::toWebGL()
       }
-
 
       # Plot for third individual -----------------------------------------------
 
@@ -5567,38 +5543,27 @@ ReViewCNV <- function(host = "0.0.0.0", port = 3838, launch = TRUE) {
             )
         }
 
-
-
-
         if (!is.null(input$True_set_3)) {
-          if (!is.null(pl_True_set_3)){
+          if (!is.null(pl_True_set_3)) {
             pl_C <- plotly::subplot(
               pl_3,
               pl_True_set_3,
               nrows = 2,
-              heights = c(4/5, 1 /5),
+              heights = c(4 / 5, 1 / 5),
               shareX = TRUE,
               titleY = TRUE
-            )}
-          else {
+            )
+          } else {
             pl_C <- pl_3
           }
-
         } else {
           pl_C <- pl_3
         }
 
-
-
-
-      pl_C <- pl_C |>
-        plotly::partial_bundle() |>
-        plotly::toWebGL()
+        pl_C <- pl_C |>
+          plotly::partial_bundle() |>
+          plotly::toWebGL()
       }
-
-
-
-
 
       # Final plot --------------------------------------------------------------
 
